@@ -2416,6 +2416,8 @@ button{-webkit-user-select:none;user-select:none;}
   var TOKEN_URL='https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/token';
   var REALTIME_URL='wss://api.x.ai/v1/realtime';
   var RATE=24000;
+  // Close the session after this much quiet, so an open line isn't billed while nobody talks.
+  var IDLE_MS=8000;
 
   var INSTRUCTIONS=[
     "You are the voice assistant inside TPACTION, the Turning Point Action volunteer app.",
@@ -2445,13 +2447,13 @@ button{-webkit-user-select:none;user-select:none;}
 
   function setState(state,msg){
     var text={connecting:'Connecting…',listening:'Listening',speaking:'Grok is speaking',
-      muted:'Microphone muted',error:"Couldn't start voice"}[state];
+      muted:'Microphone muted',paused:'Voice paused',error:"Couldn't start voice"}[state];
     statusEl.textContent=text;
     if(msg!==undefined) hintEl.textContent=msg;
-    pill.textContent={connecting:'Connecting',listening:'Live',speaking:'Live',muted:'Live',error:'Offline'}[state];
-    pill.className='v-pill'+(state==='error'?' err':(state==='connecting'?'':' live'));
+    pill.textContent={connecting:'Connecting',listening:'Live',speaking:'Live',muted:'Live',paused:'Paused',error:'Offline'}[state];
+    pill.className='v-pill'+(state==='error'?' err':(state==='connecting'||state==='paused'?'':' live'));
     orb.className='v-orb'+(state==='speaking'?' speaking':'')+(state==='connecting'?' connecting idle':'')+
-      (state==='error'||state==='muted'?' idle':'');
+      (state==='error'||state==='muted'||state==='paused'?' idle':'');
     if(S) S.state=state;
   }
 
@@ -2467,7 +2469,6 @@ button{-webkit-user-select:none;user-select:none;}
     phone.classList.add('voice-on');
     sheet.classList.add('show'); sheet.setAttribute('aria-hidden','false'); sheet.inert=false;
     logEl.textContent=''; suggEl.style.display='';
-    muteBtn.setAttribute('aria-pressed','false');
     document.getElementById('vEnd').focus();
     start();
   }
@@ -2482,7 +2483,8 @@ button{-webkit-user-select:none;user-select:none;}
   async function start(){
     var my=++gen;
     S={ws:null,ctx:null,stream:null,nodes:[],sources:[],nextT:0,muted:false,pending:[],pendingN:0,
-       asst:{},raf:0,state:'connecting'};
+       asst:{},raf:0,state:'connecting',last:Date.now(),userTalking:false,busy:false,idleT:0};
+    muteBtn.setAttribute('aria-pressed','false'); muteBtn.setAttribute('aria-label','Mute microphone');
     setState('connecting','Ask about your turf, ballots, events or your team');
 
     if(!TOKEN_URL){
@@ -2525,6 +2527,8 @@ button{-webkit-user-select:none;user-select:none;}
         }}));
         startCapture(my);
         setState('listening','Go ahead — Grok is listening');
+        S.last=Date.now();
+        S.idleT=setInterval(function(){ if(my===gen) checkIdle(); },250);
       };
       ws.onmessage=function(e){ if(my===gen) onEvent(JSON.parse(e.data)); };
       ws.onclose=function(e){
@@ -2581,15 +2585,35 @@ button{-webkit-user-select:none;user-select:none;}
     meter(my);
   }
 
+  function touch(){ if(S) S.last=Date.now(); }
+
+  // Quiet time only counts while nobody is talking: not while the user speaks,
+  // not while Grok is working on a reply, and not while its audio plays.
+  function checkIdle(){
+    var now=Date.now(), quiet=now-S.last;
+    if(S.sources.length){ touch(); return; }
+    if((S.userTalking||S.busy)&&quiet<60000) return;
+    if(quiet>=IDLE_MS){ sleep(); return; }
+    var left=Math.ceil((IDLE_MS-quiet)/1000);
+    if(left<=3&&(S.state==='listening'||S.state==='muted'))
+      hintEl.textContent='Pausing in '+left+'s to save minutes — say something to keep going';
+  }
+
+  function sleep(){
+    stop();
+    setState('paused','Closed after '+(IDLE_MS/1000)+' seconds of quiet, so you aren\'t charged. Tap the orb to pick up again.');
+  }
+
   function onEvent(ev){
     switch(ev.type){
       case 'response.output_audio.delta':
       case 'response.audio.delta':
-        play(ev.delta); break;
+        touch(); play(ev.delta); break;
       case 'response.output_audio_transcript.delta':
       case 'response.audio_transcript.delta':
       case 'response.output_text.delta':
       case 'response.text.delta':
+        touch();
         var id=ev.response_id||ev.item_id||'r';
         if(!S.asst[id]) S.asst[id]=addMsg('asst','');
         S.asst[id].textContent+=ev.delta||'';
@@ -2599,8 +2623,18 @@ button{-webkit-user-select:none;user-select:none;}
         if(ev.transcript&&ev.transcript.trim()) addMsg('user',ev.transcript.trim());
         break;
       case 'input_audio_buffer.speech_started':
+        S.userTalking=true; touch();
         stopPlayback();
         if(!S.muted) setState('listening','');
+        break;
+      case 'input_audio_buffer.speech_stopped':
+        S.userTalking=false; S.busy=true; touch();
+        break;
+      case 'response.created':
+        S.busy=true; touch();
+        break;
+      case 'response.done':
+        S.busy=false; touch();
         break;
       case 'error':
         addMsg('sys',(ev.error&&ev.error.message)||'Grok reported an error');
@@ -2618,7 +2652,7 @@ button{-webkit-user-select:none;user-select:none;}
     S.sources.push(s);
     s.onended=function(){
       S.sources=S.sources.filter(function(x){return x!==s;});
-      if(!S.sources.length&&S.state==='speaking') setState(S.muted?'muted':'listening','');
+      if(!S.sources.length){ touch(); if(S.state==='speaking') setState(S.muted?'muted':'listening',''); }
     };
     if(S.state!=='speaking') setState('speaking','Talk any time to interrupt');
   }
@@ -2643,7 +2677,7 @@ button{-webkit-user-select:none;user-select:none;}
 
   function stopMedia(){
     if(!S) return;
-    cancelAnimationFrame(S.raf); orb.style.setProperty('--lvl','0');
+    cancelAnimationFrame(S.raf); clearInterval(S.idleT); orb.style.setProperty('--lvl','0');
     stopPlayback();
     if(S.stream) S.stream.getTracks().forEach(function(t){t.stop();});
     S.nodes.forEach(function(n){ try{n.disconnect();}catch(e){} });
@@ -2688,7 +2722,7 @@ button{-webkit-user-select:none;user-select:none;}
   orb.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); retry(); } });
   muteBtn.addEventListener('click',function(){
     if(!S||S.state==='error'||S.state==='connecting') return;
-    S.muted=!S.muted; S.pending=[]; S.pendingN=0;
+    S.muted=!S.muted; S.pending=[]; S.pendingN=0; touch();
     if(S.stream) S.stream.getAudioTracks().forEach(function(t){t.enabled=!S.muted;});
     muteBtn.setAttribute('aria-pressed',String(S.muted));
     muteBtn.setAttribute('aria-label',S.muted?'Unmute microphone':'Mute microphone');
