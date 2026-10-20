@@ -1,0 +1,15 @@
+// Deploys the demo page and the voice pass Worker together as one Worker:
+// index.html is served as a static asset, POST /token runs worker/token-worker.js.
+// Cloudflare's GitHub build uses this file on every push to main.
+{
+  "name": "app-clickthrough-demo",
+  "main": "worker/token-worker.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+  // Keep XAI_API_KEY and ALLOWED_ORIGINS as set in the Cloudflare dashboard.
+  "keep_vars": true,
+  "observability": { "enabled": true }
+}

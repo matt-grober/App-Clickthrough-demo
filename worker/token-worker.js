@@ -13,6 +13,10 @@
  *   XAI_VOICE_MODEL    var, optional      passed to the page as ?model= on the realtime socket
  *   XAI_VOICE          var, optional      voice name for session.update, default chosen by the page
  *   TOKEN_LIMITER      binding, optional  Workers rate-limit binding, keyed by client IP
+ *   ASSETS             binding, optional  static assets; set when this Worker also serves index.html
+ *
+ * When the page is served by this same Worker (see wrangler.jsonc at the repo
+ * root), its own origin is always allowed.
  *
  * The Origin check only stops other websites from using this from a browser;
  * a script can forge Origin. Bind TOKEN_LIMITER (see wrangler.toml) or put
@@ -29,7 +33,7 @@ export default {
       .split(",")
       .map((o) => o.trim())
       .filter(Boolean);
-    const originOk = allowed.includes("*") || allowed.includes(origin);
+    const originOk = allowed.includes("*") || allowed.includes(origin) || origin === url.origin;
     const cors = originOk
       ? {
           "Access-Control-Allow-Origin": allowed.includes("*") ? "*" : origin,
@@ -40,7 +44,10 @@ export default {
         }
       : { Vary: "Origin" };
 
-    if (url.pathname !== "/token") return json({ error: "not_found" }, 404, cors);
+    if (url.pathname !== "/token") {
+      if (env.ASSETS) return env.ASSETS.fetch(request);
+      return json({ error: "not_found" }, 404, cors);
+    }
     if (request.method === "OPTIONS") return new Response(null, { status: originOk ? 204 : 403, headers: cors });
     if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405, { ...cors, Allow: "POST, OPTIONS" });
     if (!originOk) return json({ error: "origin_not_allowed" }, 403, cors);
