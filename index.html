@@ -2504,7 +2504,10 @@ button{-webkit-user-select:none;user-select:none;}
       S.stream=stream;
 
       var res=await fetch(TOKEN_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
-      if(!res.ok) throw new Error('token '+res.status);
+      if(!res.ok){
+        var why=''; try{ var b=await res.json(); why=b.error?': '+b.error+(b.status?' '+b.status:''):''; }catch(e){}
+        throw new Error('token '+res.status+why);
+      }
       var pass=await res.json();
       if(my!==gen) return;
       if(!pass.token) throw new Error('token missing');

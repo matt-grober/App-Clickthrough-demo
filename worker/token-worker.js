@@ -82,7 +82,13 @@ export default {
       return json({ error: "upstream_error", status: upstream.status }, 502, cors);
     }
 
-    const data = await upstream.json();
+    let data;
+    try {
+      data = await upstream.json();
+    } catch (err) {
+      console.error("xAI client_secrets response was not JSON", err);
+      return json({ error: "upstream_bad_response" }, 502, cors);
+    }
     const token = data.value ?? data.client_secret?.value ?? null;
     const expiresAt = data.expires_at ?? data.client_secret?.expires_at ?? null;
     if (!token) {
