@@ -850,6 +850,7 @@ button{-webkit-user-select:none;user-select:none;}
 .v-msg.asst{align-self:flex-start;background:rgba(36,182,206,.18);border-bottom-left-radius:5px;color:#EAF6FA;}
 .v-msg.sys{align-self:center;background:none;color:#9DB4D4;font-size:12.5px;text-align:center;padding:4px;}
 .v-sugg{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;padding:0 16px 12px;}
+.v-note{font-size:11.5px;color:#7E97BA;text-align:center;padding:0 24px 10px;line-height:1.4;}
 .v-sugg span{font-size:12.5px;color:#CFE0F5;border:1px solid rgba(255,255,255,.2);padding:6px 11px;border-radius:999px;}
 .v-bar{display:flex;gap:12px;justify-content:center;align-items:center;padding:8px 16px 0;}
 .v-btn{width:58px;height:58px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;
@@ -2180,6 +2181,7 @@ button{-webkit-user-select:none;user-select:none;}
       <span>“What's my next door?”</span>
       <span>“When's the next phone bank?”</span>
     </div>
+    <div class="v-note">This demo records voice conversations, names and taps in the app.</div>
     <div class="v-bar">
       <button class="v-btn" id="vMute" aria-label="Mute microphone" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v4"/></svg></button>
       <button class="v-end" id="vEnd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>End</button>
@@ -2215,6 +2217,51 @@ button{-webkit-user-select:none;user-select:none;}
 </div>
 
 <script>
+/* ---- activity log: what people say and do, sent in batches to the Worker's /log ---- */
+window.tpaLog=(function(){
+  // Same Worker as TOKEN_URL in the voice code below.
+  var LOG_URL='https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/log';
+  function uid(){ return window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2); }
+  function keep(store,key){ try{ var v=store.getItem(key); if(!v){ v=uid(); store.setItem(key,v); } return v; }catch(e){ return uid(); } }
+  var visitor=keep(window.localStorage,'tpa-visitor'), session=keep(window.sessionStorage,'tpa-session');
+  var name=null; try{ name=sessionStorage.getItem('tpa-name'); }catch(e){}
+  var queue=[], screen='home', timer=0;
+
+  function log(type,detail){
+    queue.push({t:new Date().toISOString(),type:type,detail:detail==null?null:String(detail).slice(0,1000),screen:screen,name:name});
+    if(queue.length>=40) flush(); else if(!timer) timer=setTimeout(flush,4000);
+  }
+  function flush(leaving){
+    clearTimeout(timer); timer=0;
+    if(!queue.length||!LOG_URL) return;
+    // text/plain keeps this a simple request, so it also works as a beacon while the page closes.
+    var body=JSON.stringify({visitor:visitor,session:session,name:name,events:queue.splice(0,40)});
+    if(leaving&&navigator.sendBeacon&&navigator.sendBeacon(LOG_URL,new Blob([body],{type:'text/plain'}))) return;
+    fetch(LOG_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:body,keepalive:true}).catch(function(){});
+    if(queue.length) flush(leaving);
+  }
+
+  // Every tap on something interactive, with the result shown to the user when there is one.
+  document.addEventListener('click',function(e){
+    var el=e.target.closest&&e.target.closest('button,[role="button"],[role="switch"],[data-goto],[data-toast],[data-sstate],.work,.thread');
+    if(!el) return;
+    var title=el.querySelector('.work-t,.thread-n,.rr-t,.eb-t,.eb-logo,.vnm-t,.m-n');
+    var label=(el.getAttribute('aria-label')||(title||el).textContent||'').replace(/\s+/g,' ').trim().slice(0,120);
+    log('tap',label+(el.dataset.toast?' → '+el.dataset.toast:''));
+  },true);
+  document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') flush(true); });
+  addEventListener('pagehide',function(){ log('app_close'); flush(true); });
+  log('app_open');
+
+  return {
+    log:log,
+    setScreen:function(s){ screen=s; },
+    getName:function(){ return name; },
+    setName:function(n){ name=n; try{ sessionStorage.setItem('tpa-name',n); }catch(e){} log('name_given',n); }
+  };
+})();
+</script>
+<script>
 (function(){
   var phone=document.getElementById('phone'), toastEl=document.getElementById('toast'), tT;
   function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(tT);
@@ -2237,6 +2284,7 @@ button{-webkit-user-select:none;user-select:none;}
   function go(key){
     if(overlays[key] && !overlays[current]) returnTo=current;
     current=key;
+    tpaLog.setScreen(key); tpaLog.log('screen',titles[key]);
     if(key==='search'){ clearMic(); setSearch('empty'); }
     Object.keys(screens).forEach(function(k){
       document.getElementById(screens[k]).classList.toggle('on',k===key);
@@ -2436,6 +2484,17 @@ button{-webkit-user-select:none;user-select:none;}
     "For official voting rules, deadlines or drop-off locations, tell the volunteer to confirm with the county elections office. Don't make up facts beyond this data."
   ].join("\n");
 
+  function instructionsFor(name){
+    return INSTRUCTIONS+"\n"+(name?
+      "The volunteer's first name is "+name+". Don't ask for it again; use it naturally now and then.":
+      "Start the conversation yourself: in one short sentence, greet them as the TPACTION assistant and ask for their first name. "+
+      "When they tell you, call save_name with it, then ask how you can help. If they'd rather not say, carry on without it.");
+  }
+
+  var NAME_TOOL={type:'function',name:'save_name',
+    description:"Save the volunteer's first name as soon as they tell you.",
+    parameters:{type:'object',properties:{name:{type:'string',description:'First name as the volunteer said it'}},required:['name']}};
+
   var phone=document.getElementById('phone');
   var sheet=document.getElementById('voice'), fab=document.getElementById('micFab');
   var orb=document.getElementById('vOrb'), pill=document.getElementById('vPill');
@@ -2446,6 +2505,7 @@ button{-webkit-user-select:none;user-select:none;}
   var gen=0, S=null;
 
   function setState(state,msg){
+    if(state==='error') tpaLog.log('voice_error',msg);
     var text={connecting:'Connecting…',listening:'Listening',speaking:'Grok is speaking',
       muted:'Microphone muted',paused:'Voice paused',error:"Couldn't start voice"}[state];
     statusEl.textContent=text;
@@ -2474,6 +2534,7 @@ button{-webkit-user-select:none;user-select:none;}
   }
 
   function close(){
+    if(S) tpaLog.log('voice_end');
     stop();
     phone.classList.remove('voice-on');
     sheet.classList.remove('show'); sheet.setAttribute('aria-hidden','true'); sheet.inert=true;
@@ -2482,8 +2543,9 @@ button{-webkit-user-select:none;user-select:none;}
 
   async function start(){
     var my=++gen;
+    tpaLog.log('voice_start');
     S={ws:null,ctx:null,stream:null,nodes:[],sources:[],nextT:0,muted:false,pending:[],pendingN:0,
-       asst:{},raf:0,state:'connecting',last:Date.now(),userTalking:false,busy:false,idleT:0};
+       asst:{},calls:{},raf:0,state:'connecting',last:Date.now(),userTalking:false,busy:false,idleT:0};
     muteBtn.setAttribute('aria-pressed','false'); muteBtn.setAttribute('aria-label','Mute microphone');
     setState('connecting','Ask about your turf, ballots, events or your team');
 
@@ -2521,10 +2583,14 @@ button{-webkit-user-select:none;user-select:none;}
         if(my!==gen) return;
         ws.send(JSON.stringify({type:'session.update',session:{
           voice:pass.voice||'Ara',
-          instructions:INSTRUCTIONS,
+          instructions:instructionsFor(tpaLog.getName()),
           turn_detection:{type:'server_vad'},
           audio:{input:{format:{type:'audio/pcm',rate:RATE}},output:{format:{type:'audio/pcm',rate:RATE}}}
         }}));
+        // Tools go in their own update so the session above still applies if they're refused.
+        ws.send(JSON.stringify({type:'session.update',session:{tools:[NAME_TOOL]}}));
+        if(!tpaLog.getName()) ws.send(JSON.stringify({type:'response.create'}));
+        tpaLog.log('voice_connected');
         startCapture(my);
         setState('listening','Go ahead — Grok is listening');
         S.last=Date.now();
@@ -2600,6 +2666,7 @@ button{-webkit-user-select:none;user-select:none;}
   }
 
   function sleep(){
+    tpaLog.log('voice_paused','idle '+(IDLE_MS/1000)+'s');
     stop();
     setState('paused','Closed after '+(IDLE_MS/1000)+' seconds of quiet, so you aren\'t charged. Tap the orb to pick up again.');
   }
@@ -2620,7 +2687,13 @@ button{-webkit-user-select:none;user-select:none;}
         logEl.scrollTop=logEl.scrollHeight;
         break;
       case 'conversation.item.input_audio_transcription.completed':
-        if(ev.transcript&&ev.transcript.trim()) addMsg('user',ev.transcript.trim());
+        if(ev.transcript&&ev.transcript.trim()){ addMsg('user',ev.transcript.trim()); tpaLog.log('user_said',ev.transcript.trim()); }
+        break;
+      case 'response.function_call_arguments.done':
+        onToolCall(ev.call_id,ev.name,ev.arguments);
+        break;
+      case 'response.output_item.done':
+        if(ev.item&&ev.item.type==='function_call') onToolCall(ev.item.call_id,ev.item.name,ev.item.arguments);
         break;
       case 'input_audio_buffer.speech_started':
         S.userTalking=true; touch();
@@ -2634,12 +2707,34 @@ button{-webkit-user-select:none;user-select:none;}
         S.busy=true; touch();
         break;
       case 'response.done':
-        S.busy=false; touch();
+        S.busy=false; touch(); logReplies();
+        if(S.followUp&&S.ws&&S.ws.readyState===1){ S.followUp=false; S.ws.send(JSON.stringify({type:'response.create'})); }
         break;
       case 'error':
         addMsg('sys',(ev.error&&ev.error.message)||'Grok reported an error');
         break;
     }
+  }
+
+  // Grok's replies are logged once each, when the response finishes or the session closes.
+  function logReplies(){
+    if(!S) return;
+    Object.keys(S.asst).forEach(function(k){
+      var el=S.asst[k];
+      if(!el.dataset.logged&&el.textContent.trim()){ el.dataset.logged='1'; tpaLog.log('grok_said',el.textContent.trim()); }
+    });
+  }
+
+  function onToolCall(callId,name,args){
+    if(!callId||S.calls[callId]) return;
+    S.calls[callId]=1;
+    var out={ok:false};
+    if(name==='save_name'){
+      try{ var n=String(JSON.parse(args||'{}').name||'').trim().slice(0,60); if(n){ tpaLog.setName(n); out={ok:true,name:n}; } }catch(e){}
+    }
+    if(!S.ws||S.ws.readyState!==1) return;
+    S.ws.send(JSON.stringify({type:'conversation.item.create',item:{type:'function_call_output',call_id:callId,output:JSON.stringify(out)}}));
+    S.followUp=true;  // Grok continues once the response that made the call has finished
   }
 
   function play(b64){
@@ -2689,6 +2784,7 @@ button{-webkit-user-select:none;user-select:none;}
   function stop(){
     gen++;
     if(!S) return;
+    logReplies();
     if(S.ws){ S.ws.onclose=null; try{S.ws.close();}catch(e){} }
     stopMedia();
     S=null;

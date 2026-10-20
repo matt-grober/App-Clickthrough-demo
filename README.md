@@ -19,4 +19,17 @@ allowed. Add other hosts to `ALLOWED_ORIGINS` (comma-separated) only if you serv
 **Worker on its own:** `worker/wrangler.toml` deploys just the token endpoint (`cd worker && npx wrangler deploy`).
 Then set `TOKEN_URL` in `index.html` to that Worker's `/token` address.
 
+## Activity log
+
+The app sends what people do (screens, taps, voice start/pause/end) and say (their words and Grok's replies) to
+`POST /log` on the same Worker, in batches. Grok asks for the person's first name at the start of their first voice
+session and saves it with a `save_name` function call; events after that carry the name, and every event carries a
+per-device `visitor` ID and a per-visit `session` ID.
+
+Events are stored in the D1 database bound as `LOGS_DB` (table `events`, created automatically). Without that
+binding the Worker writes each event to Workers Logs instead (Observability, search for `tpa_event`).
+
+To read them: Cloudflare dashboard → Storage & databases → D1 → the database → Console, e.g.
+`SELECT ts, name, type, detail, screen FROM events ORDER BY id DESC LIMIT 200;`
+
 The page needs HTTPS (or `localhost`) for microphone access.
