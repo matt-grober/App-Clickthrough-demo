@@ -1,0 +1,21 @@
+name = "tpa-voice-token"
+main = "token-worker.js"
+compatibility_date = "2025-09-01"
+
+[vars]
+# Where the demo page is hosted. Comma-separated, exact origins.
+ALLOWED_ORIGINS = "http://localhost:8080"
+TOKEN_TTL_SECONDS = "300"
+# XAI_VOICE_MODEL = "grok-voice-latest"
+# XAI_VOICE = "Ara"
+
+# The API key is a secret, not a var:
+#   npx wrangler secret put XAI_API_KEY
+
+# Optional per-IP rate limit (10 passes per minute). Uncomment to enable.
+# [[ratelimits]]
+# name = "TOKEN_LIMITER"
+# namespace_id = "1001"
+#   [ratelimits.simple]
+#   limit = 10
+#   period = 60
