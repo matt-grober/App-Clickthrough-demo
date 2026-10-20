@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TPACTION — Map with stage waypoints + contact history</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#173A6B;
+    --navy-deep:#12305A;
+    --ink:#1B1B1F;
+    --muted:#8A8F98;
+    --sheet:#F2F6FC;
+    --green:#8CE39C;
+    --red:#E03B3B;
+    --done:#2E7D4F;
+    --tried:#B0700F;
+    --map-bg:#EDEDE9;
+    --street:#FFFFFF;
+    --street-edge:#E2E2DE;
+    --park:#D7EBD3;
+    --water:#BFD9F2;
+    --shadow:0 8px 24px rgba(16,32,58,.18);
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:'Poppins','Avenir Next','Segoe UI',system-ui,sans-serif;
+    background:#0D1B2E;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  .device{
+    position:relative;
+    width:100%;
+    max-width:430px;
+    height:100dvh;
+    max-height:932px;
+    background:var(--map-bg);
+    overflow:hidden;
+    isolation:isolate;
+  }
+  @media (min-width:520px){
+    .device{border-radius:34px;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+  }
+
+  /* ---------- status bar ---------- */
+  .statusbar{
+    position:absolute;top:0;left:0;right:0;height:52px;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 26px;font-size:15px;font-weight:600;letter-spacing:.2px;
+    pointer-events:none;
+  }
+  .statusbar .right{display:flex;align-items:center;gap:6px;font-size:12px}
+  .batt{border:1.6px solid #1B1B1F;border-radius:4px;padding:1px 4px;font-size:10px;font-weight:700}
+
+  /* ---------- map ---------- */
+  .map{position:absolute;inset:0;z-index:0}
+  .map svg{width:100%;height:100%;display:block}
+  .streetlabel{
+    font-family:'Poppins',sans-serif;font-size:9.5px;fill:#9BA0A8;font-weight:500;
+    letter-spacing:.2px;
+  }
+
+  /* ---------- scrim ---------- */
+  .scrim{
+    position:absolute;inset:0;background:rgba(28,32,38,.55);
+    opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:20;
+  }
+  .scrim.on{opacity:1;pointer-events:auto}
+
+  /* ---------- pins ---------- */
+  /* pins live inside a safe band: clear of the status bar and top controls, and clear of the
+     bottom action buttons, so every door in the data is actually reachable on screen */
+  .pinlayer{
+    position:absolute;z-index:10;pointer-events:none;
+    top:max(150px,16%);bottom:max(120px,14%);left:7%;right:7%;
+  }
+  .pinlayer .pin{pointer-events:auto}
+  .pin{
+    position:absolute;transform:translate(-50%,-100%);
+    border:0;background:none;padding:0;cursor:pointer;
+    filter:drop-shadow(0 3px 5px rgba(16,32,58,.32));
+    transition:transform .18s cubic-bezier(.2,.9,.3,1.3),opacity .18s ease;
+  }
+  .pin:focus-visible{outline:3px solid #fff;outline-offset:3px;border-radius:8px}
+  .pin.sel{transform:translate(-50%,-100%) scale(1.22);z-index:3}
+  .pin.worked-door{opacity:1}
+  .pin.pulse{animation:pop .42s cubic-bezier(.2,.9,.3,1.3)}
+  @keyframes pop{
+    0%{transform:translate(-50%,-100%) scale(1)}
+    45%{transform:translate(-50%,-100%) scale(1.35)}
+    100%{transform:translate(-50%,-100%) scale(1)}
+  }
+  .pin.hidden{display:none}
+  .pin svg{display:block}
+
+  /* ---------- floating controls ---------- */
+  .fab{
+    position:absolute;top:64px;right:18px;z-index:30;
+    width:64px;height:64px;border-radius:50%;border:0;
+    background:var(--navy);color:#fff;cursor:pointer;
+    display:grid;place-items:center;box-shadow:var(--shadow);
+  }
+  .legend-btn{
+    position:absolute;top:140px;right:18px;z-index:30;
+    background:#fff;border:0;border-radius:14px;padding:10px 12px;
+    display:flex;align-items:center;gap:8px;cursor:pointer;
+    box-shadow:var(--shadow);font-family:inherit;
+    font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--navy);
+  }
+  .legend-btn .dotrow{display:flex}
+  .legend-btn .dotrow i{
+    width:8px;height:8px;border-radius:50%;display:block;
+    margin-left:-3px;border:1.5px solid #fff;
+  }
+  .legend-btn .dotrow i:first-child{margin-left:0}
+
+  .filterchip{
+    position:absolute;top:64px;left:18px;z-index:30;
+    background:var(--navy);color:#fff;border:0;border-radius:999px;
+    padding:9px 14px;font-family:inherit;font-size:10px;font-weight:700;
+    letter-spacing:.12em;cursor:pointer;box-shadow:var(--shadow);
+    display:none;align-items:center;gap:8px;
+  }
+  .filterchip.on{display:flex}
+
+  /* worked-doors counter on the map */
+  .doneChip{
+    position:absolute;top:112px;left:18px;z-index:30;
+    background:#fff;border:0;border-radius:999px;padding:8px 13px;
+    font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.12em;
+    color:var(--done);box-shadow:var(--shadow);display:none;align-items:center;gap:7px;
+  }
+  .doneChip.on{display:flex}
+
+  /* ---------- bottom actions ---------- */
+  .actions{
+    position:absolute;left:0;right:0;bottom:0;z-index:25;
+    padding:0 18px 26px;display:flex;flex-direction:column;gap:12px;
+    transition:transform .26s cubic-bezier(.2,.8,.2,1),opacity .2s ease;
+  }
+  .actions.away{transform:translateY(115%);opacity:0;pointer-events:none}
+  .actrow{display:flex;gap:12px}
+  .btn{
+    flex:1;border-radius:16px;padding:16px 10px;border:2px solid transparent;
+    font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.09em;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    cursor:pointer;background:#fff;
+  }
+  .btn-outline{border-color:var(--navy);color:var(--navy)}
+  .btn-go{background:var(--green);color:var(--navy-deep);border-color:var(--green)}
+  .btn:active{transform:scale(.985)}
+
+  /* ---------- sheets ---------- */
+  .sheet{
+    position:absolute;left:0;right:0;bottom:0;z-index:35;
+    background:var(--sheet);border-radius:26px 26px 0 0;
+    padding:14px 20px 28px;box-shadow:0 -10px 40px rgba(10,22,40,.28);
+    transform:translateY(110%);transition:transform .3s cubic-bezier(.2,.85,.25,1);
+    max-height:86%;overflow-y:auto;
+  }
+  .sheet.up{transform:translateY(0)}
+  .grabber{width:44px;height:5px;border-radius:3px;background:#C9D3E2;margin:0 auto 14px}
+
+  .namepill{
+    width:100%;background:var(--navy);color:#fff;border:0;border-radius:14px;
+    padding:16px 18px;display:flex;align-items:center;justify-content:space-between;
+    gap:12px;font-family:inherit;font-size:19px;font-weight:600;cursor:pointer;
+  }
+  .namepill .chev{opacity:.85;font-size:15px;letter-spacing:-2px}
+  .meta{
+    text-align:center;color:var(--muted);font-size:13.5px;line-height:1.5;
+    margin:12px 4px 0;font-weight:400;
+  }
+
+  /* ============ CONTACT HISTORY ============ */
+  .pillrow{display:flex;align-items:stretch;gap:8px}
+  .pillrow .namepill{flex:1;min-width:0}
+
+  /* history icon beside the name pill — opens the history sheet, costs no vertical space */
+  .hB{
+    position:relative;flex:none;width:56px;border:0;border-radius:14px;
+    background:#E3EAF6;color:var(--navy);cursor:pointer;display:grid;place-items:center;
+    transition:opacity .15s ease;
+  }
+  .hB.empty{opacity:.5}
+  .hB .hBn{
+    position:absolute;top:8px;right:9px;min-width:16px;height:16px;border-radius:8px;
+    background:var(--navy);color:#fff;font-size:9px;font-weight:700;line-height:16px;
+    text-align:center;padding:0 3px;
+  }
+
+  /* entries in the history sheet */
+  .hent{
+    background:#fff;border-radius:12px;padding:11px 13px;margin-top:8px;
+    box-shadow:0 1px 4px rgba(16,32,58,.05);border-left:3px solid var(--navy);
+  }
+  .hent .hm{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .hent .hw{font-size:11px;font-weight:700;color:var(--navy)}
+  .hent .hu{font-size:10.5px;color:var(--muted)}
+  .hent .hb{
+    font-size:8px;letter-spacing:.1em;font-weight:700;border-radius:5px;padding:3px 6px;
+    background:#EAF0FA;color:var(--navy);
+  }
+  .hent .ht{font-size:12.5px;line-height:1.55;color:#3A4152}
+  .hent.mine3{border-left-color:#2E7D4F}
+  .hgroup{font-size:8.5px;letter-spacing:.17em;color:var(--muted);font-weight:700;margin:16px 4px 2px}
+  .hempty{
+    background:#fff;border-radius:13px;padding:20px;text-align:center;
+    font-size:12.5px;color:var(--muted);line-height:1.6;
+  }
+  .hent.ownedit{cursor:pointer}
+  .hent .edtag{
+    font-size:8px;letter-spacing:.12em;font-weight:700;color:#2E7D4F;
+    background:#E4F3E9;border-radius:5px;padding:3px 6px;
+  }
+  .hent .hwin{font-size:10px;color:var(--muted);font-weight:500;margin-top:6px}
+  .hent .hedited{font-size:10px;color:var(--muted);font-style:italic;margin-top:6px}
+  .hnote{
+    font-size:11px;color:var(--muted);line-height:1.5;padding:2px 4px 8px;
+  }
+
+  /* ---------- worked-today strip ---------- */
+  .worked{
+    display:none;align-items:center;gap:10px;margin-top:12px;border-radius:14px;
+    padding:11px 12px;font-size:12.5px;font-weight:600;letter-spacing:.01em;
+  }
+  .worked.on{display:flex}
+  .worked.contact{background:#E4F3E9;color:var(--done)}
+  .worked.attempt{background:#FCF3E3;color:var(--tried)}
+  .worked .wchk{
+    width:24px;height:24px;display:grid;place-items:center;flex:none;
+  }
+  .worked .wtxt{flex:1;line-height:1.4}
+  .worked .wundo{
+    display:none;background:#fff;border:0;border-radius:9px;padding:7px 9px;flex:none;
+    font-family:inherit;font-size:8.5px;letter-spacing:.14em;font-weight:700;
+    color:inherit;cursor:pointer;
+  }
+  .worked .wundo.on{display:block}
+
+  .stageblock{
+    margin-top:16px;background:#fff;border-radius:16px;padding:14px 16px;
+    box-shadow:0 2px 10px rgba(16,32,58,.06);
+  }
+  .stagerow{display:flex;align-items:center;gap:12px}
+  .stagerow .badge{
+    width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none;
+  }
+  .stagelabel{font-size:9.5px;letter-spacing:.16em;color:var(--muted);font-weight:600;margin-bottom:3px}
+  .stagename{font-size:14.5px;font-weight:600;letter-spacing:.02em}
+  .stagesince{font-size:11.5px;color:var(--muted);margin-top:1px}
+
+  .demo{margin-top:14px;border-top:1px dashed #DCE4EF;padding-top:12px}
+  .demo p{
+    margin:0 0 9px;font-size:9.5px;letter-spacing:.14em;color:var(--muted);font-weight:600;
+  }
+  .chiprow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .chiprow::-webkit-scrollbar{display:none}
+  .chip{
+    flex:none;border:1.5px solid #E1E7F0;background:#fff;border-radius:999px;
+    padding:7px 12px 7px 7px;display:flex;align-items:center;gap:7px;cursor:pointer;
+    font-family:inherit;font-size:11px;font-weight:600;color:#4A5162;white-space:nowrap;
+  }
+  .chip .sw{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;flex:none}
+  .chip.active{border-color:var(--navy);background:#EAF0FA;color:var(--navy)}
+
+  .ghost{
+    width:100%;margin-top:14px;background:transparent;border:2px solid var(--navy);
+    border-radius:16px;padding:15px;color:var(--navy);font-family:inherit;
+    font-size:13px;font-weight:600;letter-spacing:.09em;cursor:pointer;
+  }
+
+  /* household line */
+  .hhline{
+    display:block;width:100%;background:none;border:0;padding:6px 4px 0;
+    font-family:inherit;font-size:13.5px;color:var(--muted);text-align:center;
+    cursor:pointer;letter-spacing:.01em;
+  }
+  .hhline .car{display:inline-block;margin-left:6px;font-size:10px;transition:transform .2s ease}
+  .hhline.open .car{transform:rotate(180deg)}
+  .hhlist{max-height:0;overflow:hidden;transition:max-height .25s ease}
+  .hhlist.open{max-height:240px}
+  .hhlist .row{
+    display:flex;align-items:center;gap:10px;background:#fff;border:0;width:100%;
+    border-radius:12px;padding:10px 12px;margin-top:7px;font-family:inherit;
+    text-align:left;cursor:pointer;box-shadow:0 1px 4px rgba(16,32,58,.05);
+  }
+  .hhlist .row .badge{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none}
+  .hhlist .row .nm{font-size:13px;font-weight:600}
+  .hhlist .row .sub{font-size:11px;color:var(--muted)}
+
+  .hhlist .row .who{flex:1;min-width:0}
+  .hhlist .row .nm{display:block}
+  .hhlist .row .sub{display:block}
+  .hhlist .row .tick2{flex:none;display:grid;place-items:center}
+  .hhlist .row .swap{
+    font-size:8.5px;letter-spacing:.14em;font-weight:700;color:var(--navy);
+    background:#EAF0FA;border-radius:7px;padding:6px 8px;flex:none;
+  }
+  .vflag{
+    display:none;margin-top:12px;text-align:center;font-size:11px;font-weight:600;
+    letter-spacing:.09em;color:#B0700F;background:#FCF3E3;border-radius:11px;padding:9px;
+  }
+
+  /* stage dropdown */
+  .stagepick{margin-top:16px}
+  .dd{
+    width:100%;background:#fff;border:1.5px solid #DCE4EF;border-radius:15px;
+    padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;
+    font-family:inherit;box-shadow:0 2px 8px rgba(16,32,58,.05);
+  }
+  .dd .badge{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}
+  .ddname{flex:1;text-align:left;font-size:14.5px;font-weight:600;letter-spacing:.01em}
+  .ddcaret{color:var(--muted);transition:transform .2s ease;flex:none}
+  .dd.open .ddcaret{transform:rotate(180deg)}
+  .ddlist{max-height:0;overflow:hidden;transition:max-height .28s ease}
+  .ddlist.open{max-height:340px;overflow-y:auto}
+  .ddlist .ghead{
+    font-size:8.5px;letter-spacing:.18em;color:var(--muted);font-weight:600;
+    padding:12px 4px 5px;
+  }
+  .ddopt{
+    width:100%;display:flex;align-items:center;gap:11px;background:#fff;border:0;
+    border-radius:12px;padding:9px 12px;margin-bottom:5px;cursor:pointer;
+    font-family:inherit;text-align:left;box-shadow:0 1px 4px rgba(16,32,58,.05);
+  }
+  .ddopt .badge{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none}
+  .ddopt .lbl{flex:1;font-size:13px;font-weight:600}
+  .ddopt.cur{background:#EAF0FA;box-shadow:inset 0 0 0 1.5px var(--navy)}
+  .ddopt.locked{cursor:default;opacity:.5}
+  .ddopt .tag{font-size:8px;letter-spacing:.13em;color:var(--muted);font-weight:700}
+
+  /* action triad */
+  .triad{margin-top:18px;display:flex;flex-direction:column;gap:11px}
+  .btn-skip{border-color:#D98A1F;color:#B0700F;background:#fff}
+
+  /* skip + stub sheets */
+  .skiphead{margin:0 0 4px;font-size:17px;font-weight:600}
+  .skipsub{margin:0 0 14px;font-size:12px;color:var(--muted);line-height:1.5}
+  .skipopt{
+    width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:0;
+    border-radius:13px;padding:13px 14px;margin-bottom:7px;cursor:pointer;
+    font-family:inherit;text-align:left;box-shadow:0 1px 4px rgba(16,32,58,.05);
+  }
+  .skipopt .ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none}
+  .skipopt .lbl{flex:1;font-size:13.5px;font-weight:600}
+  .skipopt .hint{font-size:11px;color:var(--muted);margin-top:1px;font-weight:400}
+  .stub{text-align:center;padding:26px 10px 10px}
+  .stub h3{margin:0 0 8px;font-size:17px;font-weight:600}
+  .stub p{margin:0;font-size:13px;color:var(--muted);line-height:1.6}
+
+
+  /* ============ VOTER PROFILE ============ */
+  .profile{
+    position:absolute;inset:0;z-index:60;background:#F2F6FC;
+    display:flex;flex-direction:column;
+    transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.85,.25,1);
+  }
+  .profile.up{transform:translateY(0)}
+  .phead{
+    flex:none;background:var(--navy);color:#fff;padding:52px 16px 14px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .phead .back{
+    background:rgba(255,255,255,.16);border:0;width:38px;height:38px;border-radius:50%;
+    display:grid;place-items:center;cursor:pointer;flex:none;
+  }
+  .phead .who{flex:1;min-width:0}
+  .phead .nm{font-size:17px;font-weight:600;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .phead .sub{font-size:11px;opacity:.72;margin-top:2px}
+  .phead .stagetag{
+    display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);
+    border-radius:9px;padding:6px 9px;font-size:9.5px;letter-spacing:.1em;font-weight:700;flex:none;
+  }
+
+  .psearch{flex:none;padding:12px 16px 4px}
+  .psearch input{
+    width:100%;border:1.5px solid #DCE4EF;border-radius:13px;padding:12px 14px;
+    font-family:inherit;font-size:14px;background:#fff;color:var(--ink);
+  }
+  .psearch input:focus{outline:none;border-color:var(--navy)}
+
+  .pbody{flex:1;overflow-y:auto;padding:8px 16px 120px}
+
+  .sect{margin-top:14px}
+  .sect>.sh{
+    width:100%;background:none;border:0;padding:8px 4px;display:flex;align-items:center;
+    gap:8px;cursor:pointer;font-family:inherit;
+  }
+  .sect .sh .t{font-size:9.5px;letter-spacing:.17em;font-weight:700;color:var(--navy);flex:1;text-align:left}
+  .sect .sh .n{font-size:9.5px;color:var(--muted);font-weight:600}
+  .sect .sh .car{color:var(--muted);transition:transform .2s ease}
+  .sect.open .sh .car{transform:rotate(180deg)}
+  .sect .sbody{display:none}
+  .sect.open .sbody{display:block}
+
+  .frow{
+    display:flex;align-items:flex-start;gap:12px;background:#fff;border:0;width:100%;
+    border-radius:13px;padding:12px 14px;margin-bottom:6px;font-family:inherit;
+    text-align:left;box-shadow:0 1px 4px rgba(16,32,58,.05);cursor:pointer;
+  }
+  .frow.ro{cursor:default;background:#F7F9FD}
+  .frow .k{flex:1.05;font-size:12px;color:var(--muted);font-weight:500;line-height:1.35;padding-top:2px}
+  .frow .v{flex:1.25;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.35;word-break:break-word}
+  .frow .v.empty{color:#B9C0CC;font-weight:500}
+  .frow .lock{flex:none;opacity:.4;margin-top:2px}
+  .frow.dirty{box-shadow:inset 0 0 0 1.6px #2E7D4F}
+  .frow .mine{
+    display:inline-block;margin-left:7px;font-size:8px;letter-spacing:.12em;font-weight:700;
+    color:#2E7D4F;background:#E4F3E9;border-radius:5px;padding:2px 5px;vertical-align:1px;
+  }
+  .frow .sens{
+    display:inline-block;margin-left:6px;font-size:8px;letter-spacing:.1em;font-weight:700;
+    color:#B0700F;background:#FCF3E3;border-radius:5px;padding:2px 5px;
+  }
+
+  .fedit{background:#fff;border-radius:13px;padding:12px 14px;margin-bottom:6px;
+    box-shadow:inset 0 0 0 1.6px var(--navy)}
+  .fedit .k{font-size:9.5px;letter-spacing:.14em;color:var(--muted);font-weight:700;margin-bottom:8px}
+  .fedit input,.fedit select,.fedit textarea{
+    width:100%;border:1.5px solid #DCE4EF;border-radius:10px;padding:11px 12px;
+    font-family:inherit;font-size:14px;background:#fff;color:var(--ink);
+  }
+  .fedit textarea{min-height:84px;resize:vertical}
+  .fedit input:focus,.fedit select:focus,.fedit textarea:focus{outline:none;border-color:var(--navy)}
+  .toggles{display:flex;gap:8px;margin-top:2px}
+  .toggles button{
+    flex:1;border:1.5px solid #DCE4EF;background:#fff;border-radius:10px;padding:11px;
+    font-family:inherit;font-size:13px;font-weight:600;color:#4A5162;cursor:pointer;
+  }
+  .toggles button.on{border-color:var(--navy);background:#EAF0FA;color:var(--navy)}
+  .fedit .ctl{display:flex;gap:8px;margin-top:9px}
+  .fedit .ctl button{
+    flex:1;border-radius:10px;padding:10px;font-family:inherit;font-size:11px;
+    font-weight:700;letter-spacing:.1em;cursor:pointer;border:1.5px solid var(--navy);
+  }
+  .fedit .ctl .ok{background:var(--navy);color:#fff}
+  .fedit .ctl .no{background:#fff;color:var(--navy)}
+
+  .savebar{
+    position:absolute;left:0;right:0;bottom:0;padding:14px 16px 26px;
+    background:linear-gradient(to top,#F2F6FC 62%,rgba(242,246,252,0));
+    display:flex;gap:11px;align-items:center;
+    transform:translateY(120%);transition:transform .25s cubic-bezier(.2,.85,.25,1);
+  }
+  .savebar.up{transform:translateY(0)}
+  .savebar .cnt{font-size:11.5px;color:var(--muted);font-weight:600;flex:none}
+  .savebar button{
+    flex:1;border-radius:15px;padding:15px;font-family:inherit;font-size:12.5px;
+    font-weight:700;letter-spacing:.1em;border:0;background:var(--navy);color:#fff;cursor:pointer;
+  }
+  .savebar .disc{flex:none;background:none;color:var(--muted);padding:15px 6px;font-size:11px;letter-spacing:.08em}
+
+  .privacy{
+    margin:16px 0 4px;background:#FCF3E3;border-radius:13px;padding:13px 15px;
+    font-size:11.5px;line-height:1.55;color:#8A6410;
+  }
+  .privacy b{display:block;font-size:9.5px;letter-spacing:.14em;margin-bottom:4px;color:#B0700F}
+
+
+  /* ============ INTERACTION ============ */
+  .interact{
+    position:absolute;inset:0;z-index:62;background:#F2F6FC;
+    display:flex;flex-direction:column;
+    transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.85,.25,1);
+  }
+  .interact.up{transform:translateY(0)}
+  .ibody{flex:1;overflow-y:auto;padding:14px 16px 150px}
+
+  .histline{
+    display:flex;align-items:center;gap:9px;padding:2px 4px 12px;
+    font-size:11.5px;color:var(--muted);font-weight:500;
+  }
+  .histline b{color:var(--navy);font-weight:700}
+
+  .accord{background:#fff;border-radius:15px;box-shadow:0 1px 5px rgba(16,32,58,.06);margin-bottom:14px;overflow:hidden}
+  .accord>.ah{
+    width:100%;background:none;border:0;padding:14px 15px;display:flex;align-items:center;
+    gap:11px;cursor:pointer;font-family:inherit;text-align:left;
+  }
+  .accord .ah .ic{width:30px;height:30px;border-radius:9px;background:#EAF0FA;display:grid;place-items:center;flex:none}
+  .accord .ah .tt{flex:1}
+  .accord .ah .t1{font-size:13.5px;font-weight:600}
+  .accord .ah .t2{font-size:11px;color:var(--muted);margin-top:1px}
+  .accord .ah .car{color:var(--muted);transition:transform .2s ease;flex:none}
+  .accord.open .ah .car{transform:rotate(180deg)}
+  .accord .abody{display:none;padding:0 15px 16px;border-top:1px solid #EEF2F8}
+  .accord.open .abody{display:block}
+  .scriptbox{
+    background:#F7F9FD;border-radius:12px;padding:14px;margin-top:14px;
+    font-size:13.5px;line-height:1.6;color:#3A4152;
+  }
+  .qlabel{font-size:9.5px;letter-spacing:.15em;color:var(--muted);font-weight:700;margin:16px 0 8px}
+  .qcard{background:#F7F9FD;border-radius:12px;padding:13px;margin-bottom:9px}
+  .qcard .qt{font-size:13px;font-weight:600;margin-bottom:9px;line-height:1.45}
+  .qcard input,.qcard select{
+    width:100%;border:1.5px solid #DCE4EF;border-radius:9px;padding:10px 11px;
+    font-family:inherit;font-size:13.5px;background:#fff;
+  }
+  .qcard .toggles button{padding:9px;font-size:12.5px}
+
+  .clabel{font-size:9.5px;letter-spacing:.16em;color:var(--navy);font-weight:700;margin:4px 4px 9px}
+  .outrow{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+  .outrow::-webkit-scrollbar{display:none}
+  .outchip{
+    flex:none;border:1.5px solid #DCE4EF;background:#fff;border-radius:999px;padding:9px 14px;
+    font-family:inherit;font-size:12px;font-weight:600;color:#4A5162;cursor:pointer;white-space:nowrap;
+  }
+  .outchip.on{border-color:var(--navy);background:var(--navy);color:#fff}
+
+  .composer{position:relative;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(16,32,58,.07)}
+  .composer textarea{
+    width:100%;border:0;background:none;border-radius:16px;padding:16px 16px 58px;
+    font-family:inherit;font-size:15.5px;line-height:1.6;color:var(--ink);
+    min-height:190px;resize:none;
+  }
+  .composer textarea:focus{outline:none}
+  .composer textarea::placeholder{color:#B9C0CC}
+  .cfoot{
+    position:absolute;left:0;right:0;bottom:0;padding:10px 12px;display:flex;
+    align-items:center;gap:10px;border-top:1px solid #F0F3F8;
+  }
+  .mic{
+    width:38px;height:38px;border-radius:50%;border:0;background:var(--navy);color:#fff;
+    display:grid;place-items:center;cursor:pointer;flex:none;
+  }
+  .mic.live{background:#C0392B;animation:mp 1.3s infinite}
+  @keyframes mp{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.5)}70%{box-shadow:0 0 0 11px rgba(192,57,43,0)}}
+  .chint{flex:1;font-size:11px;color:var(--muted);line-height:1.4}
+  .ccount{font-size:11px;color:#B9C0CC;font-weight:600;flex:none}
+
+  .logsect{margin-top:24px}
+  .loghead{display:flex;align-items:baseline;justify-content:space-between;margin:0 4px 10px}
+  .loghead h3{margin:0;font-size:13px;font-weight:700;letter-spacing:.02em}
+  .loghead span{font-size:11px;color:var(--muted);font-weight:600}
+  .logitem{
+    background:#fff;border-radius:14px;padding:13px 15px 14px;margin-bottom:9px;
+    box-shadow:0 1px 4px rgba(16,32,58,.05);border-left:4px solid var(--navy);
+  }
+  .logitem .lmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+  .logitem .when{font-size:11.5px;font-weight:700;color:var(--navy)}
+  .logitem .who{font-size:11px;color:var(--muted)}
+  .logitem .badge2{
+    font-size:8.5px;letter-spacing:.11em;font-weight:700;border-radius:6px;padding:3px 7px;
+    background:#EAF0FA;color:var(--navy);
+  }
+  .logitem .txt{font-size:13.5px;line-height:1.6;color:#3A4152}
+  .logitem.mine2{border-left-color:#2E7D4F}
+  .logempty{
+    background:#fff;border-radius:14px;padding:20px;text-align:center;
+    font-size:12.5px;color:var(--muted);line-height:1.6;
+  }
+
+  /* legend sheet */
+  .legendhead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+  .legendhead h2{margin:0;font-size:17px;font-weight:600;letter-spacing:.01em}
+  .legendhead button{
+    background:none;border:0;font-family:inherit;font-size:11px;font-weight:700;
+    letter-spacing:.1em;color:var(--navy);cursor:pointer;padding:4px}
+  .legendsub{margin:0 0 14px;font-size:12px;color:var(--muted);line-height:1.5}
+
+  .wpanel{
+    background:#fff;border-radius:14px;padding:2px 2px 12px;margin-bottom:16px;
+    box-shadow:0 1px 4px rgba(16,32,58,.05);
+  }
+  .wrow{
+    width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;
+    padding:13px 13px 9px;cursor:pointer;font-family:inherit;text-align:left;
+  }
+  .wrow .wt{flex:1;min-width:0}
+  .wrow .wt1{display:block;font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
+  .wrow .wt2{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+  .wrow .wt2 b{color:var(--ink);font-weight:700}
+  .sw{
+    flex:none;width:46px;height:27px;border-radius:999px;background:#DCE4EF;
+    position:relative;transition:background .2s ease;
+  }
+  .sw i{
+    position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 3px rgba(16,32,58,.25);transition:left .2s ease;
+  }
+  .sw.on{background:var(--navy)}
+  .sw.on i{left:22px}
+  .wkey{display:flex;gap:16px;flex-wrap:wrap;padding:0 14px}
+  .kitem{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);font-weight:500}
+  .kdot{
+    width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:none;
+    border:2px solid #fff;box-shadow:0 0 0 1px #E1E7F0;
+  }
+
+  .lgroup{margin-bottom:14px}
+  .lgroup h3{
+    margin:0 0 8px;font-size:9px;letter-spacing:.18em;color:var(--muted);font-weight:600;
+  }
+  .litem{
+    width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:0;
+    border-radius:13px;padding:10px 12px;margin-bottom:6px;cursor:pointer;
+    font-family:inherit;text-align:left;box-shadow:0 1px 4px rgba(16,32,58,.05);
+    transition:opacity .15s ease;
+  }
+  .litem .badge{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none}
+  .litem .txt{flex:1}
+  .litem .nm{font-size:13px;font-weight:600;letter-spacing:.01em}
+  .litem .ct{font-size:11px;color:var(--muted);margin-top:1px}
+  .litem.off{opacity:.34}
+  .litem .tick{font-size:11px;color:var(--navy);font-weight:700}
+
+  .toast{
+    position:absolute;left:50%;bottom:130px;z-index:50;transform:translate(-50%,14px);
+    background:var(--navy);color:#fff;border-radius:13px;padding:12px 18px;
+    font-size:12.5px;font-weight:500;letter-spacing:.02em;box-shadow:var(--shadow);
+    opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;
+    display:flex;align-items:center;gap:10px;max-width:88%;
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .toast .badge{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition-duration:.01ms!important}
+  }
+</style>
+</head>
+<body>
+<div class="device" id="device">
+
+  <div class="statusbar">
+    <span>2:03</span>
+    <span class="right"><span>⏸</span><span class="batt">79</span></span>
+  </div>
+
+  <!-- ============ MAP ============ -->
+  <div class="map">
+    <svg viewBox="0 0 430 932" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="430" height="932" fill="#EDEDE9"/>
+      <polygon points="255,300 340,300 340,392 262,392" fill="#D7EBD3"/>
+      <g stroke="#E2E2DE" stroke-width="9" fill="none" stroke-linecap="round">
+        <path d="M-10,30 H440"/><path d="M-10,398 H440"/><path d="M-10,760 H440"/>
+        <path d="M345,-10 V940"/>
+      </g>
+      <g stroke="#FFFFFF" stroke-width="6.5" fill="none" stroke-linecap="round">
+        <path d="M-10,30 H440"/><path d="M-10,398 H440"/><path d="M-10,760 H440"/>
+        <path d="M345,-10 V940"/>
+      </g>
+      <g stroke="#E7E7E3" stroke-width="5.5" fill="none" stroke-linecap="round">
+        <path d="M-10,120 H180"/><path d="M-10,168 H190"/><path d="M-10,215 H175"/>
+        <path d="M-10,258 H160"/><path d="M-10,300 H150"/><path d="M205,215 H300"/>
+        <path d="M215,258 H305"/><path d="M-10,455 H185"/><path d="M-10,500 H175"/>
+        <path d="M-10,672 H240"/><path d="M245,560 H330"/>
+        <path d="M170,120 C215,150 240,230 262,300 C272,340 280,370 285,398"/>
+        <path d="M120,455 C170,470 220,500 268,540"/>
+        <path d="M300,455 V560"/><path d="M330,470 V620"/>
+        <path d="M60,560 V760"/><path d="M120,600 V760"/><path d="M235,620 V760"/>
+        <path d="M-10,600 H140"/><path d="M-10,700 H120"/>
+      </g>
+      <g stroke="#FFFFFF" stroke-width="3.4" fill="none" stroke-linecap="round">
+        <path d="M-10,120 H180"/><path d="M-10,168 H190"/><path d="M-10,215 H175"/>
+        <path d="M-10,258 H160"/><path d="M-10,300 H150"/><path d="M205,215 H300"/>
+        <path d="M215,258 H305"/><path d="M-10,455 H185"/><path d="M-10,500 H175"/>
+        <path d="M-10,672 H240"/><path d="M245,560 H330"/>
+        <path d="M170,120 C215,150 240,230 262,300 C272,340 280,370 285,398"/>
+        <path d="M120,455 C170,470 220,500 268,540"/>
+        <path d="M300,455 V560"/><path d="M330,470 V620"/>
+        <path d="M60,560 V760"/><path d="M120,600 V760"/><path d="M235,620 V760"/>
+        <path d="M-10,600 H140"/><path d="M-10,700 H120"/>
+      </g>
+      <path d="M-10,405 L360,405" stroke="#BFD9F2" stroke-width="2.4" fill="none"/>
+      <path d="M-10,640 C90,585 210,505 330,418" stroke="#D6D6D2" stroke-width="7" fill="none"/>
+      <path d="M-10,640 C90,585 210,505 330,418" stroke="#BFD9F2" stroke-width="2.2" fill="none"/>
+      <g class="streetlabel">
+        <text x="18" y="116">E Gold Poppy Way</text>
+        <text x="18" y="211">E Desert Wind Dr</text>
+        <text x="18" y="296">E Badger Way</text>
+        <text x="18" y="451">E Rock Wren Rd</text>
+        <text x="18" y="496">E White Aster St</text>
+        <text x="18" y="668">E Verbena Dr</text>
+        <text x="248" y="556">E Bighorn Ave</text>
+        <text x="352" y="200" transform="rotate(-90 352,200)">S 48th St</text>
+        <text x="196" y="360" transform="rotate(-64 196,360)">S 46th Pl</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="pinlayer" id="pinlayer"></div>
+
+  <div class="scrim" id="scrim"></div>
+
+  <button class="fab" id="fab" aria-label="End session and leave the map">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+
+  <button class="legend-btn" id="legendBtn">
+    <span class="dotrow" id="dotrow"></span>
+    <span>STAGES</span>
+  </button>
+
+  <button class="filterchip" id="filterChip">
+    <span id="filterTxt">FILTERED</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+
+  <button class="doneChip" id="doneChip">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2E7D4F" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+    <span id="doneChipTxt">0 WORKED</span>
+  </button>
+
+  <!-- ============ BOTTOM ACTIONS ============ -->
+  <div class="actions" id="actions">
+    <div class="actrow">
+      <button class="btn btn-outline">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 2l10 10-10 10L2 12z"/><path d="M9 14v-3h5l-1.6-1.6" stroke-linecap="round"/></svg>
+        DIRECTIONS
+      </button>
+      <button class="btn btn-go">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M11 21l1.5-6-3-2.5 1-4.5 3 2 3 1"/><path d="M9.5 12.5L7 17"/></svg>
+        START WALKING
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ VOTER SHEET ============ -->
+  <div class="sheet" id="voterSheet" role="dialog" aria-label="Voter">
+    <div class="grabber"></div>
+    <div class="pillrow">
+      <button class="namepill" id="nameBtn">
+        <span id="vName">—</span><span class="chev">»»</span>
+      </button>
+      <button class="hB" id="hB" aria-label="Contact history">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#173A6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 2"/></svg>
+        <span class="hBn" id="hBn">0</span>
+      </button>
+    </div>
+    <p class="meta" id="vMeta">—</p>
+
+    <div class="worked" id="vWorked">
+      <span class="wchk" id="wChk"></span>
+      <span class="wtxt" id="wTxt">—</span>
+      <button class="wundo" id="wUndo">UNDO</button>
+    </div>
+
+    <button class="hhline" id="hhLine">—</button>
+    <div class="hhlist" id="hhList"></div>
+    <div class="vflag" id="vFlag">Not on your assigned list — same household</div>
+
+    <div class="stagepick">
+      <button class="dd" id="ddBtn" aria-expanded="false">
+        <span class="badge" id="vBadge"></span>
+        <span class="ddname" id="vStage">—</span>
+        <svg class="ddcaret" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="ddlist" id="ddList"></div>
+    </div>
+
+    <div class="triad">
+      <button class="btn btn-go" id="homeBtn">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-6h4v6"/></svg>
+        HOME
+      </button>
+      <button class="btn btn-outline" id="notHomeBtn">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5.5 10v10h13V10"/><path d="M9 13l6 6M15 13l-6 6"/></svg>
+        NOT HOME
+      </button>
+      <button class="btn btn-skip" id="skipBtn">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l11 8-11 8z"/><path d="M19 4v16"/></svg>
+        SKIP
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ SKIP DISPOSITIONS ============ -->
+  <div class="sheet" id="skipSheet" role="dialog" aria-label="Skip reason">
+    <div class="grabber"></div>
+    <h2 class="skiphead">Why are you skipping?</h2>
+    <p class="skipsub">Some reasons put the door back in tomorrow's route. Others take it off the turf for everyone. Either way it gets a check on the map so you don't walk it twice today.</p>
+    <div id="skipBody"></div>
+  </div>
+
+  <!-- ============ CONTACT HISTORY SHEET ============ -->
+  <div class="sheet" id="histSheet" role="dialog" aria-label="Contact history">
+    <div class="grabber"></div>
+    <div class="legendhead">
+      <h2 id="hsTitle">Contact history</h2>
+      <button id="hsClose">CLOSE</button>
+    </div>
+    <p class="legendsub" id="hsSub">—</p>
+    <div id="hsBody"></div>
+    <button class="ghost" id="hsBack">BACK TO VOTER</button>
+  </div>
+
+  <!-- ============ HOME STUB ============ -->
+  <div class="sheet" id="stubSheet" role="dialog" aria-label="Interaction">
+    <div class="grabber"></div>
+    <div class="stub">
+      <h3 id="stubName">Interaction page</h3>
+      <p>This is where the script and survey open next.<br>Not built yet — that's the next screen.</p>
+      <button class="ghost" id="stubBack">BACK TO MAP</button>
+    </div>
+  </div>
+
+  <!-- ============ LEGEND SHEET ============ -->
+  <div class="sheet" id="legendSheet" role="dialog" aria-label="Stages">
+    <div class="grabber"></div>
+    <div class="legendhead">
+      <h2>Stages on this turf</h2>
+      <button id="legendClose">CLOSE</button>
+    </div>
+    <p class="legendsub">Tap a stage to show only those doors. Tap again to bring the rest back.</p>
+
+    <div class="wpanel">
+      <button class="wrow" id="hideDoneBtn" role="switch" aria-checked="false">
+        <span class="wt">
+          <span class="wt1">Hide doors I’ve already worked</span>
+          <span class="wt2" id="workedCount">—</span>
+        </span>
+        <span class="sw" id="hideSw"><i></i></span>
+      </button>
+      <div class="wkey">
+        <span class="kitem">
+          <span class="kdot" style="background:#2E7D4F">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+          </span>Talked — logged
+        </span>
+        <span class="kitem">
+          <span class="kdot" style="background:#B0700F">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+          </span>Tried — no answer or skip
+        </span>
+      </div>
+    </div>
+
+    <div id="legendBody"></div>
+  </div>
+
+
+  <!-- ============ VOTER PROFILE ============ -->
+  <div class="profile" id="profile" role="dialog" aria-label="Voter record">
+    <div class="phead">
+      <button class="back" id="pBack" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="who"><div class="nm" id="pName">—</div><div class="sub" id="pSub">—</div></div>
+      <div class="stagetag" id="pStage"></div>
+    </div>
+    <div class="psearch"><input id="pSearch" placeholder="Search this record" autocomplete="off"></div>
+    <div class="pbody" id="pBody"></div>
+    <div class="savebar" id="saveBar">
+      <span class="cnt" id="saveCnt">0</span>
+      <button id="saveBtn">SAVE CHANGES</button>
+      <button class="disc" id="discardBtn">DISCARD</button>
+    </div>
+  </div>
+
+
+  <!-- ============ INTERACTION ============ -->
+  <div class="interact" id="interact" role="dialog" aria-label="Log contact">
+    <div class="phead">
+      <button class="back" id="iBack" aria-label="Back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="who"><div class="nm" id="iName">—</div><div class="sub" id="iSub">—</div></div>
+      <div class="stagetag" id="iStage"></div>
+    </div>
+
+    <div class="ibody">
+      <div class="histline" id="iHist"></div>
+
+      <div class="accord" id="scriptAcc">
+        <button class="ah">
+          <span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#173A6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-7-4-7 4z"/></svg></span>
+          <span class="tt"><span class="t1">Script and survey</span><span class="t2" id="scriptSub">Open if you need it</span></span>
+          <svg class="car" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="abody" id="scriptBody"></div>
+      </div>
+
+      <div class="clabel">WHAT HAPPENED</div>
+      <div class="outrow" id="outRow"></div>
+
+      <div class="composer">
+        <textarea id="cmt" placeholder="Say or type what happened. What you talked about, what you noticed, anything worth knowing next time."></textarea>
+        <div class="cfoot">
+          <button class="mic" id="micBtn" aria-label="Dictate">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0013 0"/><path d="M12 18v3.5"/></svg>
+          </button>
+          <span class="chint" id="micHint">Tap to dictate, or use the mic on your keyboard</span>
+          <span class="ccount" id="cCount"></span>
+        </div>
+      </div>
+
+      <div class="logsect">
+        <div class="loghead"><h3>Contact log</h3><span id="logCount"></span></div>
+        <div id="logBody"></div>
+      </div>
+    </div>
+
+    <div class="savebar up" id="iBar">
+      <button id="logSave">SAVE TO CONTACT LOG</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><span class="badge" id="toastBadge"></span><span id="toastTxt"></span></div>
+</div>
+
+<script>
+/* ---------------- glyphs ---------------- */
+const G = {
+  ban:'<circle cx="12" cy="12" r="8.4"/><path d="M6.1 6.1l11.8 11.8" stroke-linecap="round"/>',
+  bang:'<path d="M12 5.2v8.2" stroke-linecap="round" stroke-width="2.9"/><circle cx="12" cy="18.2" r="1.5" fill="currentColor" stroke="none"/>',
+  bolt:'<path d="M13.6 2.5L5.5 13.4h5.2l-1.1 8.1 8.3-11.1h-5.4z" fill="currentColor" stroke="none"/>',
+  tack:'<path d="M14.6 2.9l6.5 6.5-2.2 1.2-1 3.4-4.6-4.6-6.6 8.1 8.1-6.6-4.6-4.6 3.4-1z" fill="currentColor" stroke="none"/><path d="M9.4 14.6L4 20" stroke-linecap="round"/>',
+  person:'<circle cx="12" cy="8.2" r="3.6" fill="currentColor" stroke="none"/><path d="M4.9 20c0-3.9 3.2-6.4 7.1-6.4s7.1 2.5 7.1 6.4z" fill="currentColor" stroke="none"/>',
+  chat:'<path d="M4 4.6h16v11.2H10.2L5.4 20v-4.2H4z" fill="currentColor" stroke="none"/>',
+  chats:'<path d="M2.6 3.4h12.2v8.4H7.6L3.8 15v-3.2H2.6z" fill="currentColor" stroke="none"/><path d="M9.6 8.6h11.8v8.4h-1.2V21l-3.8-3.2H9.6z" fill="currentColor" stroke="none"/>',
+  bars:'<rect x="3" y="6.2" width="15" height="3.2" rx="1.6" fill="currentColor" stroke="none"/><rect x="3" y="11.4" width="9.5" height="3.2" rx="1.6" fill="currentColor" stroke="none"/><rect x="3" y="16.6" width="18" height="3.2" rx="1.6" fill="currentColor" stroke="none"/>',
+  check:'<circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="M7.7 12.3l2.9 2.9 5.8-5.9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+  ex:'<circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="M8.7 8.7l6.6 6.6M15.3 8.7l-6.6 6.6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/>',
+  clip:'<rect x="4.6" y="4" width="14.8" height="17" rx="2.6" fill="currentColor" stroke="none"/><rect x="8.6" y="2.1" width="6.8" height="3.6" rx="1.6" fill="currentColor" stroke="none"/><path d="M8.4 9.4h7.2M8.4 12.6h5.2" stroke="#fff" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M12 15l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="#fff" stroke="none"/>'
+};
+function glyph(name,size,color){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.1" style="color:${color}">${G[name]}</svg>`;
+}
+function tickDisc(size,color){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="11" fill="${color}"/>
+    <path d="M6.6 12.4l3.5 3.5 7.3-7.7" fill="none" stroke="#fff" stroke-width="2.9"
+          stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+/* ---------------- stages ---------------- */
+const STAGES = [
+  {id:'disengaged',   name:'Disengaged',               color:'#C0392B', g:'ban',    grp:'Entry criteria'},
+  {id:'inactive',     name:'Inactive',                 color:'#CF4A2C', g:'bang',   grp:'Entry criteria'},
+  {id:'new',          name:'New Voter',                color:'#E2622A', g:'bolt',   grp:'Entry criteria'},
+  {id:'indep',        name:'Independent Leads',        color:'#E8A128', g:'tack',   grp:'Entry criteria'},
+  {id:'initial',      name:'Initial Contact',          color:'#7DB33F', g:'person', grp:'Engagement'},
+  {id:'followup',     name:'Follow-Up',                color:'#2E7D4F', g:'chat',   grp:'Engagement'},
+  {id:'pchase',       name:'Primary Chase',            color:'#1F7A87', g:'bars',   grp:'Primary', cyc:'P'},
+  {id:'pcast',        name:'Cast Ballot in Primary',   color:'#2E86DE', g:'check',  grp:'Primary', cyc:'P'},
+  {id:'pnocast',      name:'Did Not Cast in Primary',  color:'#4A90D9', g:'ex',     grp:'Primary', cyc:'P'},
+  {id:'community',    name:'Community Follow-Up',      color:'#2F6FD0', g:'chats',  grp:'Engagement'},
+  {id:'commit',       name:'Commit to Vote',           color:'#33408C', g:'clip',   grp:'Engagement'},
+  {id:'gchase',       name:'General Chase',            color:'#5B3E9B', g:'bars',   grp:'General', cyc:'G'},
+  {id:'gcast',        name:'Cast Ballot in General',   color:'#7B2D8E', g:'check',  grp:'General', cyc:'G'},
+  {id:'gnocast',      name:'Did Not Cast in General',  color:'#C2185B', g:'ex',     grp:'General', cyc:'G'}
+];
+const S = Object.fromEntries(STAGES.map(s=>[s.id,s]));
+
+/* ---------------- sample turf (fabricated) ---------------- */
+const PEOPLE = [
+  {id:1,  hid:'h1', n:'Marcus Webb',    a:'3021 E Rock Wren Rd',   age:41, p:'Registered Independent', s:'new',        att:0, x:34, y:47, asg:true},
+  {id:11, hid:'h1', n:'Renee Webb',     a:'3021 E Rock Wren Rd',   age:39, p:'Registered Republican',  s:'disengaged', att:0, asg:false},
+
+  {id:2,  hid:'h2', n:'Alicia Turner',  a:'14802 S 46th Pl',       age:63, p:'Registered Republican',  s:'disengaged', att:1, x:62, y:33, asg:true},
+
+  {id:3,  hid:'h3', n:'Ray Ortega',     a:'3115 E White Aster St', age:29, p:'Registered Independent', s:'initial',    att:0, x:22, y:56, asg:true},
+  {id:31, hid:'h3', n:'Luz Ortega',     a:'3115 E White Aster St', age:58, p:'Registered Republican',  s:'followup',   att:0, asg:true},
+  {id:32, hid:'h3', n:'Mateo Ortega',   a:'3115 E White Aster St', age:24, p:'Registered Independent', s:'new',        att:0, asg:false},
+
+  {id:4,  hid:'h4', n:'Dana Whitfield', a:'14755 S 47th St',       age:52, p:'Registered Independent', s:'pchase',     att:2, x:71, y:60, asg:true},
+  {id:41, hid:'h4', n:'Cole Whitfield', a:'14755 S 47th St',       age:55, p:'Registered Independent', s:'pchase',     att:2, asg:true},
+
+  {id:5,  hid:'h5', n:'Sam Okafor',     a:'3230 E Bighorn Ave',    age:34, p:'Registered Republican',  s:'commit',     att:0, x:79, y:71, asg:true},
+
+  {id:6,  hid:'h6', n:'Priya Raman',    a:'14690 S 45th St',       age:47, p:'Registered Independent', s:'pnocast',    att:0, x:15, y:74, asg:true},
+  {id:61, hid:'h6', n:'Anil Raman',     a:'14690 S 45th St',       age:49, p:'Registered Independent', s:'pnocast',    att:0, asg:true},
+  {id:62, hid:'h6', n:'Meera Raman',    a:'14690 S 45th St',       age:22, p:'Registered Independent', s:'new',        att:0, asg:false},
+  {id:63, hid:'h6', n:'Dev Raman',      a:'14690 S 45th St',       age:19, p:'Registered Independent', s:'new',        att:0, asg:false},
+
+  {id:7,  hid:'h7', n:'Jon Alder',      a:'3044 E Verbena Dr',     age:71, p:'Registered Republican',  s:'inactive',   att:1, x:41, y:83, asg:true},
+  {id:71, hid:'h7', n:'Carol Alder',    a:'3044 E Verbena Dr',     age:69, p:'Registered Republican',  s:'inactive',   att:1, asg:true},
+
+  {id:8,  hid:'h8', n:'Kelsey Nguyen',  a:'14921 S 48th St',       age:25, p:'Registered Independent', s:'followup',   att:0, x:88, y:44, asg:true}
+];
+
+const doors      = ()=>PEOPLE.filter(p=>p.x!==undefined);
+const household  = v =>PEOPLE.filter(p=>p.hid===v.hid);
+const doorOf     = v =>PEOPLE.find(p=>p.hid===v.hid && p.x!==undefined);
+const person     = id=>PEOPLE.find(p=>p.id===id);
+
+/* stages whose truth comes from the voter file, not the activist */
+['pcast','pnocast','gcast','gnocast'].forEach(id => S[id].src = 'file');
+
+const SKIPS = [
+  {id:'later',    lbl:'Nobody available right now', hint:'Back in tomorrow’s route',      c:'#3E7BC4', ic:'chat',  keep:true, note:'Nobody available'},
+  {id:'gated',    lbl:'Gated or no access',         hint:'Back in tomorrow’s route',      c:'#3E7BC4', ic:'ban',   keep:true, note:'Gated — no access'},
+  {id:'dog',      lbl:'Aggressive dog',             hint:'Back in tomorrow’s route',      c:'#3E7BC4', ic:'bang',  keep:true, note:'Dog on the property'},
+  {id:'unsafe',   lbl:'Unsafe area',                hint:'Flags the block for everyone',  c:'#C0392B', ic:'bang',  keep:false, alert:true},
+  {id:'vacant',   lbl:'Vacant or wrong address',    hint:'Removes the whole address',     c:'#8A8F98', ic:'ex',    keep:false, scope:'address'},
+  {id:'moved',    lbl:'Voter has moved',            hint:'Removes the door from turf',    c:'#8A8F98', ic:'ex',    keep:false},
+  {id:'dnc',      lbl:'Asked not to be contacted',  hint:'Suppresses this voter everywhere', c:'#1B1B1F', ic:'ban', keep:false}
+];
+
+/* ---------------- worked-today marks ---------------- */
+/* A door gets a check the moment any disposition is recorded:
+   'contact' (green) when a conversation is saved to the log,
+   'attempt' (amber) for NOT HOME and for skips that keep the door in the route. */
+let evSeq = 0;
+const clock = ()=>new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+
+function mark(list,type,note){
+  const ev = ++evSeq, at = clock();
+  list.forEach(p=>{ p.done = {type,note,at,ev}; });
+}
+function unmark(v){
+  const ev = v.done && v.done.ev;
+  if(!ev) return;
+  PEOPLE.forEach(p=>{ if(p.done && p.done.ev===ev) p.done = null; });
+}
+/* door-level state: contact beats attempt beats nothing */
+function doorState(v){
+  const hh = household(v);
+  if(hh.some(p=>p.done && p.done.type==='contact')) return 'contact';
+  if(hh.some(p=>p.done)) return 'attempt';
+  return null;
+}
+const markColor = t => t==='contact' ? '#2E7D4F' : '#B0700F';
+const workedDoors = ()=>doors().filter(v=>doorState(v));
+
+/* ---------------- pin rendering ---------------- */
+function pinSVG(stage,mk){
+  /* a worked door takes the disposition colour outright — green for talked, amber for tried */
+  const fill = mk ? markColor(mk) : stage.color;
+  const face = mk
+    ? `<path d="M14 21 L18.8 25.8 L28.2 15.6" fill="none" stroke="#fff" stroke-width="3.7"
+             stroke-linecap="round" stroke-linejoin="round"/>`
+    : `<g transform="translate(9.6,9)">${glyph(stage.g,23,'#fff')}</g>`;
+  /* keep the stage readable once the pin is recoloured: cycle letter, or a stage-colour dot */
+  const corner = stage.cyc
+    ? `<circle cx="30" cy="30" r="9.5" fill="#fff"/>
+       <text x="30" y="33.6" text-anchor="middle" font-family="Poppins,sans-serif"
+             font-size="11" font-weight="700" fill="${stage.color}">${stage.cyc}</text>`
+    : (mk ? `<circle cx="30" cy="30" r="8" fill="#fff"/>
+             <circle cx="30" cy="30" r="4.6" fill="${stage.color}"/>` : '');
+  return `<svg width="42" height="54" viewBox="0 0 42 54">
+    <path d="M21 53C21 53 39 32.5 39 20.4 39 9.6 30.9 1.5 21 1.5S3 9.6 3 20.4C3 32.5 21 53 21 53z"
+          fill="${fill}" stroke="#fff" stroke-width="2.4"/>
+    ${face}
+    ${corner}
+  </svg>`;
+}
+
+const pinlayer = document.getElementById('pinlayer');
+let filter = null, selected = null, hideDone = false;
+
+function renderPins(){
+  pinlayer.innerHTML = '';
+  const selDoor = selected ? doorOf(person(selected)) : null;
+  doors().forEach(v=>{
+    const st = S[v.s], mk = doorState(v);
+    const hidden = (filter && filter!==v.s) || (hideDone && mk && !(selDoor&&selDoor.id===v.id));
+    const b = document.createElement('button');
+    b.className = 'pin' + (hidden ? ' hidden':'') + (selDoor&&selDoor.id===v.id?' sel':'') + (mk?' worked-door':'');
+    b.style.left = v.x+'%'; b.style.top = v.y+'%';
+    b.innerHTML = pinSVG(st,mk);
+    const state = mk==='contact' ? ', contacted today' : mk ? ', already tried today' : '';
+    b.setAttribute('aria-label', `${v.n}, ${st.name}${state}`);
+    b.dataset.id = v.id;
+    b.onclick = ()=>openVoter(v.id);
+    pinlayer.appendChild(b);
+  });
+  updateDoneChip();
+}
+
+function updateDoneChip(){
+  const c=document.getElementById('doneChip'), n=workedDoors().length;
+  c.classList.toggle('on', n>0);
+  document.getElementById('doneChipTxt').textContent = `${n} OF ${doors().length} WORKED`;
+}
+
+/* ---------------- sheets ---------------- */
+const scrim=document.getElementById('scrim'),
+      actions=document.getElementById('actions'),
+      voterSheet=document.getElementById('voterSheet'),
+      legendSheet=document.getElementById('legendSheet');
+
+const skipSheet=document.getElementById('skipSheet'), stubSheet=document.getElementById('stubSheet');
+
+function openVoter(id){
+  selected=id;
+  const v=person(id), st=S[v.s];
+  document.getElementById('vName').textContent=v.n;
+  const att = v.att ? `, ${v.att} prior ${v.att===1?'attempt':'attempts'}` : '';
+  document.getElementById('vMeta').textContent=`${v.a}, Age: ${v.age}, Party: ${v.p}${att}`;
+
+  renderWorked(v);
+  renderHistory(v);
+
+  const flag=document.getElementById('vFlag');
+  flag.style.display = v.asg ? 'none' : 'block';
+
+  const hh=document.getElementById('hhLine'), hl=document.getElementById('hhList');
+  const others=household(v).filter(p=>p.id!==v.id);
+  const total=others.length+1;
+  hl.innerHTML='';
+  if(total>1){
+    hh.style.display='block';
+    hh.innerHTML=`${total} registered voters at this address<span class="car">▾</span>`;
+    others.forEach(m=>{
+      const ms=S[m.s], r=document.createElement('button'); r.className='row';
+      r.innerHTML=`<span class="badge" style="background:${ms.color}">${glyph(ms.g,15,'#fff')}</span>
+        <span class="who"><span class="nm">${m.n}</span>
+        <span class="sub">Age ${m.age} · ${ms.name}${m.asg?'':' · not on your list'}</span></span>
+        ${m.done?`<span class="tick2">${tickDisc(17,markColor(m.done.type))}</span>`:''}
+        <span class="swap">TALK TO</span>`;
+      r.onclick=()=>{ openVoter(m.id); document.getElementById('hhLine').click(); };
+      hl.appendChild(r);
+    });
+  } else {
+    hh.style.display='block';
+    hh.innerHTML='Only registered voter at this address';
+  }
+  hh.classList.remove('open'); hl.classList.remove('open');
+
+  const bd=document.getElementById('vBadge');
+  bd.style.background=st.color; bd.innerHTML=glyph(st.g,20,'#fff');
+  document.getElementById('vStage').textContent=st.name;
+  document.getElementById('ddBtn').classList.remove('open');
+  document.getElementById('ddList').classList.remove('open');
+  buildDropdown(v);
+
+  scrim.classList.add('on'); actions.classList.add('away');
+  skipSheet.classList.remove('up'); stubSheet.classList.remove('up');
+  document.getElementById('histSheet').classList.remove('up');
+  voterSheet.classList.add('up');
+  renderPins();
+}
+
+/* the "already worked" strip inside the voter sheet */
+function renderWorked(v){
+  const w=document.getElementById('vWorked'),
+        undo=document.getElementById('wUndo'),
+        state=doorState(v);
+  w.classList.remove('on','contact','attempt');
+  undo.classList.remove('on');
+  if(!state) return;
+
+  let txt;
+  if(v.done){
+    txt = `${v.done.note} · ${v.done.at}`;
+    undo.classList.add('on');
+  } else {
+    const other = household(v).find(p=>p.done);
+    txt = `${other.n.split(' ')[0]}: ${other.done.note} · ${other.done.at}`;
+  }
+  document.getElementById('wChk').innerHTML = tickDisc(22,markColor(state));
+  document.getElementById('wTxt').textContent = txt;
+  w.classList.add('on',state);
+}
+
+function closeSheets(){
+  selected=null;
+  scrim.classList.remove('on'); actions.classList.remove('away');
+  voterSheet.classList.remove('up'); legendSheet.classList.remove('up');
+  skipSheet.classList.remove('up'); stubSheet.classList.remove('up');
+  document.getElementById('histSheet').classList.remove('up');
+  renderPins();
+}
+scrim.onclick=closeSheets;
+document.getElementById('fab').onclick=()=>{
+  if(IN_APP && !scrim.classList.contains('on')) tell({type:'close'}); else closeSheets();
+};
+document.getElementById('legendClose').onclick=closeSheets;
+document.getElementById('stubBack').onclick=closeSheets;
+
+document.getElementById('wUndo').onclick=()=>{
+  const v=person(selected);
+  if(!v || !v.done) return;
+  unmark(v);
+  openVoter(v.id); buildLegend();
+  toast(S[v.s],'Check cleared — door is back in the route');
+};
+
+/* household expander */
+document.getElementById('hhLine').onclick=()=>{
+  const hh=document.getElementById('hhLine'), hl=document.getElementById('hhList');
+  if(!hl.children.length) return;
+  hh.classList.toggle('open'); hl.classList.toggle('open');
+};
+
+/* stage dropdown */
+document.getElementById('ddBtn').onclick=()=>{
+  const b=document.getElementById('ddBtn'), l=document.getElementById('ddList');
+  const open=!l.classList.contains('open');
+  l.classList.toggle('open',open); b.classList.toggle('open',open);
+  b.setAttribute('aria-expanded',open);
+};
+
+function buildDropdown(v){
+  const l=document.getElementById('ddList'); l.innerHTML='';
+  [...new Set(STAGES.map(s=>s.grp))].forEach(g=>{
+    const h=document.createElement('div'); h.className='ghead'; h.textContent=g.toUpperCase();
+    l.appendChild(h);
+    STAGES.filter(s=>s.grp===g).forEach(s=>{
+      const o=document.createElement('button');
+      o.className='ddopt'+(s.id===v.s?' cur':'')+(s.src==='file'?' locked':'');
+      o.innerHTML=`<span class="badge" style="background:${s.color}">${glyph(s.g,15,'#fff')}</span>
+        <span class="lbl">${s.name}</span>
+        ${s.src==='file'?'<span class="tag">VOTER FILE</span>':''}`;
+      if(s.src!=='file') o.onclick=()=>setStage(v,s);
+      l.appendChild(o);
+    });
+  });
+}
+
+function setStage(v,s){
+  if(v.s===s.id) return;
+  v.s=s.id;
+  openVoter(v.id);
+  const d=doorOf(v);
+  const p=d && pinlayer.querySelector(`.pin[data-id="${d.id}"]`);
+  if(p){ p.classList.add('pulse'); setTimeout(()=>p.classList.remove('pulse'),450); }
+  toast(s, `${v.n.split(' ')[0]} moved to ${s.name}`);
+  buildLegend(); buildDots();
+}
+
+/* ---------------- three actions ---------------- */
+document.getElementById('homeBtn').onclick=()=>{ openInteract(selected); };
+
+document.getElementById('notHomeBtn').onclick=()=>{
+  const v=person(selected);
+  household(v).forEach(p=>p.att++);
+  mark(household(v),'attempt','No answer');
+  toast(S[v.s], `Attempt ${v.att} logged — door checked off for today`);
+  closeSheets(); buildLegend();
+};
+
+document.getElementById('skipBtn').onclick=()=>{
+  buildSkips();
+  voterSheet.classList.remove('up'); skipSheet.classList.add('up');
+};
+
+function buildSkips(){
+  const b=document.getElementById('skipBody'); b.innerHTML='';
+  SKIPS.forEach(k=>{
+    const o=document.createElement('button'); o.className='skipopt';
+    o.innerHTML=`<span class="ic" style="background:${k.c}">${glyph(k.ic,17,'#fff')}</span>
+      <span class="lbl">${k.lbl}<span class="hint">${k.hint}</span></span>`;
+    o.onclick=()=>applySkip(k);
+    b.appendChild(o);
+  });
+}
+
+function drop(list){
+  list.forEach(p=>{
+    const i=PEOPLE.indexOf(p);
+    if(i>-1) PEOPLE.splice(i,1);
+  });
+}
+
+function applySkip(k){
+  const v=person(selected), first=v.n.split(' ')[0];
+  let msg;
+  if(k.keep){
+    /* stays on the turf, so it needs the check to keep you from doubling back */
+    mark(household(v),'attempt',`Skipped — ${k.note}`);
+    msg=`Checked off — ${first} back in tomorrow’s route`;
+  } else if(k.scope==='address'){
+    drop(household(v));
+    msg=`Whole address removed from this turf`;
+  } else {
+    const wasDoor = v.x!==undefined, hh=household(v), rest=hh.filter(p=>p.id!==v.id);
+    if(wasDoor && rest.length){ rest[0].x=v.x; rest[0].y=v.y; }
+    drop([v]);
+    msg=`${first} removed — ${rest.length?'household stays on turf':'door cleared'}`;
+  }
+  if(k.alert) msg=`Block flagged unsafe — organizers notified`;
+  toast(S[v.s], msg);
+  closeSheets(); buildLegend(); buildDots();
+}
+
+/* ---------------- toast ---------------- */
+let toastTimer;
+function toast(stage,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastBadge').style.background=stage.color;
+  document.getElementById('toastBadge').innerHTML=glyph(stage.g,15,'#fff');
+  document.getElementById('toastTxt').textContent=msg;
+  tell({type:'result',detail:msg});
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('on'),2400);
+}
+
+/* ---------------- legend ---------------- */
+function buildLegend(){
+  updateWorkedRow();
+  const body=document.getElementById('legendBody'); body.innerHTML='';
+  const groups=[...new Set(STAGES.map(s=>s.grp))];
+  groups.forEach(g=>{
+    const wrap=document.createElement('div'); wrap.className='lgroup';
+    wrap.innerHTML=`<h3>${g.toUpperCase()}</h3>`;
+    STAGES.filter(s=>s.grp===g).forEach(s=>{
+      const list=doors().filter(v=>v.s===s.id);
+      const count=list.length, done=list.filter(v=>doorState(v)).length;
+      const b=document.createElement('button');
+      b.className='litem'+(filter&&filter!==s.id?' off':'');
+      b.innerHTML=`<span class="badge" style="background:${s.color}">${glyph(s.g,18,'#fff')}</span>
+        <span class="txt"><span class="nm">${s.name}</span>
+        <span class="ct">${count} ${count===1?'door':'doors'} on this turf${done?` · ${done} worked`:''}</span></span>
+        ${filter===s.id?'<span class="tick">SHOWING</span>':''}`;
+      b.onclick=()=>{ filter = (filter===s.id?null:s.id); buildLegend(); renderPins(); updateChip(); };
+      wrap.appendChild(b);
+    });
+    body.appendChild(wrap);
+  });
+  updateDoneChip();
+}
+
+function updateWorkedRow(){
+  const n=workedDoors().length, total=doors().length;
+  document.getElementById('workedCount').innerHTML =
+    n ? `<b>${n} of ${total}</b> doors checked off today`
+      : `<b>No doors worked yet</b> — checks appear as you go`;
+  document.getElementById('hideSw').classList.toggle('on',hideDone);
+  document.getElementById('hideDoneBtn').setAttribute('aria-checked',hideDone);
+}
+
+document.getElementById('hideDoneBtn').onclick=()=>{
+  hideDone=!hideDone;
+  updateWorkedRow(); renderPins(); updateChip();
+  const n=workedDoors().length;
+  toast(doors()[0] ? S[doors()[0].s] : S.followup, hideDone
+    ? `${n} worked ${n===1?'door':'doors'} hidden on the map`
+    : `Worked doors showing again — look for the checks`);
+};
+
+function updateChip(){
+  const c=document.getElementById('filterChip'), t=document.getElementById('filterTxt');
+  if(filter){ c.classList.add('on'); t.textContent=S[filter].name.toUpperCase(); }
+  else if(hideDone){ c.classList.add('on'); t.textContent='WORKED DOORS HIDDEN'; }
+  else c.classList.remove('on');
+}
+document.getElementById('filterChip').onclick=()=>{
+  filter=null; hideDone=false; buildLegend(); renderPins(); updateChip();
+};
+document.getElementById('legendBtn').onclick=()=>{
+  buildLegend(); scrim.classList.add('on'); actions.classList.add('away'); legendSheet.classList.add('up');
+};
+
+function buildDots(){
+  const d=document.getElementById('dotrow'); d.innerHTML='';
+  [...new Set(doors().map(v=>v.s))].slice(0,4).forEach(id=>{
+    const i=document.createElement('i'); i.style.background=S[id].color; d.appendChild(i);
+  });
+}
+
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSheets(); });
+
+
+/* ================= VOTER PROFILE ================= */
+const YN=['Yes','No'];
+const FIELDS=[
+ {g:'Identity',      k:'firstName',  l:'First Name',   src:'file'},
+ {g:'Identity',      k:'middleName', l:'Middle Name',  src:'file'},
+ {g:'Identity',      k:'lastName',   l:'Last Name',    src:'file'},
+ {g:'Identity',      k:'gender',     l:'Gender',       src:'file', opts:['F','M','Unknown']},
+ {g:'Identity',      k:'age',        l:'Age',          src:'file', t:'number'},
+ {g:'Identity',      k:'birthday',   l:'Birthday',     src:'file'},
+
+ {g:'Contact',       k:'cell',       l:'Voter Cell Phone', t:'tel'},
+ {g:'Contact',       k:'email',      l:'Email',            t:'email'},
+ {g:'Contact',       k:'landline',   l:'Landline',     src:'file'},
+ {g:'Contact',       k:'street',     l:'Street Address', src:'file'},
+ {g:'Contact',       k:'city',       l:'City',         src:'file'},
+ {g:'Contact',       k:'state',      l:'State',        src:'file'},
+ {g:'Contact',       k:'zip',        l:'Zip Code',     src:'file'},
+ {g:'Contact',       k:'mailing',    l:'Mailing Address', src:'file'},
+
+ {g:'Registration & districts', k:'party',    l:'Party Registered', src:'file'},
+ {g:'Registration & districts', k:'county',   l:'County',           src:'file'},
+ {g:'Registration & districts', k:'precinct', l:'Precinct',         src:'file'},
+ {g:'Registration & districts', k:'houseD',   l:'State House District', src:'file'},
+ {g:'Registration & districts', k:'senateD',  l:'State Senate District', src:'file'},
+ {g:'Registration & districts', k:'congD',    l:'Congressional District', src:'file'},
+ {g:'Registration & districts', k:'supD',     l:'County Supervisorial District', src:'file'},
+ {g:'Registration & districts', k:'councD',   l:'County Council / Commissioner District', src:'file'},
+ {g:'Registration & districts', k:'ctvTerr',  l:'CTV Territory',    src:'file'},
+ {g:'Registration & districts', k:'ctvReg',   l:'CTV Region',       src:'file'},
+ {g:'Registration & districts', k:'absentee', l:'Absentee Type',    src:'file'},
+ {g:'Registration & districts', k:'regDate',  l:'Calculated Reg Date', src:'file'},
+
+ {g:'About this person', k:'occupation', l:'Occupation'},
+ {g:'About this person', k:'employer',   l:'Employer'},
+ {g:'About this person', k:'marital',    l:'Marital Status', opts:['Single','Married','Divorced','Widowed']},
+ {g:'About this person', k:'kids',       l:'Number of Kids', t:'number', sens:1},
+ {g:'About this person', k:'kids12',     l:'Any Kids Under 12?', opts:YN, sens:1},
+ {g:'About this person', k:'ownRent',    l:'Homeowner or Renter?', opts:['Homeowner','Renter']},
+ {g:'About this person', k:'nativeAZ',   l:'Native Arizonan?', opts:YN},
+ {g:'About this person', k:'yearsAZ',    l:'How Many Years in AZ?', t:'number'},
+ {g:'About this person', k:'education',  l:'Level of Education', opts:['High school','Some college','Bachelor’s','Graduate']},
+ {g:'About this person', k:'language',   l:'Primary Language'},
+ {g:'About this person', k:'veteran',    l:'Veteran', opts:YN},
+ {g:'About this person', k:'branch',     l:'Military Branch'},
+ {g:'About this person', k:'responder',  l:'1st Responder', opts:YN},
+ {g:'About this person', k:'animal',     l:'Animal Owner', opts:YN},
+ {g:'About this person', k:'pets',       l:'Pets / Farm Animals'},
+ {g:'About this person', k:'vehicle',    l:'Vehicle', sens:1},
+ {g:'About this person', k:'outdoor',    l:'Outdoor Activities'},
+ {g:'About this person', k:'hobbies',    l:'Hobbies'},
+ {g:'About this person', k:'orgs',       l:'Organizations Involved With'},
+ {g:'About this person', k:'religion',   l:'Religion', sens:1},
+ {g:'About this person', k:'church',     l:'Church Name', sens:1},
+ {g:'About this person', k:'ethnicity',  l:'Ethnicity', sens:1},
+ {g:'About this person', k:'atHome',     l:'At Home', sens:1},
+ {g:'About this person', k:'describe',   l:'Describe the Person', t:'textarea', sens:1},
+ {g:'About this person', k:'tags',       l:'Tags'},
+
+ {g:'Voting status', k:'inPerson',   l:'Voting In Person', opts:YN},
+ {g:'Voting status', k:'ballotHQ',   l:'Ballot Verified By HQ', src:'file'},
+ {g:'Voting status', k:'flagDist',   l:'Flag Distributed', opts:YN},
+ {g:'Voting status', k:'flagInst',   l:'Flag Installation', opts:YN},
+ {g:'Voting status', k:'newRegAZ',   l:'New Registered Voter In Arizona', opts:YN},
+ {g:'Voting status', k:'iRegistered',l:'I personally registered this voter', opts:YN},
+ {g:'Voting status', k:'died',       l:'Voter Died', opts:YN},
+ {g:'Voting status', k:'moved',      l:'Voter Moved', opts:YN},
+ {g:'Voting status', k:'movedAddr',  l:'Voter Moved (New Address)'},
+ {g:'Voting status', k:'origStage',  l:'Original Stage', src:'file'},
+
+ {g:'Record',  k:'notes',      l:'Notes', t:'textarea'},
+ {g:'Record',  k:'assigned',   l:'Assigned To', src:'file'},
+ {g:'Record',  k:'dateAdded',  l:'Date Added', src:'file'},
+ {g:'Record',  k:'stateVID',   l:'Voters_StateVoterID', src:'file'},
+ {g:'Record',  k:'countyID',   l:'Voters_CountyID', src:'file'},
+ {g:'Record',  k:'seqZig',     l:'Voters_Sequence Zig Zag', src:'file'},
+ {g:'Record',  k:'seqOdd',     l:'Voters_Sequence OddEven', src:'file'},
+ {g:'Record',  k:'familyID',   l:'Residence_Families_FamilyID', src:'file'},
+ {g:'Record',  k:'comments',   l:'Comment Count', src:'file'},
+ {g:'Record',  k:'meetings',   l:'Meeting Notes Count', src:'file'},
+ {g:'Record',  k:'calls',      l:'Call Logs Count', src:'file'},
+ {g:'Record',  k:'lastEdit',   l:'Last Edited by', src:'file'}
+];
+const GROUPS=[...new Set(FIELDS.map(f=>f.g))];
+const OPEN={'Identity':false,'Contact':true,'Registration & districts':false,'About this person':true,'Voting status':false,'Record':false};
+
+function seed(v){
+  if(v.f) return v.f;
+  const parts=v.n.split(' ');
+  v.f={
+    firstName:parts[0], middleName:'', lastName:parts.slice(1).join(' '),
+    gender:'', age:String(v.age), birthday:'',
+    cell:'', email:'', landline:'',
+    street:v.a, city:'Chandler', state:'AZ', zip:'85249', mailing:'',
+    party:v.p.replace('Registered ',''), county:'MARICOPA', precinct:'0549 NIGHTINGALE',
+    houseD:'13', senateD:'13', congD:'5', supD:'', councD:'',
+    ctvTerr:'PETERSON FARMS', ctvReg:'CHANDLER REGION', absentee:'', regDate:'',
+    inPerson:'', ballotHQ:'', flagDist:'', flagInst:'', newRegAZ:'', iRegistered:'',
+    died:'', moved:'', movedAddr:'', origStage:S[v.s].name,
+    notes:'', assigned:'Jennifer S', dateAdded:'Aug 13, 2026',
+    stateVID:'LALAZ29838'+v.id, countyID:'', seqZig:'', seqOdd:'', familyID:v.hid.toUpperCase(),
+    comments:'0', meetings:'0', calls:'0', lastEdit:''
+  };
+  if(CAMP) Object.assign(v.f, CAMP.place);
+  return v.f;
+}
+
+/* ---- contact history inside the profile ----
+   Notes are an append-only trail, not fields: only your own most recent entry stays editable,
+   and only for a short window. Everything else is read-only, and new notes go through the
+   contact screen so they keep their author, channel and outcome. */
+const NOTE_EDIT_MIN=60;
+let histOpen=false, editNote=null;
+
+const noteEditable = e => !!(e.mine && e.ts && (Date.now()-e.ts) < NOTE_EDIT_MIN*60000);
+const minsLeft = e => Math.max(1, NOTE_EDIT_MIN - Math.floor((Date.now()-e.ts)/60000));
+
+function profileEntry(e,i,own){
+  const st=S[e.stage]||S.followup;
+  const canEdit = own && noteEditable(e);
+  return `<div class="hent${e.mine?' mine3':''}${canEdit?' ownedit':''}"
+       style="border-left-color:${st.color}" ${canEdit?`data-note="${i}"`:''}>
+    <div class="hm">
+      <span class="hw">${e.when}</span>
+      <span class="hu">${e.from ? e.from+' · ' : ''}${e.who}</span>
+      <span class="hb">${e.ch.toUpperCase()}</span>
+      <span class="hb">${e.out.toUpperCase()}</span>
+      ${canEdit?'<span class="edtag">EDIT</span>':''}
+    </div>
+    <div class="ht">${e.txt}</div>
+    ${canEdit?`<div class="hwin">Yours — editable for ${minsLeft(e)} more min</div>`:''}
+    ${e.edited?'<div class="hedited">edited</div>':''}
+  </div>`;
+}
+
+function historySection(q){
+  const own=logsFor(pv), hh=hhLogs(pv);
+  if(!own.length && !hh.length) return null;
+
+  const hit = e => e.txt.toLowerCase().includes(q) ||
+                   e.out.toLowerCase().includes(q) ||
+                   e.who.toLowerCase().includes(q);
+  const mine = q ? own.filter(hit) : own;
+  const theirs = q ? hh.filter(hit) : hh;
+  if(q && !mine.length && !theirs.length) return null;   /* stays out of the way of field search */
+
+  const n=mine.length+theirs.length;
+  const sec=document.createElement('div');
+  sec.className='sect'+((q||histOpen)?' open':'');
+  sec.innerHTML=`<button class="sh"><span class="t">CONTACT HISTORY</span>
+    <span class="n">${n} ${n===1?'note':'notes'}</span>
+    <svg class="car" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="sbody"></div>`;
+  sec.querySelector('.sh').onclick=()=>{ histOpen=!sec.classList.contains('open'); editNote=null; renderProfile(); };
+
+  const sb=sec.querySelector('.sbody');
+  let html='';
+  if(!q) html+=`<div class="hnote">Written at the door and kept as a record. Your own latest note can be corrected for ${NOTE_EDIT_MIN} minutes; older notes and other activists’ notes are read-only.</div>`;
+  own.forEach((e,i)=>{
+    if(q && !hit(e)) return;
+    html += (editNote===i) ? '' : profileEntry(e,i,true);
+    if(editNote===i) html += `<div class="fedit" data-editing="1">
+        <div class="k">EDIT YOUR NOTE — ${e.when}</div>
+        <textarea id="noteIn">${e.txt}</textarea>
+        <div class="ctl"><button class="no">CANCEL</button><button class="ok">SAVE</button></div>
+      </div>`;
+  });
+  if(theirs.length) html += `<div class="hgroup">OTHERS AT THIS ADDRESS</div>` +
+    theirs.map(e=>profileEntry(e,-1,false)).join('');
+  if(!q) html += `<button class="ghost" id="pLogBtn" style="margin-top:12px;padding:13px">LOG A NEW CONTACT</button>`;
+  sb.innerHTML=html;
+
+  sb.querySelectorAll('.hent.ownedit').forEach(el=>{
+    el.onclick=()=>{ editNote=+el.dataset.note; renderProfile(); };
+  });
+  const ed=sb.querySelector('[data-editing]');
+  if(ed){
+    ed.querySelector('.no').onclick=()=>{ editNote=null; renderProfile(); };
+    ed.querySelector('.ok').onclick=()=>{
+      const txt=ed.querySelector('#noteIn').value.trim();
+      const e=logsFor(pv)[editNote];
+      if(txt && e){ e.txt=txt; e.edited=true; }
+      editNote=null; renderProfile();
+      toast(S[pv.s],'Note updated');
+    };
+    setTimeout(()=>{ const t=ed.querySelector('#noteIn'); if(t) t.focus(); },40);
+  }
+  const lg=sb.querySelector('#pLogBtn');
+  if(lg) lg.onclick=()=>{ const id=pv.id; closeProfile(); openInteract(id); };
+
+  return sec;
+}
+
+const profile=document.getElementById('profile');
+let pv=null, draft={}, editing=null, query='';
+
+function openProfile(id){
+  pv=person(id); seed(pv); draft={}; editing=null; query='';
+  histOpen=false; editNote=null;
+  document.getElementById('pSearch').value='';
+  const st=S[pv.s];
+  document.getElementById('pName').textContent=pv.n;
+  document.getElementById('pSub').textContent=`${pv.a} · Age ${pv.age}`;
+  document.getElementById('pStage').innerHTML=`${glyph(st.g,13,'#fff')}<span>${st.name.toUpperCase()}</span>`;
+  renderProfile();
+  profile.classList.add('up');
+}
+function closeProfile(){ profile.classList.remove('up'); editing=null; }
+
+function renderProfile(){
+  const body=document.getElementById('pBody'); body.innerHTML='';
+  const q=query.trim().toLowerCase();
+
+  const hs=historySection(q);
+  if(hs) body.appendChild(hs);
+
+  GROUPS.forEach(g=>{
+    let list=FIELDS.filter(f=>f.g===g);
+    if(q) list=list.filter(f=>f.l.toLowerCase().includes(q));
+    if(!list.length) return;
+    const filled=list.filter(f=>val(f.k)).length;
+    const sec=document.createElement('div');
+    sec.className='sect'+((q||OPEN[g])?' open':'');
+    sec.innerHTML=`<button class="sh"><span class="t">${g.toUpperCase()}</span>
+      <span class="n">${filled}/${list.length}</span>
+      <svg class="car" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="sbody"></div>`;
+    sec.querySelector('.sh').onclick=()=>{ OPEN[g]=!sec.classList.contains('open'); renderProfile(); };
+    const sb=sec.querySelector('.sbody');
+    list.forEach(f=>sb.appendChild(editing===f.k ? editor(f) : row(f)));
+    if(g==='About this person' && !q){
+      const note=document.createElement('div'); note.className='privacy';
+      note.innerHTML='<b>SENSITIVE FIELDS</b>Marked fields describe someone’s household, beliefs, or background. Worth confirming who can read them and how long they’re kept before this ships.';
+      sb.appendChild(note);
+    }
+    body.appendChild(sec);
+  });
+  updateSaveBar();
+}
+
+const val=k=>(k in draft)?draft[k]:(pv.f[k]||'');
+
+function row(f){
+  const b=document.createElement('button');
+  const v=val(f.k), locked=f.src==='file';
+  b.className='frow'+(locked?' ro':'')+((f.k in draft)?' dirty':'');
+  b.innerHTML=`<span class="k">${f.l}${f.sens?'<span class="sens">SENSITIVE</span>':''}</span>
+    <span class="v ${v?'':'empty'}">${v||(locked?'—':'Add')}${(f.k in draft)?'<span class="mine">YOU</span>':''}</span>
+    ${locked?'<svg class="lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A8F98" stroke-width="2.4"><rect x="4" y="10" width="16" height="11" rx="2.4"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>':''}`;
+  if(!locked) b.onclick=()=>{ editing=f.k; renderProfile(); };
+  return b;
+}
+
+function editor(f){
+  const d=document.createElement('div'); d.className='fedit';
+  const v=val(f.k);
+  let ctrl;
+  if(f.opts){
+    ctrl=`<div class="toggles">${f.opts.map(o=>`<button data-v="${o}" class="${v===o?'on':''}">${o}</button>`).join('')}</div>`;
+  } else if(f.t==='textarea'){
+    ctrl=`<textarea id="fin">${v}</textarea>`;
+  } else {
+    ctrl=`<input id="fin" type="${f.t||'text'}" value="${v.replace(/"/g,'&quot;')}">`;
+  }
+  d.innerHTML=`<div class="k">${f.l}</div>${ctrl}
+    <div class="ctl"><button class="no">CANCEL</button><button class="ok">APPLY</button></div>`;
+
+  d.querySelectorAll('.toggles button').forEach(b=>{
+    b.onclick=()=>{
+      d.querySelectorAll('.toggles button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+    };
+  });
+  d.querySelector('.no').onclick=()=>{ editing=null; renderProfile(); };
+  d.querySelector('.ok').onclick=()=>{
+    let nv;
+    if(f.opts){ const on=d.querySelector('.toggles button.on'); nv=on?on.dataset.v:''; }
+    else nv=d.querySelector('#fin').value.trim();
+    if(nv!==(pv.f[f.k]||'')) draft[f.k]=nv; else delete draft[f.k];
+    editing=null; renderProfile();
+  };
+  setTimeout(()=>{ const i=d.querySelector('#fin'); if(i) i.focus(); },40);
+  return d;
+}
+
+function updateSaveBar(){
+  const n=Object.keys(draft).length, bar=document.getElementById('saveBar');
+  bar.classList.toggle('up',n>0);
+  document.getElementById('saveCnt').textContent=`${n} ${n===1?'change':'changes'}`;
+}
+
+document.getElementById('pSearch').oninput=e=>{ query=e.target.value; renderProfile(); };
+document.getElementById('pBack').onclick=()=>{
+  if(Object.keys(draft).length){
+    if(!confirm('You have unsaved changes. Leave without saving?')) return;
+  }
+  closeProfile();
+};
+document.getElementById('discardBtn').onclick=()=>{ draft={}; editing=null; renderProfile(); };
+document.getElementById('saveBtn').onclick=()=>{
+  const n=Object.keys(draft).length;
+  Object.assign(pv.f,draft);
+  if(draft.cell) pv.cellKnown=true;
+  pv.f.lastEdit='You · just now';
+  draft={}; renderProfile();
+  toast(S[pv.s], `${n} ${n===1?'field':'fields'} saved to ${pv.n.split(' ')[0]}’s record`);
+};
+document.getElementById('nameBtn').onclick=()=>{ if(selected) openProfile(selected); };
+
+
+/* ================= CONTACT LOG / INTERACTION ================= */
+const OUTCOMES=['Spoke with them','Spoke to household','Left literature','Brief — they were busy','Voter refused'];
+const SCRIPT="Hi, I'm [name] with Turning Point Action — I live a few streets over. I'm not selling anything, I'm just talking with neighbors about the election coming up. Do you have a couple of minutes?";
+const SURVEY=[
+  {q:'Did you make initial contact with the targeted voter?', t:'yn'},
+  {q:'Did you make a personal connection? Please describe.', t:'text'},
+  {q:'Are they planning to vote by mail or in person?', t:'sel', o:['By mail','In person','Undecided']},
+  {q:'Would they commit to voting?', t:'yn'}
+];
+
+const LOGS={
+  1:[{when:'Aug 9 · 6:10 PM', who:'Jennifer S', ch:'Door', out:'Spoke with them', stage:'new',
+      txt:'Registered in June, first election here. Asked what is actually on the ballot besides president — wanted a plain list, not a flyer. Said evenings after 6 are best.'}],
+  8:[{when:'Aug 11 · 5:40 PM', who:'You', ch:'Door', out:'Spoke with them', stage:'followup', mine:true,
+      txt:'Works retail at the mall, schedule changes weekly. Said she would vote if she had a ride or could do it by mail. Walked her through requesting an early ballot but she did not finish it on the spot.'},
+     {when:'Jul 28 · 1:05 PM', who:'Marcus T', ch:'Phone', out:'Brief — they were busy', stage:'followup',
+      txt:'Short call. Asked us to text instead of calling.'}],
+  4:[{when:'Aug 2 · 6:40 PM', who:'You', ch:'Door', out:'Spoke with them', stage:'pchase', mine:true,
+      txt:'Caught her on the way in from work. She has her early ballot but said it is sitting on the counter — worried about the signature matching because she changed her last name. Told her the county has a cure process. She asked for something in writing about it.'},
+     {when:'Jul 21 · 5:15 PM', who:'Jennifer S', ch:'Door', out:'Brief — they were busy', stage:'followup',
+      txt:'Answered but had kids in the car. Said to come back on a weekend. Husband Cole is also on the list, works nights.'}],
+  6:[{when:'Aug 5 · 11:20 AM', who:'Marcus T', ch:'Phone', out:'Spoke with them', stage:'pnocast',
+      txt:'She thought she voted in the primary but it looks like the ballot never got returned. Frustrated about it. Two adult kids at the house who just registered — she wants them included next time.'}],
+  7:[{when:'Jul 30 · 7:05 PM', who:'You', ch:'Door', out:'Left literature', stage:'inactive', mine:true,
+      txt:'No answer, left the flyer in the door. Truck in the driveway with a veteran plate. Neighbor said they are usually home mornings.'}]
+};
+
+const interact=document.getElementById('interact');
+let iv=null, outcome=OUTCOMES[0], rec=null, listening=false;
+
+function openInteract(id){
+  iv=person(id); outcome=OUTCOMES[0];
+  const st=S[iv.s];
+  document.getElementById('iName').textContent=iv.n;
+  document.getElementById('iSub').textContent=iv.a;
+  document.getElementById('iStage').innerHTML=`${glyph(st.g,13,'#fff')}<span>${st.name.toUpperCase()}</span>`;
+  document.getElementById('cmt').value = iv.draftTxt || '';
+  document.getElementById('scriptAcc').classList.remove('open');
+  buildScript(); buildOutcomes(); buildLog(); histLine(); countChars();
+  voterSheet.classList.remove('up');
+  interact.classList.add('up');
+}
+function closeInteract(){
+  if(iv) iv.draftTxt=document.getElementById('cmt').value;
+  stopRec(); interact.classList.remove('up');
+}
+document.getElementById('iBack').onclick=()=>{ closeInteract(); openVoter(iv.id); };
+
+function histLine(){
+  const l=LOGS[iv.id]||[], h=document.getElementById('iHist');
+  const n=l.length;
+  const today = iv.done ? ` · <b>${iv.done.note} today at ${iv.done.at}</b>` : '';
+  h.innerHTML = (n
+    ? `<b>${n===1?'2nd':'Contact '+(n+1)}</b> · last was ${l[0].when.split(' ·')[0]} by ${l[0].who} · ${iv.att} logged ${iv.att===1?'attempt':'attempts'}`
+    : `<b>First contact</b> · nothing logged for this voter yet`) + today;
+}
+
+function buildScript(){
+  const b=document.getElementById('scriptBody');
+  b.innerHTML=`<div class="scriptbox">${SCRIPT}</div><div class="qlabel">SURVEY — OPTIONAL</div>`;
+  SURVEY.forEach((q,i)=>{
+    const c=document.createElement('div'); c.className='qcard';
+    let ctrl;
+    if(q.t==='yn') ctrl=`<div class="toggles"><button>Yes</button><button>No</button></div>`;
+    else if(q.t==='sel') ctrl=`<select><option value="">Choose…</option>${q.o.map(o=>`<option>${o}</option>`).join('')}</select>`;
+    else ctrl=`<input placeholder="Type your answer">`;
+    c.innerHTML=`<div class="qt">${i+1}. ${q.q}</div>${ctrl}`;
+    c.querySelectorAll('.toggles button').forEach(bt=>bt.onclick=()=>{
+      c.querySelectorAll('.toggles button').forEach(x=>x.classList.remove('on')); bt.classList.add('on');
+    });
+    b.appendChild(c);
+  });
+}
+document.querySelector('#scriptAcc .ah').onclick=()=>{
+  const a=document.getElementById('scriptAcc');
+  a.classList.toggle('open');
+  document.getElementById('scriptSub').textContent =
+    a.classList.contains('open') ? 'Nothing here is required' : 'Open if you need it';
+};
+
+function buildOutcomes(){
+  const r=document.getElementById('outRow'); r.innerHTML='';
+  OUTCOMES.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='outchip'+(o===outcome?' on':'');
+    b.textContent=o;
+    b.onclick=()=>{ outcome=o; buildOutcomes(); };
+    r.appendChild(b);
+  });
+}
+
+function buildLog(){
+  const l=LOGS[iv.id]||[], b=document.getElementById('logBody');
+  document.getElementById('logCount').textContent = l.length ? `${l.length} ${l.length===1?'entry':'entries'}` : '';
+  b.innerHTML='';
+  if(!l.length){
+    b.innerHTML=`<div class="logempty">No one has logged a conversation with ${iv.n.split(' ')[0]} yet.<br>What you write here is what the next activist will read.</div>`;
+    return;
+  }
+  l.forEach(e=>{
+    const st=S[e.stage]||S[iv.s];
+    const d=document.createElement('div'); d.className='logitem'+(e.mine?' mine2':'');
+    d.style.borderLeftColor=st.color;
+    d.innerHTML=`<div class="lmeta">
+        <span class="when">${e.when}</span>
+        <span class="who">${e.who}</span>
+        <span class="badge2">${e.ch.toUpperCase()}</span>
+        <span class="badge2">${e.out.toUpperCase()}</span>
+      </div><div class="txt">${e.txt}</div>`;
+    b.appendChild(d);
+  });
+}
+
+/* dictation — native keyboard mic is the production path; this is the in-app fallback */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function stopRec(){ if(rec){ try{rec.stop();}catch(e){} } listening=false;
+  document.getElementById('micBtn').classList.remove('live'); }
+
+document.getElementById('micBtn').onclick=()=>{
+  const hint=document.getElementById('micHint'), ta=document.getElementById('cmt');
+  if(!SR){ hint.textContent='Use the mic on your keyboard to dictate'; ta.focus(); return; }
+  if(listening){ stopRec(); hint.textContent='Tap to dictate, or use the mic on your keyboard'; return; }
+  try{
+    rec=new SR(); rec.continuous=true; rec.interimResults=true; rec.lang='en-US';
+    let base=ta.value ? ta.value.replace(/\s+$/,'')+' ' : '';
+    rec.onresult=e=>{
+      let out='';
+      for(let i=e.resultIndex;i<e.results.length;i++) out+=e.results[i][0].transcript;
+      ta.value=base+out; countChars();
+      if(e.results[e.results.length-1].isFinal){ base=ta.value.replace(/\s+$/,'')+' '; }
+    };
+    rec.onerror=()=>{ stopRec(); hint.textContent='Dictation unavailable here — use the keyboard mic'; };
+    rec.onend=()=>{ if(listening){ try{rec.start();}catch(e){} } };
+    rec.start(); listening=true;
+    document.getElementById('micBtn').classList.add('live');
+    hint.textContent='Listening — tap again to stop';
+  }catch(e){ hint.textContent='Use the mic on your keyboard to dictate'; ta.focus(); }
+};
+
+function countChars(){
+  const v=document.getElementById('cmt').value.trim();
+  const w=v?v.split(/\s+/).length:0;
+  document.getElementById('cCount').textContent = w ? `${w}w` : '';
+}
+document.getElementById('cmt').oninput=countChars;
+
+document.getElementById('logSave').onclick=()=>{
+  const ta=document.getElementById('cmt'), txt=ta.value.trim();
+  if(!txt){ ta.focus(); toast(S[iv.s],'Add a note before saving'); return; }
+  stopRec();
+  const now=new Date();
+  const when=now.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+
+             now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  LOGS[iv.id]=LOGS[iv.id]||[];
+  LOGS[iv.id].unshift({when, who:'You', ch:'Door', out:outcome, stage:iv.s, mine:true, ts:Date.now(), txt});
+  mark([iv],'contact',outcome);
+  ta.value=''; iv.draftTxt=''; countChars(); buildLog(); histLine();
+  renderPins(); buildLegend();
+  toast(S[iv.s], `Logged — ${iv.n.split(' ')[0]}’s door checked off`);
+};
+
+/* ================= CONTACT HISTORY FROM THE PEEK SHEET ================= */
+/* Read-only. The icon beside the name pill carries a count and opens a sheet; nothing about
+   the disposition flow moves, whether or not the voter has history. */
+const logsFor = v => LOGS[v.id] || [];
+function hhLogs(v){
+  return household(v).filter(p=>p.id!==v.id)
+    .flatMap(p=>(LOGS[p.id]||[]).map(e=>({...e, from:p.n})));
+}
+
+function entryHTML(e){
+  const st=S[e.stage]||S.followup;
+  return `<div class="hent${e.mine?' mine3':''}" style="border-left-color:${st.color}">
+    <div class="hm">
+      <span class="hw">${e.when}</span>
+      <span class="hu">${e.from ? e.from+' · ' : ''}${e.who}</span>
+      <span class="hb">${e.ch.toUpperCase()}</span>
+      <span class="hb">${e.out.toUpperCase()}</span>
+    </div>
+    <div class="ht">${e.txt}</div>
+  </div>`;
+}
+
+function renderHistory(v){
+  const n=logsFor(v).length + hhLogs(v).length,
+        own=logsFor(v).length,
+        B=document.getElementById('hB'),
+        badge=document.getElementById('hBn');
+  badge.textContent=own || n;
+  badge.style.display = n ? 'block' : 'none';
+  B.classList.toggle('empty', !n);
+  B.setAttribute('aria-label', n
+    ? `Contact history — ${n} ${n===1?'note':'notes'}`
+    : 'Contact history — nothing logged yet');
+}
+
+document.getElementById('hB').onclick=()=>{ if(selected) openHist(person(selected)); };
+
+const histSheet=document.getElementById('histSheet');
+function openHist(v){
+  const l=logsFor(v), hh=hhLogs(v), first=v.n.split(' ')[0];
+  document.getElementById('hsTitle').textContent=`${first}’s history`;
+  document.getElementById('hsSub').textContent = l.length
+    ? `${l.length} ${l.length===1?'note':'notes'} from previous visits and calls. Read-only — new notes are written on the contact screen.`
+    : `Nothing logged for ${first} yet.`;
+  const body=document.getElementById('hsBody');
+  body.innerHTML =
+    (l.length ? l.map(entryHTML).join('')
+      : (hh.length ? '' : `<div class="hempty">No one has logged a conversation with ${first} yet.<br>Anything you write at the door shows up here for the next activist.</div>`)) +
+    (hh.length ? `<div class="hgroup">OTHERS AT THIS ADDRESS</div>` + hh.map(entryHTML).join('') : '');
+  voterSheet.classList.remove('up');
+  histSheet.classList.add('up');
+}
+document.getElementById('hsBack').onclick=()=>{ if(selected) openVoter(selected); };
+document.getElementById('hsClose').onclick=closeSheets;
+
+/* ================= TPACTION APP: CAMPAIGN DATA + BRIDGE =================
+   The app opens this page as doors.html?c=<campaign>. Without ?c it shows the original sample turf.
+   All names, addresses and notes below are fabricated example data. */
+const IN_APP = window.parent!==window;
+function tell(msg){
+  if(IN_APP) parent.postMessage(Object.assign({source:'tpa-doors'},msg), location.origin==='null'?'*':location.origin);
+}
+document.addEventListener('click',e=>{
+  const el=e.target.closest && e.target.closest('button');
+  if(!el) return;
+  const label=(el.getAttribute('aria-label')||el.textContent||'').replace(/\s+/g,' ').trim().slice(0,120);
+  tell({type:'tap',detail:label});
+},true);
+
+const CAMPAIGNS = {
+  vnm: {
+    labels:['W Indian School Rd','W Turney Ave','W Glenrosa Ave','W Highland Ave','W Pierson St','W Camelback Rd','W Mulberry Dr','N 19th Ave','N 15th Dr'],
+    place:{city:'Phoenix', zip:'85015', precinct:'0418 ENCANTO', houseD:'26', senateD:'26', congD:'3',
+           ctvTerr:'ENCANTO', ctvReg:'PHOENIX CENTRAL', assigned:'Voters Near Me', dateAdded:'Oct 18, 2026'},
+    seed:{talked:206, tried:208},
+    people:[
+      {id:201, hid:'v1', n:'Kevin Doyle',    a:'3318 W Turney Ave',          age:34, p:'Registered Republican',  s:'disengaged', att:0, x:28, y:30, asg:true},
+      {id:202, hid:'v2', n:'Angela Reyes',   a:'3402 W Glenrosa Ave',        age:48, p:'Registered Independent', s:'indep',      att:0, x:55, y:26, asg:true},
+      {id:212, hid:'v2', n:'Victor Reyes',   a:'3402 W Glenrosa Ave',        age:51, p:'Registered Republican',  s:'commit',     att:0, asg:true},
+      {id:203, hid:'v3', n:'Hannah Cho',     a:'4410 N 15th Dr',             age:21, p:'Registered Republican',  s:'new',        att:0, x:82, y:38, asg:true},
+      {id:213, hid:'v3', n:'Grace Cho',      a:'4410 N 15th Dr',             age:50, p:'Registered Republican',  s:'followup',   att:0, asg:false},
+      {id:204, hid:'v4', n:'Robert Fitzgerald', a:'3125 W Highland Ave',     age:67, p:'Registered Republican',  s:'gchase',     att:1, x:38, y:48, asg:true},
+      {id:205, hid:'v5', n:'Jasmine Ortiz',  a:'3511 W Pierson St',          age:39, p:'Registered Independent', s:'initial',    att:0, x:66, y:55, asg:true},
+      {id:206, hid:'v6', n:'Derek Hall',     a:'4602 N 19th Ave',            age:44, p:'Registered Republican',  s:'commit',     att:0, x:18, y:64, asg:true},
+      {id:207, hid:'v7', n:'Nora Patel',     a:'3290 W Mulberry Dr',         age:30, p:'Registered Independent', s:'community',  att:0, x:48, y:70, asg:true},
+      {id:217, hid:'v7', n:'Sameer Patel',   a:'3290 W Mulberry Dr',         age:32, p:'Registered Independent', s:'community',  att:0, asg:true},
+      {id:208, hid:'v8', n:'Luis Navarro',   a:'3333 W Indian School Rd #12', age:27, p:'Registered Republican', s:'inactive',   att:2, x:78, y:76, asg:true},
+      {id:209, hid:'v9', n:'Ellen Brooks',   a:'3220 W Camelback Rd',        age:74, p:'Registered Republican',  s:'gcast',      att:0, x:30, y:84, asg:true}
+    ],
+    logs:{
+      202:[{when:'Oct 11 · 5:50 PM', who:'Maria G', ch:'Door', out:'Spoke with them', stage:'indep',
+            txt:'Teacher at the elementary school on 19th Ave. Cares mostly about school funding and property taxes. Open to talking again but wants specifics, not slogans. Husband Victor is already voting.'}],
+      204:[{when:'Oct 15 · 10:30 AM', who:'Deshan S', ch:'Phone', out:'Spoke with them', stage:'gchase',
+            txt:'Has his early ballot. Recently widowed and said the paperwork has been overwhelming. Offered a hand with the ballot envelope if he wants one. Mornings are best.'}],
+      206:[{when:'Oct 8 · 6:20 PM', who:'You', ch:'Door', out:'Spoke with them', stage:'commit', mine:true,
+            txt:'Committed to voting early in person. Coaches Little League at Encanto Park and offered to bring two other parents to the Oct 3 Super Chase.'}],
+      208:[{when:'Oct 4 · 7:15 PM', who:'Ana L', ch:'Door', out:'Left literature', stage:'inactive',
+            txt:'Apartment complex, call box at the gate. Got buzzed in by a neighbor. No answer at #12, left the door hanger.'}],
+      209:[{when:'Oct 10 · 2:00 PM', who:'Ray C', ch:'Phone', out:'Spoke with them', stage:'gcast',
+            txt:'Mailed her ballot back the day it arrived. Happy to put a yard sign up and asked if we need volunteers to make calls from home.'}]
+    }
+  },
+
+  maryvale3: {
+    labels:['W Osborn Rd','W Catalina Dr','W Whitton Ave','W Earll Dr','W Monterey Way','W Thomas Rd','W Clarendon Ave','N 51st Ave','N 49th Dr'],
+    place:{city:'Phoenix', zip:'85031', precinct:'0612 CORTEZ', houseD:'24', senateD:'24', congD:'3',
+           ctvTerr:'MARYVALE', ctvReg:'PHOENIX WEST', assigned:'Matt R', dateAdded:'Sep 30, 2026'},
+    seed:{talked:102, tried:101},
+    people:[
+      {id:101, hid:'m1', n:'Rosa Alvarez',   a:'1408 N 49th Dr',   age:64, p:'Registered Republican',  s:'gchase',    att:1, x:30, y:32, asg:true},
+      {id:111, hid:'m1', n:'Hector Alvarez', a:'1408 N 49th Dr',   age:66, p:'Registered Republican',  s:'gchase',    att:1, asg:true},
+      {id:102, hid:'m2', n:'Thomas Nguyen',  a:'1412 N 49th Dr',   age:37, p:'Registered Independent', s:'commit',    att:0, x:52, y:28, asg:true},
+      {id:103, hid:'m3', n:'Miguel Santos',  a:'1420 N 49th Dr',   age:33, p:'Registered Republican',  s:'gchase',    att:0, x:74, y:36, asg:true},
+      {id:113, hid:'m3', n:'Sofia Santos',   a:'1420 N 49th Dr',   age:31, p:'Registered Republican',  s:'new',       att:0, asg:false},
+      {id:104, hid:'m4', n:'Walter Boyd',    a:'1502 N 49th Dr',   age:58, p:'Registered Republican',  s:'inactive',  att:1, x:20, y:50, asg:true},
+      {id:114, hid:'m4', n:'Denise Boyd',    a:'1502 N 49th Dr',   age:55, p:'Registered Republican',  s:'inactive',  att:1, asg:true},
+      {id:105, hid:'m5', n:'Esperanza Ruiz', a:'5031 W Catalina Dr', age:45, p:'Registered Independent', s:'indep',   att:0, x:46, y:54, asg:true},
+      {id:106, hid:'m6', n:'Brandon Kim',    a:'5110 W Whitton Ave', age:22, p:'Registered Republican', s:'new',      att:0, x:84, y:58, asg:true},
+      {id:107, hid:'m7', n:'Gloria Mendez',  a:'4927 W Earll Dr',  age:71, p:'Registered Republican',  s:'commit',    att:0, x:62, y:72, asg:true},
+      {id:117, hid:'m7', n:'Arturo Mendez',  a:'4927 W Earll Dr',  age:73, p:'Registered Republican',  s:'commit',    att:0, asg:true},
+      {id:108, hid:'m8', n:'Tyler Brooks',   a:'5019 W Monterey Way', age:29, p:'Registered Independent', s:'initial', att:0, x:34, y:78, asg:true},
+      {id:109, hid:'m9', n:'Linda Park',     a:'1436 N 50th Ave',  age:52, p:'Registered Republican',  s:'community', att:0, x:14, y:86, asg:true}
+    ],
+    logs:{
+      101:[{when:'Oct 14 · 5:30 PM', who:'You', ch:'Text', out:'Spoke with them', stage:'gchase', mine:true,
+            txt:'Replied to the ballot reminder: says she mailed it Friday and asked how long it takes. Told her to check the county ballot tracker in a few days. Husband Hector has his ballot but hasn’t filled it out.'},
+           {when:'Oct 6 · 6:15 PM', who:'Maria G', ch:'Door', out:'Spoke to household', stage:'gchase',
+            txt:'Hector answered. Both got early ballots last week. Rosa prefers Spanish materials — asked for the bilingual guide.'}],
+      102:[{when:'Oct 9 · 7:00 PM', who:'Deshan S', ch:'Phone', out:'Spoke with them', stage:'commit',
+            txt:'Asked where to drop his ballot off. Gave him the drop box at the Maryvale library. Said he’d do it this weekend.'}],
+      103:[{when:'Oct 12 · 4:45 PM', who:'You', ch:'Door', out:'Brief — they were busy', stage:'gchase', mine:true,
+            txt:'Heading to work. Ballot is in the car, hasn’t opened it. Said Sundays are better. Wife Sofia just registered in August.'}],
+      104:[{when:'Sep 28 · 10:20 AM', who:'Ana L', ch:'Door', out:'Left literature', stage:'inactive',
+            txt:'No answer. Ring camera, left the door hanger. Neighbor says they both work early shifts.'}],
+      107:[{when:'Oct 3 · 11:00 AM', who:'Ray C', ch:'Door', out:'Spoke with them', stage:'commit',
+            txt:'Retired. Both vote every time but want to vote in person this year. Asked about early voting sites close by and whether there is parking.'}]
+    }
+  },
+
+  estrella9: {
+    labels:['W Lower Buckeye Rd','W Pima St','W Durango St','W Hadley St','W Mohave St','W Buckeye Rd','W Gibson Ln','S 107th Ave','S 103rd Dr'],
+    place:{city:'Tolleson', zip:'85353', precinct:'1025 ESTRELLA', houseD:'22', senateD:'22', congD:'7',
+           ctvTerr:'ESTRELLA VILLAGE', ctvReg:'PHOENIX WEST', assigned:'Matt R', dateAdded:'Oct 19, 2026'},
+    seed:null,
+    people:[
+      {id:301, hid:'e1', n:'Carlos Fuentes',  a:'10712 W Pima St',          age:47, p:'Registered Republican',  s:'commit',     att:0, x:24, y:28, asg:true},
+      {id:311, hid:'e1', n:'Maribel Fuentes', a:'10712 W Pima St',          age:45, p:'Registered Republican',  s:'followup',   att:0, asg:true},
+      {id:302, hid:'e2', n:'Jordan Lee',      a:'10620 W Durango St',       age:26, p:'Registered Independent', s:'new',        att:0, x:58, y:34, asg:true},
+      {id:303, hid:'e3', n:'Patricia Owens',  a:'10531 W Hadley St',        age:59, p:'Registered Republican',  s:'gchase',     att:0, x:80, y:46, asg:true},
+      {id:304, hid:'e4', n:'Samuel Tran',     a:'10455 W Mohave St',        age:42, p:'Registered Republican',  s:'initial',    att:0, x:36, y:52, asg:true},
+      {id:305, hid:'e5', n:'Brianna Cole',    a:'10318 W Gibson Ln',        age:31, p:'Registered Independent', s:'indep',      att:0, x:16, y:70, asg:true},
+      {id:315, hid:'e5', n:'Marcus Cole',     a:'10318 W Gibson Ln',        age:33, p:'Registered Republican',  s:'indep',      att:0, asg:false},
+      {id:306, hid:'e6', n:'Frank DeLuca',    a:'10802 W Lower Buckeye Rd', age:69, p:'Registered Republican',  s:'inactive',   att:1, x:62, y:66, asg:true},
+      {id:307, hid:'e7', n:'Aaliyah Grant',   a:'10377 W Pima St',          age:23, p:'Registered Republican',  s:'new',        att:0, x:44, y:80, asg:true},
+      {id:308, hid:'e8', n:'Teresa Vega',     a:'10560 W Durango St',       age:46, p:'Registered Republican',  s:'disengaged', att:0, x:84, y:82, asg:true}
+    ],
+    logs:{
+      301:[{when:'Sep 21 · 9:40 AM', who:'Sandra B', ch:'Door', out:'Spoke with them', stage:'commit',
+            txt:'Runs a landscaping business, out most weekdays. Both plan to vote early. Carlos asked for a few door hangers to hand out at his church.'}],
+      306:[{when:'Sep 24 · 6:30 PM', who:'Ray C', ch:'Door', out:'Brief — they were busy', stage:'inactive',
+            txt:'Talked through the screen door — watching the game. Said he hasn’t voted since 2020 and isn’t sure his registration is current. Worth checking his status before the next visit.'}]
+    }
+  }
+};
+const CAMP = CAMPAIGNS[new URLSearchParams(location.search).get('c')] || null;
+if(CAMP){
+  PEOPLE.splice(0, PEOPLE.length, ...CAMP.people);
+  Object.keys(LOGS).forEach(k=>delete LOGS[k]);
+  Object.assign(LOGS, CAMP.logs);
+  document.querySelectorAll('.streetlabel text').forEach((t,i)=>{ if(CAMP.labels[i]) t.textContent=CAMP.labels[i]; });
+}
+
+/* mockup seed — one door talked to, one tried, so both check colors are visible on load.
+   Delete this block when the real shift state comes from the server. */
+(function seedWorked(){
+  if(CAMP && !CAMP.seed) return;
+  const talked=person(CAMP?CAMP.seed.talked:8), tried=person(CAMP?CAMP.seed.tried:7);
+  if(talked) mark([talked],'contact','Spoke with them');
+  if(tried)  mark(household(tried),'attempt','No answer');
+})();
+
+renderPins(); buildLegend(); buildDots();
+</script>
+</body>
+</html>

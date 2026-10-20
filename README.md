@@ -6,6 +6,14 @@ search, notifications, turf map). All names, numbers and addresses are example d
 screen; on a desktop it shows inside a phone frame. It follows the system light/dark setting, and you can
 override that in Me › Dark mode.
 
+## Doors canvassing
+
+`doors.html` is the canvassing map (voter sheet, stages, skips, voter record, contact log), kept as designed. The app
+opens it full screen when someone picks a Doors campaign: Voters Near Me (`doors.html?c=vnm`), Maryvale — Turf 3
+(`?c=maryvale3`) or Estrella Village — Turf 9 (`?c=estrella9`). Each campaign's example voters, notes and map street
+names are in the `CAMPAIGNS` block near the end of `doors.html`; opened without `?c`, it shows the original sample
+turf. Taps and results inside it go to the activity log.
+
 ## Grok voice
 
 The red mic button opens a live voice conversation with Grok. The page never holds an xAI key. Instead it

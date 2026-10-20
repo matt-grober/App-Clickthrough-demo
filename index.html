@@ -775,29 +775,11 @@ button{-webkit-user-select:none;user-select:none;}
 .listrow .rowhint{margin-left:auto;font-size:13px;color:var(--ink-3);font-weight:550;}
 .listrow .rowhint + .chev{margin-left:6px;}
 
-/* ---------- turf map ---------- */
-.turfmap{position:relative;height:300px;background:#E9EEE6;overflow:hidden;}
-.dark .turfmap{background:#1B211D;}
-.turfmap svg.streets{position:absolute;inset:0;width:100%;height:100%;}
-.turfmap .st{stroke:#FFFFFF;stroke-width:9;fill:none;}
-.turfmap .st.major{stroke:#F7E3A6;stroke-width:13;}
-.dark .turfmap .st{stroke:#343B37;}
-.dark .turfmap .st.major{stroke:#5A5133;}
-.turfmap .turfline{fill:rgba(27,95,168,.08);stroke:var(--blue);stroke-width:2.5;stroke-dasharray:7 5;}
-.turfmap .lbl{font-size:10.5px;font-weight:650;fill:#7A8576;letter-spacing:.3px;}
-.mpin{position:absolute;width:18px;height:18px;margin:-18px 0 0 -9px;}
-.mpin .pkd{display:block;width:18px;height:18px;}
-.mpin.big .pkd{width:24px;height:24px;}
-.mpin.big{margin:-24px 0 0 -12px;}
-.youdot{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#2D7FF9;
-  border:3px solid #fff;box-shadow:0 0 0 7px rgba(45,127,249,.22);}
-.mapchip{position:absolute;left:12px;top:12px;background:var(--surface);color:var(--ink);border-radius:10px;
-  padding:7px 11px;font-size:12.5px;font-weight:650;box-shadow:0 2px 8px rgba(0,0,0,.15);}
-.mapkey{background:var(--surface);padding:11px 14px 13px;border-bottom:1px solid var(--line);}
-.mapkey .pinkey{margin-top:0;}
-.doorrow{display:flex;align-items:center;gap:11px;padding:12px 14px;background:var(--surface);
-  border-bottom:1px solid var(--line-2);}
-.doorrow .pkd{flex:0 0 15px;transform:rotate(-45deg);}
+/* ---------- doors canvassing (doors.html, full screen over the app) ---------- */
+.doorsview{position:absolute;inset:0;z-index:86;background:#0D1B2E;display:none;}
+.doorsview.on{display:block;}
+.doorsview iframe{border:0;width:100%;height:100%;display:block;}
+.phone.doors-on .micfab{display:none;}
 
 /* ---------- big mic button ---------- */
 .micfab{position:absolute;right:16px;bottom:94px;width:70px;height:70px;border-radius:50%;border:none;
@@ -1426,7 +1408,7 @@ button{-webkit-user-select:none;user-select:none;}
     <div class="body">
 
       <div class="pane on" id="p-doors">
-        <button class="vnm" data-toast="Starting Voters Near Me — 184 doors nearby">
+        <button class="vnm" data-doors="vnm">
           <span class="vnm-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M19 10c0 6-7 11-7 11s-7-5-7-11a7 7 0 0114 0z"/></svg>ALWAYS AVAILABLE</span>
           <span class="vnm-t">Voters Near Me</span>
           <span class="vnm-s">184 doors within 2 miles of you</span>
@@ -1438,7 +1420,7 @@ button{-webkit-user-select:none;user-select:none;}
         <div class="vnm-pin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2l1.4 1.4-1.1 1.1 4.2 4.2 1.1-1.1L21 9l-4.6 4.6 1.1 1.1-1.4 1.4-4.2-4.2L5 19.6 4.4 19l6.7-6.9-4.2-4.2L5.5 9 6.9 7.6 8 8.7 14 2z"/></svg>Pinned — always at the top of this list</div>
 
         <div class="sechead">Your turfs<span class="subtle">2 assigned</span></div>
-        <div class="work doors" data-goto="handoff">
+        <div class="work doors" data-doors="maryvale3">
           <div class="work-main">
             <div class="work-t">Maryvale — Turf 3</div>
             <div class="work-s">W Osborn &amp; N 51st Ave · 1.2 mi · worked 2h ago</div>
@@ -1447,7 +1429,7 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="work-right"><span class="work-n">42</span><span class="work-nl">left</span></div>
           <span class="chev">›</span>
         </div>
-        <div class="work doors" data-goto="handoff">
+        <div class="work doors" data-doors="estrella9">
           <div class="work-main">
             <div class="work-t">Estrella Village — Turf 9</div>
             <div class="work-s">0.8 mi · claimed yesterday · not started</div>
@@ -1580,78 +1562,6 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="work-main"><div class="work-t">Request supplies</div><div class="work-s">Cards, stamps and address labels by mail</div></div>
           <span class="chev">›</span>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ TURF MAP ============ -->
-  <div class="screen" id="s-handoff">
-    <div class="body">
-      <div class="turfmap" aria-label="Map of Maryvale Turf 3">
-        <svg class="streets" viewBox="0 0 390 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <path class="st major" d="M-10 64H400"/>
-          <path class="st" d="M-10 150H400M-10 236H400"/>
-          <path class="st major" d="M78 -10V310"/>
-          <path class="st" d="M176 -10V310M268 -10V310M352 -10V310"/>
-          <path class="turfline" d="M96 82H334V222H96Z"/>
-          <text class="lbl" x="200" y="56">W OSBORN RD</text>
-          <text class="lbl" x="200" y="142">W CATALINA DR</text>
-          <text class="lbl" x="84" y="290" transform="rotate(-90 84 290)">N 51ST AVE</text>
-          <text class="lbl" x="182" y="290" transform="rotate(-90 182 290)">N 49TH DR</text>
-        </svg>
-        <span class="mapchip">Turf 3 · 42 doors left</span>
-        <span class="mpin" style="left:120px;top:104px"><span class="pkd g"></span></span>
-        <span class="mpin" style="left:150px;top:104px"><span class="pkd g"></span></span>
-        <span class="mpin" style="left:206px;top:104px"><span class="pkd a"></span></span>
-        <span class="mpin" style="left:236px;top:104px"><span class="pkd g"></span></span>
-        <span class="mpin" style="left:296px;top:104px"><span class="pkd g"></span></span>
-        <span class="mpin" style="left:120px;top:190px"><span class="pkd g"></span></span>
-        <span class="mpin big" style="left:198px;top:172px"><span class="pkd b"></span></span>
-        <span class="mpin" style="left:198px;top:206px"><span class="pkd b"></span></span>
-        <span class="mpin" style="left:236px;top:190px"><span class="pkd a"></span></span>
-        <span class="mpin" style="left:296px;top:172px"><span class="pkd b"></span></span>
-        <span class="mpin" style="left:296px;top:206px"><span class="pkd b"></span></span>
-        <span class="youdot" style="left:168px;top:150px"></span>
-      </div>
-      <div class="mapkey">
-        <div class="pinkey">
-          <span class="pk"><span class="pkd g"></span>Talked / logged</span>
-          <span class="pk"><span class="pkd a"></span>Tried / skipped</span>
-          <span class="pk"><span class="pkd b"></span>Not yet worked</span>
-        </div>
-      </div>
-
-      <div class="stats" style="margin-top:0;border-top:none;">
-        <div class="stat"><span class="stat-n">58</span><span class="stat-l">Knocked</span></div>
-        <div class="stat"><span class="stat-n">42</span><span class="stat-l">Left</span></div>
-        <div class="stat"><span class="stat-n hot">9</span><span class="stat-l">Chase stops</span></div>
-        <div class="stat"><span class="stat-n">38%</span><span class="stat-l">Contact</span></div>
-      </div>
-
-      <div class="sechead">Next doors<span class="subtle">walking order</span></div>
-      <div class="doorrow">
-        <span class="pkd b"></span>
-        <div class="m-main"><div class="m-n">1416 N 49th Dr</div><div class="m-s">Rosa Alvarez · ballot requested, not returned</div></div>
-        <button class="pillbtn fill" data-toast="Logged: talked at the door">Log</button>
-      </div>
-      <div class="doorrow">
-        <span class="pkd b"></span>
-        <div class="m-main"><div class="m-n">1420 N 49th Dr</div><div class="m-s">Miguel Santos · ballot not returned · 4 days</div></div>
-        <button class="pillbtn" data-toast="Logged: talked at the door">Log</button>
-      </div>
-      <div class="doorrow">
-        <span class="pkd b"></span>
-        <div class="m-main"><div class="m-n">1502 N 49th Dr</div><div class="m-s">2 voters · no ballot requested</div></div>
-        <button class="pillbtn" data-toast="Logged: talked at the door">Log</button>
-      </div>
-      <div class="doorrow">
-        <span class="pkd a"></span>
-        <div class="m-main"><div class="m-n">1408 N 49th Dr</div><div class="m-s">No answer at 2:19 PM · literature left</div></div>
-        <button class="pillbtn" data-toast="Revisit added to the end of your route">Revisit</button>
-      </div>
-
-      <div style="padding:16px 14px 0;">
-        <button class="btn btn-primary" style="width:100%;background:var(--blue);color:#fff;" data-goto="chase">Back to turf list</button>
       </div>
     </div>
   </div>
@@ -1790,7 +1700,7 @@ button{-webkit-user-select:none;user-select:none;}
       </div>
 
       <div class="sechead">Your assignment</div>
-      <div class="work doors" data-goto="handoff">
+      <div class="work doors" data-doors="maryvale3">
         <div class="work-main">
           <div class="work-t">Maryvale — Turf 3</div>
           <div class="work-s">Assigned at check-in · 0.4 mi from the park</div>
@@ -2010,19 +1920,19 @@ button{-webkit-user-select:none;user-select:none;}
         </div>
 
         <div class="rgrp">VOTERS · 23</div>
-        <div class="rres" data-goto="handoff">
+        <div class="rres" data-doors="maryvale3">
           <span class="rr-i" style="background:var(--red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
           <span class="rr-m"><span class="rr-t">Rosa Alvarez</span><span class="rr-s">1408 N 49th Dr · requested Sep 2 · 0.2 mi</span></span>
           <span class="chev">›</span>
         </div>
-        <div class="rres" data-goto="handoff">
+        <div class="rres" data-doors="maryvale3">
           <span class="rr-i" style="background:var(--red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
           <span class="rr-m"><span class="rr-t">Thomas Nguyen</span><span class="rr-s">1412 N 49th Dr · requested Sep 2 · 0.2 mi</span></span>
           <span class="chev">›</span>
         </div>
 
         <div class="rgrp">TURFS · 2</div>
-        <div class="rres" data-goto="handoff">
+        <div class="rres" data-doors="maryvale3">
           <span class="rr-i" style="background:var(--green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg></span>
           <span class="rr-m"><span class="rr-t">Maryvale — Turf 3</span><span class="rr-s">42 doors left · 9 chase stops on route</span></span>
           <span class="chev">›</span>
@@ -2159,6 +2069,11 @@ button{-webkit-user-select:none;user-select:none;}
     </div>
   </div>
 
+  <!-- ==================== DOORS CANVASSING ==================== -->
+  <div class="doorsview" id="doorsView" aria-hidden="true">
+    <iframe id="doorsFrame" title="Doors canvassing" allow="microphone"></iframe>
+  </div>
+
   <!-- ==================== VOICE ==================== -->
   <button class="micfab" id="micFab" aria-label="Talk to Grok">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v4M8 22h8"/></svg>
@@ -2268,11 +2183,11 @@ window.tpaLog=(function(){
     tT=setTimeout(function(){toastEl.classList.remove('show');},2000);}
 
   var screens={home:'s-home',people:'s-people',chase:'s-chase',events:'s-events',me:'s-me',
-    handoff:'s-handoff',event:'s-event',eventpast:'s-eventpast',search:'s-search',notif:'s-notif'};
+    event:'s-event',eventpast:'s-eventpast',search:'s-search',notif:'s-notif'};
   var titles={home:'TPACTION',people:'People',chase:'Chase',events:'Events',me:'Me',
-    handoff:'Maryvale — Turf 3',event:'Maryvale launch',eventpast:'Build the Red Wall 2025',
+    event:'Maryvale launch',eventpast:'Build the Red Wall 2025',
     search:'Search',notif:'Notifications'};
-  var parentTab={handoff:'chase',event:'events',eventpast:'events'};
+  var parentTab={event:'events',eventpast:'events'};
   var navbtns=document.querySelectorAll('.navbtn');
   var chaseBtn=document.getElementById('chaseBtn');
   var lastMode=0, lastDetailParent=null;
@@ -2356,9 +2271,32 @@ window.tpaLog=(function(){
     s.addEventListener('click',function(){setMode(+s.dataset.cseg);});
   });
 
+  /* ---- doors canvassing: doors.html opens full screen for the chosen campaign ---- */
+  var doorsView=document.getElementById('doorsView'), doorsFrame=document.getElementById('doorsFrame');
+  var doorsNames={vnm:'Voters Near Me',maryvale3:'Maryvale — Turf 3',estrella9:'Estrella Village — Turf 9'};
+  function openDoors(c){
+    doorsFrame.src='doors.html?c='+encodeURIComponent(c);
+    doorsView.classList.add('on'); doorsView.setAttribute('aria-hidden','false');
+    phone.classList.add('doors-on');
+    tpaLog.setScreen('doors'); tpaLog.log('screen','Doors — '+(doorsNames[c]||c));
+  }
+  function closeDoors(){
+    doorsView.classList.remove('on'); doorsView.setAttribute('aria-hidden','true');
+    phone.classList.remove('doors-on');
+    doorsFrame.src='about:blank';
+    tpaLog.setScreen(current); tpaLog.log('screen',titles[current]);
+  }
+  window.addEventListener('message',function(e){
+    if(e.source!==doorsFrame.contentWindow||!e.data||e.data.source!=='tpa-doors') return;
+    if(e.data.type==='close') closeDoors();
+    else if(e.data.type==='tap') tpaLog.log('tap',e.data.detail);
+    else if(e.data.type==='result') tpaLog.log('doors_result',e.data.detail);
+  });
+
   document.addEventListener('click',function(e){
-    var t=e.target.closest('[data-toast],[data-goto],[data-rsvp],[data-chase]');
+    var t=e.target.closest('[data-toast],[data-goto],[data-rsvp],[data-chase],[data-doors]');
     if(!t) return;
+    if(t.dataset.doors){ openDoors(t.dataset.doors); return; }
     if(t.hasAttribute('data-chase')){
       go('chase'); setMode(+t.dataset.chase);
       if(t.dataset.toast) toast(t.dataset.toast);
@@ -2474,7 +2412,7 @@ window.tpaLog=(function(){
     "Example data:",
     "- This week: 58 doors, 31 calls, 88 texts, 12 postcards, 4-day streak. 18 voters moved forward a ballot stage, up from 11.",
     "- Weekly goals: doors 312 of 400, calls 62 of 150, texts 340 of 300, postcards 12 of 50. Three days left.",
-    "- Turfs: Maryvale Turf 3, 42 doors left of 100, 9 ballot-chase stops, next door 1416 N 49th Dr (Rosa Alvarez, ballot requested, not returned). Estrella Village Turf 9, 140 doors, not started. Available nearby: Alhambra Turf 2 (120 doors), Encanto Turf 5 (95 doors).",
+    "- Turfs: Maryvale Turf 3, 42 doors left of 100, 9 ballot-chase stops, next door 1408 N 49th Dr (Rosa Alvarez, mailed her ballot Friday; husband Hector hasn't filled his out). Estrella Village Turf 9, 140 doors, not started. Available nearby: Alhambra Turf 2 (120 doors), Encanto Turf 5 (95 doors).",
     "- Chase list: 23 voters on Matt's turfs requested a ballot and haven't returned it. The Maricopa deadline is 6 days away.",
     "- Calls: Maricopa ballot chase paused with 74 left. People you know: 14. Super Chase turnout: 210.",
     "- Texts waiting: Rosa Alvarez asked whether mailing takes long; Thomas Nguyen asked where to drop his ballot off; Danielle Okoro opted out.",
