@@ -72,9 +72,11 @@
   }
 
   /* ---------- scrim ---------- */
+  /* above the header, the action bar and the list view, below the sheets themselves —
+     so a tap anywhere outside an open sheet dismisses it */
   .scrim{
     position:absolute;inset:0;background:rgba(28,32,38,.55);
-    opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:20;
+    opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:30;
   }
   .scrim.on{opacity:1;pointer-events:auto}
 
@@ -83,7 +85,7 @@
      bottom action buttons, so every door in the data is actually reachable on screen */
   .pinlayer{
     position:absolute;z-index:10;pointer-events:none;
-    top:max(150px,16%);bottom:max(120px,14%);left:7%;right:7%;
+    top:max(196px,21%);bottom:max(120px,14%);left:7%;right:7%;
   }
   .pinlayer .pin{pointer-events:auto}
   .pin{
@@ -104,29 +106,51 @@
   .pin.hidden{display:none}
   .pin svg{display:block}
 
-  /* ---------- floating controls ---------- */
-  .fab{
-    position:absolute;top:64px;right:18px;z-index:30;
-    width:64px;height:64px;border-radius:50%;border:0;
-    background:var(--navy);color:#fff;cursor:pointer;
-    display:grid;place-items:center;box-shadow:var(--shadow);
+  /* ---------- campaign header ---------- */
+  .apphead{
+    position:absolute;top:0;left:0;right:0;z-index:28;background:var(--navy);color:#fff;
+    padding:50px 10px 0;box-shadow:0 2px 14px rgba(10,22,40,.22);
   }
+  .hrow{display:flex;align-items:center;gap:6px;padding:2px 4px}
+  .hback{
+    flex:none;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.14);
+    display:grid;place-items:center;cursor:pointer;
+  }
+  .hwho{flex:1;min-width:0;padding:0 2px}
+  .hcamp{
+    font-size:15.5px;font-weight:600;letter-spacing:.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .hsub{font-size:10.5px;opacity:.74;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .legend-btn{
-    position:absolute;top:140px;right:18px;z-index:30;
-    background:#fff;border:0;border-radius:14px;padding:10px 12px;
-    display:flex;align-items:center;gap:8px;cursor:pointer;
-    box-shadow:var(--shadow);font-family:inherit;
-    font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--navy);
+    flex:none;background:rgba(255,255,255,.14);border:0;border-radius:12px;padding:9px 10px;
+    display:flex;align-items:center;gap:7px;cursor:pointer;font-family:inherit;
+    font-size:9px;font-weight:700;letter-spacing:.13em;color:#fff;
   }
+  .legend-btn.gone{display:none}
   .legend-btn .dotrow{display:flex}
   .legend-btn .dotrow i{
     width:8px;height:8px;border-radius:50%;display:block;
-    margin-left:-3px;border:1.5px solid #fff;
+    margin-left:-3px;border:1.5px solid var(--navy);
   }
   .legend-btn .dotrow i:first-child{margin-left:0}
 
+  .hbelow{display:flex;align-items:flex-end;gap:12px;padding:8px 6px 12px}
+  .seg{flex:none;display:flex;background:rgba(255,255,255,.14);border-radius:11px;padding:3px;gap:3px}
+  .seg button{
+    border:0;background:none;border-radius:9px;padding:7px 14px;cursor:pointer;
+    font-family:inherit;font-size:9.5px;font-weight:700;letter-spacing:.12em;
+    color:rgba(255,255,255,.72);display:flex;align-items:center;gap:6px;
+  }
+  .seg button.on{background:#fff;color:var(--navy)}
+  .hprog{flex:1;min-width:0}
+  .hpct{font-size:11px;font-weight:600;letter-spacing:.01em;text-align:right;display:block}
+  .hpct i{opacity:.6;font-style:normal;font-weight:400}
+  .hbar{height:4px;border-radius:3px;background:rgba(255,255,255,.2);margin-top:6px;overflow:hidden}
+  .hbar span{display:block;height:100%;border-radius:3px;background:var(--green);transition:width .3s ease}
+
   .filterchip{
-    position:absolute;top:64px;left:18px;z-index:30;
+    position:absolute;top:172px;left:18px;z-index:26;
     background:var(--navy);color:#fff;border:0;border-radius:999px;
     padding:9px 14px;font-family:inherit;font-size:10px;font-weight:700;
     letter-spacing:.12em;cursor:pointer;box-shadow:var(--shadow);
@@ -134,14 +158,73 @@
   }
   .filterchip.on{display:flex}
 
-  /* worked-doors counter on the map */
-  .doneChip{
-    position:absolute;top:112px;left:18px;z-index:30;
-    background:#fff;border:0;border-radius:999px;padding:8px 13px;
-    font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.12em;
-    color:var(--done);box-shadow:var(--shadow);display:none;align-items:center;gap:7px;
+  /* ---------- list view ---------- */
+  .listview{
+    position:absolute;left:0;right:0;top:0;bottom:0;z-index:24;background:var(--sheet);
+    padding:178px 0 0;display:none;flex-direction:column;
   }
-  .doneChip.on{display:flex}
+  .listview.on{display:flex}
+  .sortrow{
+    flex:none;display:flex;gap:7px;overflow-x:auto;padding:10px 16px 10px;scrollbar-width:none;
+    background:var(--sheet);
+  }
+  .sortrow::-webkit-scrollbar{display:none}
+  .sortchip{
+    flex:none;border:1.5px solid #DCE4EF;background:#fff;border-radius:999px;padding:8px 13px;
+    font-family:inherit;font-size:10.5px;font-weight:700;letter-spacing:.07em;color:#4A5162;
+    cursor:pointer;white-space:nowrap;
+  }
+  .sortchip.on{border-color:var(--navy);background:var(--navy);color:#fff}
+  .sortchip.clear{border-color:#D98A1F;background:#FCF3E3;color:#B0700F;display:flex;align-items:center;gap:6px}
+
+  .lsearch{flex:none;position:relative;display:flex;align-items:center;padding:12px 16px 0}
+  .lsearch input{
+    width:100%;border:1.5px solid #DCE4EF;border-radius:13px;padding:12px 40px 12px 40px;
+    font-family:inherit;font-size:14px;background:#fff;color:var(--ink);
+  }
+  .lsearch input:focus{outline:none;border-color:var(--navy)}
+  .lsearch .ic{
+    position:absolute;left:30px;display:grid;place-items:center;color:var(--muted);pointer-events:none;
+  }
+  .lsearch .x{
+    position:absolute;right:27px;width:24px;height:24px;border:0;border-radius:50%;
+    background:#EEF2F8;color:#6B7280;cursor:pointer;display:none;place-items:center;
+  }
+  .lsearch .x.on{display:grid}
+  .lcount{
+    flex:none;padding:10px 20px 0;font-size:9.5px;letter-spacing:.14em;font-weight:700;color:var(--muted);
+  }
+  .listrows{flex:1;overflow-y:auto;padding:0 16px 150px}
+  .lgrouphead{
+    font-size:9px;letter-spacing:.17em;color:var(--muted);font-weight:700;padding:14px 4px 6px;
+  }
+  .lrow{
+    width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:0;
+    border-left:4px solid transparent;border-radius:13px;padding:12px 13px;margin-bottom:8px;
+    font-family:inherit;text-align:left;cursor:pointer;box-shadow:0 1px 4px rgba(16,32,58,.05);
+  }
+  .lrow .lb{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none}
+  .lrow .lmid{flex:1;min-width:0}
+  .lrow .lname{font-size:14px;font-weight:600;letter-spacing:.01em}
+  .lrow .lhh{
+    font-size:8.5px;letter-spacing:.1em;font-weight:700;color:var(--navy);background:#EAF0FA;
+    border-radius:5px;padding:2px 5px;margin-left:6px;vertical-align:1px;
+  }
+  .lrow .laddr{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .lrow .ltags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+  .lrow .tag{
+    font-size:8px;letter-spacing:.1em;font-weight:700;border-radius:5px;padding:3px 6px;
+    background:#EEF2F8;color:#4A5162;font-style:normal;
+  }
+  .lrow .tag.warn{background:#FCF3E3;color:#B0700F}
+  .lrow .tag.ok{background:#E4F3E9;color:#2E7D4F}
+  .lrow .lright{flex:none;display:grid;place-items:center;color:#C2CAD8}
+  .lrow.done{background:#F7F9FD}
+  .lrow.done .lname{color:#5A6372}
+  .lempty{
+    background:#fff;border-radius:14px;padding:24px;text-align:center;
+    font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:10px;
+  }
 
   /* ---------- bottom actions ---------- */
   .actions{
@@ -170,7 +253,11 @@
     max-height:86%;overflow-y:auto;
   }
   .sheet.up{transform:translateY(0)}
-  .grabber{width:44px;height:5px;border-radius:3px;background:#C9D3E2;margin:0 auto 14px}
+  .sheet.dragging{transition:none}
+  .grabber{
+    width:44px;height:5px;border-radius:3px;background:#C9D3E2;margin:0 auto 14px;
+    cursor:grab;touch-action:none;
+  }
 
   .namepill{
     width:100%;background:var(--navy);color:#fff;border:0;border-radius:14px;
@@ -693,25 +780,60 @@
 
   <div class="pinlayer" id="pinlayer"></div>
 
+  <!-- ============ LIST VIEW ============ -->
+  <div class="listview" id="listView">
+    <div class="lsearch">
+      <span class="ic">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.2 16.2L21 21"/></svg>
+      </span>
+      <input id="lQ" placeholder="Search name, street or stage" autocomplete="off">
+      <button class="x" id="lQX" aria-label="Clear search">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+    </div>
+    <div class="sortrow" id="sortRow"></div>
+    <div class="lcount" id="lCount"></div>
+    <div class="listrows" id="listRows"></div>
+  </div>
+
   <div class="scrim" id="scrim"></div>
 
-  <button class="fab" id="fab" aria-label="End session and leave the map">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
-  </button>
-
-  <button class="legend-btn" id="legendBtn">
-    <span class="dotrow" id="dotrow"></span>
-    <span>STAGES</span>
-  </button>
+  <!-- ============ CAMPAIGN HEADER ============ -->
+  <header class="apphead" id="appHead">
+    <div class="hrow">
+      <button class="hback" id="hdrBack" aria-label="Leave this campaign">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="hwho">
+        <div class="hcamp" id="hCamp">—</div>
+        <div class="hsub" id="hSub">—</div>
+      </div>
+      <button class="legend-btn" id="legendBtn">
+        <span class="dotrow" id="dotrow"></span>
+        <span>STAGES</span>
+      </button>
+    </div>
+    <div class="hbelow">
+      <div class="seg" id="viewSeg">
+        <button data-v="map" class="on">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M9 3L3 5.5v15L9 18l6 3 6-2.5v-15L15 6z"/><path d="M9 3v15M15 6v15"/></svg>
+          MAP
+        </button>
+        <button data-v="list">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+          LIST
+        </button>
+      </div>
+      <div class="hprog">
+        <span class="hpct" id="hPct">—</span>
+        <div class="hbar"><span id="hBarFill" style="width:0%"></span></div>
+      </div>
+    </div>
+  </header>
 
   <button class="filterchip" id="filterChip">
     <span id="filterTxt">FILTERED</span>
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
-  </button>
-
-  <button class="doneChip" id="doneChip">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2E7D4F" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
-    <span id="doneChipTxt">0 WORKED</span>
   </button>
 
   <!-- ============ BOTTOM ACTIONS ============ -->
@@ -957,29 +1079,29 @@ const S = Object.fromEntries(STAGES.map(s=>[s.id,s]));
 
 /* ---------------- sample turf (fabricated) ---------------- */
 const PEOPLE = [
-  {id:1,  hid:'h1', n:'Marcus Webb',    a:'3021 E Rock Wren Rd',   age:41, p:'Registered Independent', s:'new',        att:0, x:34, y:47, asg:true},
+  {id:1,  hid:'h1', n:'Marcus Webb',    a:'3021 E Rock Wren Rd',   age:41, p:'Registered Independent', s:'new',        att:0, x:34, y:47, d:0.1, flags:["new"], asg:true},
   {id:11, hid:'h1', n:'Renee Webb',     a:'3021 E Rock Wren Rd',   age:39, p:'Registered Republican',  s:'disengaged', att:0, asg:false},
 
-  {id:2,  hid:'h2', n:'Alicia Turner',  a:'14802 S 46th Pl',       age:63, p:'Registered Republican',  s:'disengaged', att:1, x:62, y:33, asg:true},
+  {id:2,  hid:'h2', n:'Alicia Turner',  a:'14802 S 46th Pl',       age:63, p:'Registered Republican',  s:'disengaged', att:1, x:62, y:33, d:0.3, flags:["unreturned"], asg:true},
 
-  {id:3,  hid:'h3', n:'Ray Ortega',     a:'3115 E White Aster St', age:29, p:'Registered Independent', s:'initial',    att:0, x:22, y:56, asg:true},
+  {id:3,  hid:'h3', n:'Ray Ortega',     a:'3115 E White Aster St', age:29, p:'Registered Independent', s:'initial',    att:0, x:22, y:56, d:0.2, flags:[], asg:true},
   {id:31, hid:'h3', n:'Luz Ortega',     a:'3115 E White Aster St', age:58, p:'Registered Republican',  s:'followup',   att:0, asg:true},
   {id:32, hid:'h3', n:'Mateo Ortega',   a:'3115 E White Aster St', age:24, p:'Registered Independent', s:'new',        att:0, asg:false},
 
-  {id:4,  hid:'h4', n:'Dana Whitfield', a:'14755 S 47th St',       age:52, p:'Registered Independent', s:'pchase',     att:2, x:71, y:60, asg:true},
+  {id:4,  hid:'h4', n:'Dana Whitfield', a:'14755 S 47th St',       age:52, p:'Registered Independent', s:'pchase',     att:2, x:71, y:60, d:0.4, flags:["unreturned"], asg:true},
   {id:41, hid:'h4', n:'Cole Whitfield', a:'14755 S 47th St',       age:55, p:'Registered Independent', s:'pchase',     att:2, asg:true},
 
-  {id:5,  hid:'h5', n:'Sam Okafor',     a:'3230 E Bighorn Ave',    age:34, p:'Registered Republican',  s:'commit',     att:0, x:79, y:71, asg:true},
+  {id:5,  hid:'h5', n:'Sam Okafor',     a:'3230 E Bighorn Ave',    age:34, p:'Registered Republican',  s:'commit',     att:0, x:79, y:71, d:0.6, flags:["cast"], asg:true},
 
-  {id:6,  hid:'h6', n:'Priya Raman',    a:'14690 S 45th St',       age:47, p:'Registered Independent', s:'pnocast',    att:0, x:15, y:74, asg:true},
+  {id:6,  hid:'h6', n:'Priya Raman',    a:'14690 S 45th St',       age:47, p:'Registered Independent', s:'pnocast',    att:0, x:15, y:74, d:0.5, flags:[], asg:true},
   {id:61, hid:'h6', n:'Anil Raman',     a:'14690 S 45th St',       age:49, p:'Registered Independent', s:'pnocast',    att:0, asg:true},
   {id:62, hid:'h6', n:'Meera Raman',    a:'14690 S 45th St',       age:22, p:'Registered Independent', s:'new',        att:0, asg:false},
   {id:63, hid:'h6', n:'Dev Raman',      a:'14690 S 45th St',       age:19, p:'Registered Independent', s:'new',        att:0, asg:false},
 
-  {id:7,  hid:'h7', n:'Jon Alder',      a:'3044 E Verbena Dr',     age:71, p:'Registered Republican',  s:'inactive',   att:1, x:41, y:83, asg:true},
+  {id:7,  hid:'h7', n:'Jon Alder',      a:'3044 E Verbena Dr',     age:71, p:'Registered Republican',  s:'inactive',   att:1, x:41, y:83, d:0.7, flags:["unreturned"], asg:true},
   {id:71, hid:'h7', n:'Carol Alder',    a:'3044 E Verbena Dr',     age:69, p:'Registered Republican',  s:'inactive',   att:1, asg:true},
 
-  {id:8,  hid:'h8', n:'Kelsey Nguyen',  a:'14921 S 48th St',       age:25, p:'Registered Independent', s:'followup',   att:0, x:88, y:44, asg:true}
+  {id:8,  hid:'h8', n:'Kelsey Nguyen',  a:'14921 S 48th St',       age:25, p:'Registered Independent', s:'followup',   att:0, x:88, y:44, d:0.8, flags:["unreturned"], asg:true}
 ];
 
 const doors      = ()=>PEOPLE.filter(p=>p.x!==undefined);
@@ -1071,11 +1193,164 @@ function renderPins(){
   updateDoneChip();
 }
 
-function updateDoneChip(){
-  const c=document.getElementById('doneChip'), n=workedDoors().length;
-  c.classList.toggle('on', n>0);
-  document.getElementById('doneChipTxt').textContent = `${n} OF ${doors().length} WORKED`;
+/* ---------------- campaign header, view switch, list ---------------- */
+/* The campaign is data, not copy: name, method and turf come from the assignment record. */
+const CAMPAIGN={
+  name:'Chandler South Chase',
+  turf:'Turf 7 · Peterson Farms',
+  method:'Doors'
+};
+/* ballot flags come from the L2 returned-ballot file, not from anything logged in the app */
+const FLAGS={
+  unreturned:{lbl:'UNRETURNED BALLOT', tone:'warn'},
+  cast:      {lbl:'BALLOT CAST',       tone:'ok'},
+  new:       {lbl:'NEW REGISTRATION',  tone:''}
+};
+
+let view='map';
+
+function updateDoneChip(){   /* header progress — same call sites as the old map chip */
+  const n=workedDoors().length, total=doors().length,
+        pct = total ? Math.round(n/total*100) : 0;
+  document.getElementById('hCamp').textContent=CAMPAIGN.name;
+  document.getElementById('hSub').textContent=`${CAMPAIGN.method} · ${CAMPAIGN.turf} · ${total} doors`;
+  document.getElementById('hPct').innerHTML=`${n} of ${total} <i>doors worked</i>`;
+  document.getElementById('hBarFill').style.width=pct+'%';
+  if(view==='list') renderList();
 }
+
+function setView(v){
+  view=v;
+  document.getElementById('listView').classList.toggle('on', v==='list');
+  /* STAGES stays in both views — the legend is how anyone reads the colour coding,
+     and list rows are colour-coded too */
+  document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
+  if(v==='list') renderList(); else renderPins();
+}
+document.querySelectorAll('#viewSeg button').forEach(b=>{
+  b.onclick=()=>{ if(view!==b.dataset.v){ closeSheets(); setView(b.dataset.v); } };
+});
+
+/* sort belongs to the list, not to the data — the map keeps its own geography */
+const SORTS=[
+  {id:'todo',  lbl:'Unworked first'},
+  {id:'dist',  lbl:'Distance'},
+  {id:'street',lbl:'Street'},
+  {id:'stage', lbl:'Stage'}
+];
+let sortBy='todo', lq='';
+
+/* quick search — name, street, stage, ballot flag, and anyone else at the same address,
+   so searching a housemate still finds the door */
+function matches(v,q){
+  if(!q) return true;
+  const st=S[v.s].name.toLowerCase();
+  const flags=(v.flags||[]).map(f=>FLAGS[f]?FLAGS[f].lbl.toLowerCase():'').join(' ');
+  return v.n.toLowerCase().includes(q)
+      || v.a.toLowerCase().includes(q)
+      || st.includes(q)
+      || flags.includes(q)
+      || household(v).some(p=>p.n.toLowerCase().includes(q));
+}
+
+function renderList(){
+  const row=document.getElementById('sortRow'); row.innerHTML='';
+
+  /* filters set on the map surface here too, so the list never lies about what it's showing */
+  if(filter){
+    const c=document.createElement('button');
+    c.className='sortchip clear';
+    c.innerHTML=`${S[filter].name.toUpperCase()} <span>✕</span>`;
+    c.onclick=()=>{ filter=null; buildLegend(); renderPins(); updateChip(); renderList(); };
+    row.appendChild(c);
+  }
+  if(hideDone){
+    const c=document.createElement('button');
+    c.className='sortchip clear';
+    c.innerHTML='WORKED HIDDEN <span>✕</span>';
+    c.onclick=()=>{ hideDone=false; updateWorkedRow(); renderPins(); updateChip(); renderList(); };
+    row.appendChild(c);
+  }
+
+  SORTS.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='sortchip'+(s.id===sortBy?' on':'');
+    b.textContent=s.lbl;
+    b.onclick=()=>{ sortBy=s.id; renderList(); };
+    row.appendChild(b);
+  });
+
+  const q=lq.trim().toLowerCase();
+  document.getElementById('lQX').classList.toggle('on', !!q);
+
+  /* the stage filter and the hide-worked switch carry over from the map */
+  let list=doors().filter(v=>!filter || v.s===filter);
+  if(hideDone) list=list.filter(v=>!doorState(v));
+  if(q) list=list.filter(v=>matches(v,q));
+
+  const stageRank = id => STAGES.findIndex(s=>s.id===id);
+  const street = v => v.a.replace(/^\d+\s+/,'');
+  const sorters={
+    todo:  (a,b)=>(doorState(a)?1:0)-(doorState(b)?1:0) || a.d-b.d,
+    dist:  (a,b)=>a.d-b.d,
+    street:(a,b)=>street(a).localeCompare(street(b)) || a.d-b.d,
+    stage: (a,b)=>stageRank(a.s)-stageRank(b.s) || a.d-b.d
+  };
+  list=[...list].sort(sorters[sortBy]);
+
+  const body=document.getElementById('listRows'); body.innerHTML='';
+  const cnt=document.getElementById('lCount');
+  cnt.textContent = list.length===doors().length
+    ? `${list.length} DOORS`
+    : `${list.length} OF ${doors().length} DOORS`;
+
+  if(!list.length){
+    cnt.textContent='NO MATCHES';
+    body.innerHTML = q
+      ? `<div class="lempty">Nothing matches “${q}”.<br>Search by voter name, street, stage, or someone else at the same address.</div>`
+      : `<div class="lempty">Nothing to show with the filters you have on.<br>Clear the stage filter or the hide-worked switch to see the rest of the turf.</div>`;
+    return;
+  }
+
+  let lastGroup=null;
+  list.forEach(v=>{
+    const group = sortBy==='street' ? street(v)
+                : sortBy==='stage'  ? S[v.s].name
+                : sortBy==='todo'   ? (doorState(v) ? 'Worked today' : 'Still to knock')
+                : null;
+    if(group && group!==lastGroup){
+      const g=document.createElement('div'); g.className='lgrouphead';
+      g.textContent=group.toUpperCase(); body.appendChild(g); lastGroup=group;
+    }
+
+    const st=S[v.s], mk=doorState(v), hh=household(v).length;
+    const tags=(v.flags||[]).map(f=>FLAGS[f]).filter(Boolean)
+      .map(f=>`<i class="tag ${f.tone}">${f.lbl}</i>`).join('');
+    const b=document.createElement('button');
+    b.className='lrow'+(mk?' done':'');
+    b.style.borderLeftColor = mk ? markColor(mk) : st.color;
+    b.innerHTML=`
+      <span class="lb" style="background:${mk?markColor(mk):st.color}">
+        ${mk?tickDisc(20,markColor(mk)):glyph(st.g,18,'#fff')}
+      </span>
+      <span class="lmid">
+        <span class="lname">${v.n}${hh>1?`<span class="lhh">+${hh-1}</span>`:''}</span>
+        <span class="laddr">${v.a} · ${v.d} mi · ${st.name}</span>
+        ${tags?`<span class="ltags">${tags}</span>`:''}
+      </span>
+      <span class="lright">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </span>`;
+    b.onclick=()=>openVoter(v.id);
+    body.appendChild(b);
+  });
+}
+
+document.getElementById('lQ').oninput=e=>{ lq=e.target.value; renderList(); };
+document.getElementById('lQX').onclick=()=>{
+  lq=''; document.getElementById('lQ').value='';
+  renderList(); document.getElementById('lQ').focus();
+};
 
 /* ---------------- sheets ---------------- */
 const scrim=document.getElementById('scrim'),
@@ -1166,9 +1441,39 @@ function closeSheets(){
   renderPins();
 }
 scrim.onclick=closeSheets;
-document.getElementById('fab').onclick=()=>{
+document.getElementById('hdrBack').onclick=()=>{   /* leaves the campaign / ends the session */
   if(IN_APP && !scrim.classList.contains('on')) tell({type:'close'}); else closeSheets();
 };
+
+/* swipe the sheet down to dismiss it, the way a native bottom sheet behaves.
+   Dragging only starts from the top of the sheet and only when it is scrolled to the top,
+   so it never fights the sheet's own scrolling. */
+function dismissOnDrag(el){
+  let y0=0, dy=0, live=false;
+  el.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button,input,textarea,select,a')) return;
+    if(el.scrollTop>4) return;
+    y0=e.clientY; dy=0; live=true;
+    el.classList.add('dragging');
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!live) return;
+    dy=Math.max(0, e.clientY-y0);
+    if(dy>2) el.style.transform=`translateY(${dy}px)`;
+  });
+  const release=()=>{
+    if(!live) return;
+    live=false;
+    el.classList.remove('dragging');
+    el.style.transform='';
+    if(dy>70) closeSheets();
+  };
+  el.addEventListener('pointerup',release);
+  el.addEventListener('pointercancel',release);
+  el.addEventListener('pointerleave',release);
+}
+[voterSheet, skipSheet, stubSheet, legendSheet, document.getElementById('histSheet')]
+  .forEach(dismissOnDrag);
 document.getElementById('legendClose').onclick=closeSheets;
 document.getElementById('stubBack').onclick=closeSheets;
 
@@ -1328,14 +1633,17 @@ function updateWorkedRow(){
 document.getElementById('hideDoneBtn').onclick=()=>{
   hideDone=!hideDone;
   updateWorkedRow(); renderPins(); updateChip();
-  const n=workedDoors().length;
+  if(view==='list') renderList();
+  const n=workedDoors().length, where = view==='list' ? 'the list' : 'the map';
   toast(doors()[0] ? S[doors()[0].s] : S.followup, hideDone
-    ? `${n} worked ${n===1?'door':'doors'} hidden on the map`
+    ? `${n} worked ${n===1?'door':'doors'} hidden on ${where}`
     : `Worked doors showing again — look for the checks`);
 };
 
 function updateChip(){
   const c=document.getElementById('filterChip'), t=document.getElementById('filterTxt');
+  /* in list view the active filters are chips in the sort row instead, so the floating one stays down */
+  if(view==='list'){ c.classList.remove('on'); return; }
   if(filter){ c.classList.add('on'); t.textContent=S[filter].name.toUpperCase(); }
   else if(hideDone){ c.classList.add('on'); t.textContent='WORKED DOORS HIDDEN'; }
   else c.classList.remove('on');
@@ -1898,23 +2206,24 @@ document.addEventListener('click',e=>{
 
 const CAMPAIGNS = {
   vnm: {
+    header:{name:'Voters Near Me', turf:'Encanto · within 2 mi', method:'Doors'},
     labels:['W Indian School Rd','W Turney Ave','W Glenrosa Ave','W Highland Ave','W Pierson St','W Camelback Rd','W Mulberry Dr','N 19th Ave','N 15th Dr'],
     place:{city:'Phoenix', zip:'85015', precinct:'0418 ENCANTO', houseD:'26', senateD:'26', congD:'3',
            ctvTerr:'ENCANTO', ctvReg:'PHOENIX CENTRAL', assigned:'Voters Near Me', dateAdded:'Oct 18, 2026'},
     seed:{talked:206, tried:208},
     people:[
-      {id:201, hid:'v1', n:'Kevin Doyle',    a:'3318 W Turney Ave',          age:34, p:'Registered Republican',  s:'disengaged', att:0, x:28, y:30, asg:true},
-      {id:202, hid:'v2', n:'Angela Reyes',   a:'3402 W Glenrosa Ave',        age:48, p:'Registered Independent', s:'indep',      att:0, x:55, y:26, asg:true},
+      {id:201, hid:'v1', n:'Kevin Doyle',    a:'3318 W Turney Ave',          age:34, p:'Registered Republican',  s:'disengaged', att:0, x:28, y:30, d:0.4, flags:[], asg:true},
+      {id:202, hid:'v2', n:'Angela Reyes',   a:'3402 W Glenrosa Ave',        age:48, p:'Registered Independent', s:'indep',      att:0, x:55, y:26, d:0.6, flags:[], asg:true},
       {id:212, hid:'v2', n:'Victor Reyes',   a:'3402 W Glenrosa Ave',        age:51, p:'Registered Republican',  s:'commit',     att:0, asg:true},
-      {id:203, hid:'v3', n:'Hannah Cho',     a:'4410 N 15th Dr',             age:21, p:'Registered Republican',  s:'new',        att:0, x:82, y:38, asg:true},
+      {id:203, hid:'v3', n:'Hannah Cho',     a:'4410 N 15th Dr',             age:21, p:'Registered Republican',  s:'new',        att:0, x:82, y:38, d:1.1, flags:["new"], asg:true},
       {id:213, hid:'v3', n:'Grace Cho',      a:'4410 N 15th Dr',             age:50, p:'Registered Republican',  s:'followup',   att:0, asg:false},
-      {id:204, hid:'v4', n:'Robert Fitzgerald', a:'3125 W Highland Ave',     age:67, p:'Registered Republican',  s:'gchase',     att:1, x:38, y:48, asg:true},
-      {id:205, hid:'v5', n:'Jasmine Ortiz',  a:'3511 W Pierson St',          age:39, p:'Registered Independent', s:'initial',    att:0, x:66, y:55, asg:true},
-      {id:206, hid:'v6', n:'Derek Hall',     a:'4602 N 19th Ave',            age:44, p:'Registered Republican',  s:'commit',     att:0, x:18, y:64, asg:true},
-      {id:207, hid:'v7', n:'Nora Patel',     a:'3290 W Mulberry Dr',         age:30, p:'Registered Independent', s:'community',  att:0, x:48, y:70, asg:true},
+      {id:204, hid:'v4', n:'Robert Fitzgerald', a:'3125 W Highland Ave',     age:67, p:'Registered Republican',  s:'gchase',     att:1, x:38, y:48, d:0.3, flags:["unreturned"], asg:true},
+      {id:205, hid:'v5', n:'Jasmine Ortiz',  a:'3511 W Pierson St',          age:39, p:'Registered Independent', s:'initial',    att:0, x:66, y:55, d:0.9, flags:[], asg:true},
+      {id:206, hid:'v6', n:'Derek Hall',     a:'4602 N 19th Ave',            age:44, p:'Registered Republican',  s:'commit',     att:0, x:18, y:64, d:0.2, flags:[], asg:true},
+      {id:207, hid:'v7', n:'Nora Patel',     a:'3290 W Mulberry Dr',         age:30, p:'Registered Independent', s:'community',  att:0, x:48, y:70, d:1.4, flags:[], asg:true},
       {id:217, hid:'v7', n:'Sameer Patel',   a:'3290 W Mulberry Dr',         age:32, p:'Registered Independent', s:'community',  att:0, asg:true},
-      {id:208, hid:'v8', n:'Luis Navarro',   a:'3333 W Indian School Rd #12', age:27, p:'Registered Republican', s:'inactive',   att:2, x:78, y:76, asg:true},
-      {id:209, hid:'v9', n:'Ellen Brooks',   a:'3220 W Camelback Rd',        age:74, p:'Registered Republican',  s:'gcast',      att:0, x:30, y:84, asg:true}
+      {id:208, hid:'v8', n:'Luis Navarro',   a:'3333 W Indian School Rd #12', age:27, p:'Registered Republican', s:'inactive',   att:2, x:78, y:76, d:0.7, flags:["unreturned"], asg:true},
+      {id:209, hid:'v9', n:'Ellen Brooks',   a:'3220 W Camelback Rd',        age:74, p:'Registered Republican',  s:'gcast',      att:0, x:30, y:84, d:1.8, flags:["cast"], asg:true}
     ],
     logs:{
       202:[{when:'Oct 11 · 5:50 PM', who:'Maria G', ch:'Door', out:'Spoke with them', stage:'indep',
@@ -1931,24 +2240,25 @@ const CAMPAIGNS = {
   },
 
   maryvale3: {
+    header:{name:'Phoenix West Ballot Chase', turf:'Turf 3 · Maryvale', method:'Doors'},
     labels:['W Osborn Rd','W Catalina Dr','W Whitton Ave','W Earll Dr','W Monterey Way','W Thomas Rd','W Clarendon Ave','N 51st Ave','N 49th Dr'],
     place:{city:'Phoenix', zip:'85031', precinct:'0612 CORTEZ', houseD:'24', senateD:'24', congD:'3',
            ctvTerr:'MARYVALE', ctvReg:'PHOENIX WEST', assigned:'Matt R', dateAdded:'Sep 30, 2026'},
     seed:{talked:102, tried:101},
     people:[
-      {id:101, hid:'m1', n:'Rosa Alvarez',   a:'1408 N 49th Dr',   age:64, p:'Registered Republican',  s:'gchase',    att:1, x:30, y:32, asg:true},
+      {id:101, hid:'m1', n:'Rosa Alvarez',   a:'1408 N 49th Dr',   age:64, p:'Registered Republican',  s:'gchase',    att:1, x:30, y:32, d:0.1, flags:["unreturned"], asg:true},
       {id:111, hid:'m1', n:'Hector Alvarez', a:'1408 N 49th Dr',   age:66, p:'Registered Republican',  s:'gchase',    att:1, asg:true},
-      {id:102, hid:'m2', n:'Thomas Nguyen',  a:'1412 N 49th Dr',   age:37, p:'Registered Independent', s:'commit',    att:0, x:52, y:28, asg:true},
-      {id:103, hid:'m3', n:'Miguel Santos',  a:'1420 N 49th Dr',   age:33, p:'Registered Republican',  s:'gchase',    att:0, x:74, y:36, asg:true},
+      {id:102, hid:'m2', n:'Thomas Nguyen',  a:'1412 N 49th Dr',   age:37, p:'Registered Independent', s:'commit',    att:0, x:52, y:28, d:0.1, flags:["cast"], asg:true},
+      {id:103, hid:'m3', n:'Miguel Santos',  a:'1420 N 49th Dr',   age:33, p:'Registered Republican',  s:'gchase',    att:0, x:74, y:36, d:0.2, flags:["unreturned"], asg:true},
       {id:113, hid:'m3', n:'Sofia Santos',   a:'1420 N 49th Dr',   age:31, p:'Registered Republican',  s:'new',       att:0, asg:false},
-      {id:104, hid:'m4', n:'Walter Boyd',    a:'1502 N 49th Dr',   age:58, p:'Registered Republican',  s:'inactive',  att:1, x:20, y:50, asg:true},
+      {id:104, hid:'m4', n:'Walter Boyd',    a:'1502 N 49th Dr',   age:58, p:'Registered Republican',  s:'inactive',  att:1, x:20, y:50, d:0.3, flags:["unreturned"], asg:true},
       {id:114, hid:'m4', n:'Denise Boyd',    a:'1502 N 49th Dr',   age:55, p:'Registered Republican',  s:'inactive',  att:1, asg:true},
-      {id:105, hid:'m5', n:'Esperanza Ruiz', a:'5031 W Catalina Dr', age:45, p:'Registered Independent', s:'indep',   att:0, x:46, y:54, asg:true},
-      {id:106, hid:'m6', n:'Brandon Kim',    a:'5110 W Whitton Ave', age:22, p:'Registered Republican', s:'new',      att:0, x:84, y:58, asg:true},
-      {id:107, hid:'m7', n:'Gloria Mendez',  a:'4927 W Earll Dr',  age:71, p:'Registered Republican',  s:'commit',    att:0, x:62, y:72, asg:true},
+      {id:105, hid:'m5', n:'Esperanza Ruiz', a:'5031 W Catalina Dr', age:45, p:'Registered Independent', s:'indep',   att:0, x:46, y:54, d:0.3, flags:[], asg:true},
+      {id:106, hid:'m6', n:'Brandon Kim',    a:'5110 W Whitton Ave', age:22, p:'Registered Republican', s:'new',      att:0, x:84, y:58, d:0.5, flags:["new"], asg:true},
+      {id:107, hid:'m7', n:'Gloria Mendez',  a:'4927 W Earll Dr',  age:71, p:'Registered Republican',  s:'commit',    att:0, x:62, y:72, d:0.4, flags:[], asg:true},
       {id:117, hid:'m7', n:'Arturo Mendez',  a:'4927 W Earll Dr',  age:73, p:'Registered Republican',  s:'commit',    att:0, asg:true},
-      {id:108, hid:'m8', n:'Tyler Brooks',   a:'5019 W Monterey Way', age:29, p:'Registered Independent', s:'initial', att:0, x:34, y:78, asg:true},
-      {id:109, hid:'m9', n:'Linda Park',     a:'1436 N 50th Ave',  age:52, p:'Registered Republican',  s:'community', att:0, x:14, y:86, asg:true}
+      {id:108, hid:'m8', n:'Tyler Brooks',   a:'5019 W Monterey Way', age:29, p:'Registered Independent', s:'initial', att:0, x:34, y:78, d:0.6, flags:[], asg:true},
+      {id:109, hid:'m9', n:'Linda Park',     a:'1436 N 50th Ave',  age:52, p:'Registered Republican',  s:'community', att:0, x:14, y:86, d:0.2, flags:[], asg:true}
     ],
     logs:{
       101:[{when:'Oct 14 · 5:30 PM', who:'You', ch:'Text', out:'Spoke with them', stage:'gchase', mine:true,
@@ -1967,21 +2277,22 @@ const CAMPAIGNS = {
   },
 
   estrella9: {
+    header:{name:'Phoenix West Ballot Chase', turf:'Turf 9 · Estrella Village', method:'Doors'},
     labels:['W Lower Buckeye Rd','W Pima St','W Durango St','W Hadley St','W Mohave St','W Buckeye Rd','W Gibson Ln','S 107th Ave','S 103rd Dr'],
     place:{city:'Tolleson', zip:'85353', precinct:'1025 ESTRELLA', houseD:'22', senateD:'22', congD:'7',
            ctvTerr:'ESTRELLA VILLAGE', ctvReg:'PHOENIX WEST', assigned:'Matt R', dateAdded:'Oct 19, 2026'},
     seed:null,
     people:[
-      {id:301, hid:'e1', n:'Carlos Fuentes',  a:'10712 W Pima St',          age:47, p:'Registered Republican',  s:'commit',     att:0, x:24, y:28, asg:true},
+      {id:301, hid:'e1', n:'Carlos Fuentes',  a:'10712 W Pima St',          age:47, p:'Registered Republican',  s:'commit',     att:0, x:24, y:28, d:0.2, flags:[], asg:true},
       {id:311, hid:'e1', n:'Maribel Fuentes', a:'10712 W Pima St',          age:45, p:'Registered Republican',  s:'followup',   att:0, asg:true},
-      {id:302, hid:'e2', n:'Jordan Lee',      a:'10620 W Durango St',       age:26, p:'Registered Independent', s:'new',        att:0, x:58, y:34, asg:true},
-      {id:303, hid:'e3', n:'Patricia Owens',  a:'10531 W Hadley St',        age:59, p:'Registered Republican',  s:'gchase',     att:0, x:80, y:46, asg:true},
-      {id:304, hid:'e4', n:'Samuel Tran',     a:'10455 W Mohave St',        age:42, p:'Registered Republican',  s:'initial',    att:0, x:36, y:52, asg:true},
-      {id:305, hid:'e5', n:'Brianna Cole',    a:'10318 W Gibson Ln',        age:31, p:'Registered Independent', s:'indep',      att:0, x:16, y:70, asg:true},
+      {id:302, hid:'e2', n:'Jordan Lee',      a:'10620 W Durango St',       age:26, p:'Registered Independent', s:'new',        att:0, x:58, y:34, d:0.3, flags:["new"], asg:true},
+      {id:303, hid:'e3', n:'Patricia Owens',  a:'10531 W Hadley St',        age:59, p:'Registered Republican',  s:'gchase',     att:0, x:80, y:46, d:0.5, flags:["unreturned"], asg:true},
+      {id:304, hid:'e4', n:'Samuel Tran',     a:'10455 W Mohave St',        age:42, p:'Registered Republican',  s:'initial',    att:0, x:36, y:52, d:0.3, flags:[], asg:true},
+      {id:305, hid:'e5', n:'Brianna Cole',    a:'10318 W Gibson Ln',        age:31, p:'Registered Independent', s:'indep',      att:0, x:16, y:70, d:0.6, flags:[], asg:true},
       {id:315, hid:'e5', n:'Marcus Cole',     a:'10318 W Gibson Ln',        age:33, p:'Registered Republican',  s:'indep',      att:0, asg:false},
-      {id:306, hid:'e6', n:'Frank DeLuca',    a:'10802 W Lower Buckeye Rd', age:69, p:'Registered Republican',  s:'inactive',   att:1, x:62, y:66, asg:true},
-      {id:307, hid:'e7', n:'Aaliyah Grant',   a:'10377 W Pima St',          age:23, p:'Registered Republican',  s:'new',        att:0, x:44, y:80, asg:true},
-      {id:308, hid:'e8', n:'Teresa Vega',     a:'10560 W Durango St',       age:46, p:'Registered Republican',  s:'disengaged', att:0, x:84, y:82, asg:true}
+      {id:306, hid:'e6', n:'Frank DeLuca',    a:'10802 W Lower Buckeye Rd', age:69, p:'Registered Republican',  s:'inactive',   att:1, x:62, y:66, d:0.4, flags:["unreturned"], asg:true},
+      {id:307, hid:'e7', n:'Aaliyah Grant',   a:'10377 W Pima St',          age:23, p:'Registered Republican',  s:'new',        att:0, x:44, y:80, d:0.2, flags:["new"], asg:true},
+      {id:308, hid:'e8', n:'Teresa Vega',     a:'10560 W Durango St',       age:46, p:'Registered Republican',  s:'disengaged', att:0, x:84, y:82, d:0.7, flags:[], asg:true}
     ],
     logs:{
       301:[{when:'Sep 21 · 9:40 AM', who:'Sandra B', ch:'Door', out:'Spoke with them', stage:'commit',
@@ -1997,6 +2308,7 @@ if(CAMP){
   Object.keys(LOGS).forEach(k=>delete LOGS[k]);
   Object.assign(LOGS, CAMP.logs);
   document.querySelectorAll('.streetlabel text').forEach((t,i)=>{ if(CAMP.labels[i]) t.textContent=CAMP.labels[i]; });
+  Object.assign(CAMPAIGN, CAMP.header);
 }
 
 /* mockup seed — one door talked to, one tried, so both check colors are visible on load.
@@ -2008,7 +2320,8 @@ if(CAMP){
   if(tried)  mark(household(tried),'attempt','No answer');
 })();
 
-renderPins(); buildLegend(); buildDots();
+renderPins(); buildLegend(); buildDots(); setView('map');
 </script>
 </body>
 </html>
+
