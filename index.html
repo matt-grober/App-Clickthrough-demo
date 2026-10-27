@@ -11,6 +11,9 @@
 <meta name="description" content="TPACTION clickable demo — Turning Point Action volunteer app with Grok voice. All data is example data.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312233F'/%3E%3Cpath d='M9 21a8 8 0 1114 5M17 9l5 4-5 4' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' transform='translate(-1 -2)'/%3E%3C/svg%3E">
 <title>TPACTION</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    TPACTION HOME REDESIGN v2
@@ -850,6 +853,145 @@ button{-webkit-user-select:none;user-select:none;}
 @media (max-width:520px){
   .voice{padding:calc(14px + env(safe-area-inset-top,0px)) 0 calc(18px + env(safe-area-inset-bottom,0px));}
 }
+
+/* ============================================================
+   V2 — FIGMA REVISIONS (Superfeed brand colors, Montserrat)
+   ============================================================ */
+:root{
+  --brand:#3667F6; --dkblue:#03129C; --cherry:#E53268; --aqua:#9AFCFD; --sky:#69A6FA;
+  --gray2:#909AB1; --lgray:#E6E5E8; --ink-dk:#2C2B2B; --yellow:#F3B85C; --mint:#7EF698;
+  --purple:#9E1FC5; --indigo:#4226C7; --warn:#EB4035;
+  --tint-pink:#FCE3EB; --tint-yellow:#FDF1DE; --tint-blue:#E4EBFE;
+  /* existing tokens remapped to the brand */
+  --navy:#03129C; --navy-2:#03129C; --blue:#3667F6; --red:#E53268; --cyan:#9AFCFD;
+  --magenta:#E53268; --amber:#F3B85C; --green:#7EF698; --violet:#9E1FC5;
+}
+.dark{ --navy:#03129C; --blue:#3667F6; --cyan:#9AFCFD; }
+body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;}
+
+/* header: logo square, then the screen title in small caps */
+.brandmark{border-radius:6px;background:var(--dkblue);}
+.wordmark{font-family:"Montserrat",sans-serif;text-transform:uppercase;font-weight:800;font-size:13px;letter-spacing:.05em;line-height:1.15;
+  white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.seg{text-transform:uppercase;letter-spacing:.07em;font-size:12.5px;font-weight:600;}
+.seg.on{font-weight:800;}
+.segtabs.four .seg{font-size:11.5px;}
+.navbtn{text-transform:uppercase;letter-spacing:.05em;font-size:9.5px;font-weight:700;}
+
+/* badges and alerts */
+.dot,.navdot,.segbadge{background:var(--cherry);}
+.n-tag.hot{background:var(--tint-pink);color:var(--cherry);}
+
+/* avatars and initials: solid dark blue */
+.avatar-sm,.avatar-lg,.tav,.m-av,.m-av.lead,.ta-av{background:var(--dkblue);}
+
+/* tab underline + selected highlight */
+.seg.on::after{background:var(--brand);}
+.srcchip{background:#fff;border-color:var(--gray2);color:var(--gray2);}
+.srcchip.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+
+/* primary buttons: brand, rounder */
+.btn{border-radius:16px;}
+.btn-primary{background:var(--brand);color:#fff;}
+.pillbtn,.pillbtn.fill{background:var(--brand);border-color:var(--brand);color:#fff;border-radius:999px;}
+.act{border-radius:14px;}
+.act.fill{background:var(--brand);border-color:var(--brand);}
+.act.fill.red{background:var(--cherry);border-color:var(--cherry);}
+.act.fill.vio{background:var(--dkblue);border-color:var(--dkblue);}
+
+/* center Chase button: solid brand, no ring; turns aqua when Chase is the active tab */
+.chasebtn{border:none;background:var(--brand);box-shadow:0 6px 16px rgba(54,103,246,.45);}
+.chasebtn.on{background:var(--aqua);color:var(--dkblue);box-shadow:0 6px 16px rgba(3,18,156,.25);}
+.navbtn.on{color:var(--aqua);}
+
+/* pills and tags: colored text on a lighter tint of the same color */
+.b-red{background:var(--tint-pink);color:var(--cherry);}
+.b-amber{background:var(--tint-yellow);color:#B57A14;}
+.b-blue,.b-green{background:var(--tint-blue);color:var(--brand);}
+.chip.warn{background:var(--tint-pink);color:var(--cherry);}
+.etype{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.06em;padding:3px 7px;border-radius:6px;margin-bottom:5px;}
+.etype.canvass{background:var(--tint-pink);color:var(--cherry);}
+.etype.train{background:var(--tint-yellow);color:#B57A14;}
+.etype.rally,.etype.phonebank{background:var(--tint-blue);color:var(--brand);}
+
+/* ---------- Home ---------- */
+.impact{background:var(--brand);color:var(--aqua);}
+.impact::before{background:rgba(154,252,253,.14);}
+.impact-k,.impact-n span,.impact-d,.flow-l,.flow-l em,.flow-n,.impact-n b{color:var(--aqua);}
+.flow-bar{background:rgba(255,255,255,.22);}
+.flow-bar i{background:var(--aqua);}
+.goal-track i.g-doors{background:var(--brand);}
+.goal-track i.g-calls{background:var(--cherry);}
+.goal-track i.g-texts{background:var(--dkblue);}
+.goal-track i.g-mail{background:var(--aqua);}
+.log-k.d{background:var(--brand);} .log-k.c{background:var(--cherry);}
+.log-k.t{background:var(--dkblue);} .log-k.m{background:var(--aqua);}
+.stat-n.hot{color:var(--yellow);}
+.tb i{background:var(--dkblue);}
+.tb.today i{background:var(--brand);}
+.tg-track i{background:var(--brand);}
+.tg-pace{color:var(--brand);}
+.tm i{color:var(--brand);}
+
+/* ---------- People ---------- */
+.matchhero .ci.vio{background:var(--brand);}
+.matchhero h3{text-transform:uppercase;letter-spacing:.06em;font-size:16px;font-weight:800;}
+.acc-key.mat{background:var(--mint);}
+.acc-key.hp{background:var(--warn);}      /* Republican categories may use red */
+.acc-key.lp{background:var(--yellow);}
+.acc-key.ind{background:var(--purple);}
+.acc-key.all{background:var(--gray2);}
+.acc.open .acc-n{background:var(--tint-blue);color:var(--brand);}
+.acc-more{color:var(--brand);}
+.value{background:var(--brand);}
+.value p{color:#fff;}
+.vstats{background:transparent;gap:8px;}
+.vstat{background:var(--sky);border-radius:12px;}
+.vstat span{color:#fff;}
+.m-btn{border:1.5px solid var(--lgray);color:var(--brand);}
+.m-btn svg{width:18px;height:18px;}
+
+/* ---------- Chase ---------- */
+.work.calls::after{background:var(--cherry);}
+.work.texts::after{background:var(--cherry);}   /* "Ballot reminder" batch bar */
+.work.mail::after{background:var(--aqua);}
+.work-rail i{background:var(--brand);}
+.thread.unread{box-shadow:inset 3.5px 0 0 var(--cherry);}
+.unreaddot,.n-dot{background:var(--brand);}
+
+/* ---------- Events ---------- */
+.eb-rsvp{background:var(--brand);border-color:var(--brand);color:#fff;border-radius:999px;padding:6px 15px;}
+.eb-rsvp.going{background:#fff;border-color:#fff;color:var(--dkblue);}
+.eb-flag.live{background:var(--cherry);}
+
+/* event detail */
+.eh{background:linear-gradient(180deg,var(--brand) 0%,var(--dkblue) 100%);}
+.eh-pill.livep{background:var(--cherry);}
+#s-event .impact,#s-eventpast .impact{background:var(--dkblue);}
+#s-event .impact-k,#s-event .impact-d,#s-event .flow-l{color:#B9C4F2;}
+#s-event .impact-n b,#s-event .flow-n{color:#fff;}
+.ag.now{background:rgba(229,50,104,.06);}
+.ag.now::after{background:var(--cherry);}
+.ag.now .ag-t,.ag-live{color:var(--cherry);}
+.kv-warn .kv-i{color:var(--yellow);}
+.kv-warn .kv-t{color:var(--ink);}
+.m-live{background:var(--mint);}
+.m-av.invite{background:#fff;border:1.5px solid var(--gray2);color:var(--gray2);}
+.btn-dirs{background:var(--lgray);color:var(--ink-dk);padding:0 15px;}
+.vidcap{padding:0 14px 8px;font-size:13.5px;font-weight:700;color:var(--ink);}
+.post-media.video{background:#000;}
+
+/* misc surfaces tied to old accents */
+.evdate.soon{background:var(--tint-pink);}
+.n-i.red{background:var(--cherry);} .n-i.mag{background:var(--cherry);}
+.n-i.vio{background:var(--dkblue);} .n-i.grn{background:var(--mint);color:var(--dkblue);}
+
+/* voice mic: flat brand colors, no gradients */
+.micfab{background:var(--cherry);box-shadow:0 8px 20px rgba(229,50,104,.35);}
+.micfab::before{border-color:rgba(229,50,104,.35);}
+.v-orb{background:var(--brand);box-shadow:0 0 calc(24px + var(--lvl) * 56px) rgba(54,103,246,calc(.3 + var(--lvl) * .5));}
+.v-orb.speaking{background:var(--cherry);box-shadow:0 0 calc(24px + var(--lvl) * 56px) rgba(229,50,104,calc(.3 + var(--lvl) * .5));}
+.v-orb.idle{background:var(--gray2);box-shadow:none;}
 </style>
 </head>
 <body>
@@ -871,7 +1013,7 @@ button{-webkit-user-select:none;user-select:none;}
     <div class="brandmark">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16a8 8 0 1114 5"/><path d="M13 4l5 4-5 4"/></svg>
     </div>
-    <div class="wordmark" id="wordmark">TPACTION</div>
+    <div class="wordmark" id="wordmark">Turning Point Action</div>
     <button class="iconbtn" aria-label="Search" data-goto="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
     <button class="iconbtn" aria-label="Notifications" data-goto="notif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 10-12 0c0 6-2 7-2 7h16s-2-1-2-7"/><path d="M13.7 20a2 2 0 01-3.4 0"/></svg><span class="dot" id="bellDot">6</span></button>
     <button class="avatar-sm" style="border:none;font:inherit;font-size:12px;font-weight:700;cursor:pointer;" aria-label="Open my profile" data-goto="me">MR</button>
@@ -1087,16 +1229,16 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-av lead">SB</div>
           <div class="m-main"><div class="m-n">Sandra Beltran</div><div class="m-s">Regional director · Arizona</div></div>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Sandra" data-toast="Calling Sandra Beltran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Sandra" data-toast="Opening a message to Sandra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Sandra" data-toast="Calling Sandra Beltran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Sandra" data-toast="Opening a message to Sandra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
         <div class="member">
           <div class="m-av lead">RC</div>
           <div class="m-main"><div class="m-n">Ray Castillo</div><div class="m-s">Field organizer · Phoenix West</div></div>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Ray" data-toast="Calling Ray Castillo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Ray" data-toast="Opening a message to Ray"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Ray" data-toast="Calling Ray Castillo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Ray" data-toast="Opening a message to Ray"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
 
@@ -1105,24 +1247,24 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-av">MG<span class="m-live"></span></div>
           <div class="m-main"><div class="m-n">Maria Gutierrez</div><div class="m-s">Knocking Turf 7 now · 1,412 doors this month</div></div>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Maria" data-toast="Calling Maria Gutierrez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Maria" data-toast="Opening a message to Maria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Maria" data-toast="Calling Maria Gutierrez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Maria" data-toast="Opening a message to Maria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
         <div class="member">
           <div class="m-av">DS<span class="m-live"></span></div>
           <div class="m-main"><div class="m-n">Deshan Silva</div><div class="m-s">On a call queue now · 806 calls this month</div></div>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Deshan" data-toast="Calling Deshan Silva"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Deshan" data-toast="Opening a message to Deshan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Deshan" data-toast="Calling Deshan Silva"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Deshan" data-toast="Opening a message to Deshan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
         <div class="member">
           <div class="m-av">AL</div>
           <div class="m-main"><div class="m-n">Ana Lopez</div><div class="m-s">Last active yesterday · 512 doors this month</div></div>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Ana" data-toast="Calling Ana Lopez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Ana" data-toast="Opening a message to Ana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Ana" data-toast="Calling Ana Lopez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Ana" data-toast="Opening a message to Ana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
 
@@ -1167,7 +1309,7 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="ci vio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
           <h3>Match my contacts</h3>
           <p>Check your phone contacts against the voter file. People respond to someone they know far more often than to a stranger at the door.</p>
-          <button class="btn btn-primary" style="width:100%;background:var(--violet);color:#fff;" data-toast="Matched 247 contacts — 14 found on the voter file">Match my contacts</button>
+          <button class="btn btn-primary" style="width:100%;" data-toast="Matched 247 contacts — 14 found on the voter file">Match my contacts</button>
           <div class="privacy">Matching happens on your device. Contact details are never uploaded, and you choose who to add. Last run 2 days ago.</div>
         </div>
 
@@ -1281,8 +1423,8 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-main"><div class="m-n">Miguel Santos</div><div class="m-s">Voted 1 of last 4 · ballot not returned</div></div>
           <span class="badge b-red">Chase</span>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Miguel Santos" data-toast="Calling Miguel Santos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Miguel Santos" data-toast="Opening a message to Miguel Santos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Miguel Santos" data-toast="Calling Miguel Santos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Miguel Santos" data-toast="Opening a message to Miguel Santos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
         <div class="member">
@@ -1290,8 +1432,8 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-main"><div class="m-n">Priya Raman</div><div class="m-s">Voted 2 of last 4 · no ballot requested</div></div>
           <span class="badge b-amber">Ask</span>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Priya Raman" data-toast="Calling Priya Raman"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Priya Raman" data-toast="Opening a message to Priya Raman"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Priya Raman" data-toast="Calling Priya Raman"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Priya Raman" data-toast="Opening a message to Priya Raman"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
         <div class="member">
@@ -1299,8 +1441,8 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-main"><div class="m-n">Walter Boyd</div><div class="m-s">Voted 1 of last 4 · no ballot requested</div></div>
           <span class="badge b-amber">Ask</span>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Walter Boyd" data-toast="Calling Walter Boyd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Walter Boyd" data-toast="Opening a message to Walter Boyd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Walter Boyd" data-toast="Calling Walter Boyd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Walter Boyd" data-toast="Opening a message to Walter Boyd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
             <button class="acc-more" data-toast="Showing all 6">Show 3 more</button>
@@ -1324,8 +1466,8 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-main"><div class="m-n">Carla Tran</div><div class="m-s">Voted 4 of last 4 · returned Sep 4</div></div>
           <span class="badge b-green">Done</span>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Carla Tran" data-toast="Calling Carla Tran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Carla Tran" data-toast="Opening a message to Carla Tran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Carla Tran" data-toast="Calling Carla Tran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Carla Tran" data-toast="Opening a message to Carla Tran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
         <div class="member">
@@ -1333,8 +1475,8 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-main"><div class="m-n">Rosa Alvarez</div><div class="m-s">Voted 4 of last 4 · ballot not returned</div></div>
           <span class="badge b-red">Chase</span>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Rosa Alvarez" data-toast="Calling Rosa Alvarez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Rosa Alvarez" data-toast="Opening a message to Rosa Alvarez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Rosa Alvarez" data-toast="Calling Rosa Alvarez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Rosa Alvarez" data-toast="Opening a message to Rosa Alvarez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
         <div class="member">
@@ -1342,8 +1484,8 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-main"><div class="m-n">Dana Keller</div><div class="m-s">Voted 3 of last 4 · returned Sep 2</div></div>
           <span class="badge b-green">Done</span>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Dana Keller" data-toast="Calling Dana Keller"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Dana Keller" data-toast="Opening a message to Dana Keller"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Dana Keller" data-toast="Calling Dana Keller"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Dana Keller" data-toast="Opening a message to Dana Keller"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
             <button class="acc-more" data-toast="Showing all 5">Show 2 more</button>
@@ -1367,8 +1509,8 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-main"><div class="m-n">Jesse Moreno</div><div class="m-s">Voted 3 of last 4 · no ballot requested</div></div>
           <span class="badge b-blue">Talk</span>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Jesse Moreno" data-toast="Calling Jesse Moreno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Jesse Moreno" data-toast="Opening a message to Jesse Moreno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Jesse Moreno" data-toast="Calling Jesse Moreno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Jesse Moreno" data-toast="Opening a message to Jesse Moreno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
         <div class="member">
@@ -1376,8 +1518,8 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-main"><div class="m-n">Aisha Noor</div><div class="m-s">Voted 2 of last 4 · ballot not returned</div></div>
           <span class="badge b-blue">Talk</span>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Aisha Noor" data-toast="Calling Aisha Noor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Aisha Noor" data-toast="Opening a message to Aisha Noor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Aisha Noor" data-toast="Calling Aisha Noor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Aisha Noor" data-toast="Opening a message to Aisha Noor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
         <div class="member">
@@ -1385,8 +1527,8 @@ button{-webkit-user-select:none;user-select:none;}
           <div class="m-main"><div class="m-n">Tomas Ferreira</div><div class="m-s">Voted 4 of last 4 · returned Aug 30</div></div>
           <span class="badge b-green">Done</span>
           <div class="m-acts">
-            <button class="m-btn" aria-label="Call Tomas Ferreira" data-toast="Calling Tomas Ferreira"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button>
-            <button class="m-btn" aria-label="Text Tomas Ferreira" data-toast="Opening a message to Tomas Ferreira"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button>
+            <button class="m-btn" aria-label="Call Tomas Ferreira" data-toast="Calling Tomas Ferreira"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Tomas Ferreira" data-toast="Opening a message to Tomas Ferreira"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
           </div>
         </div>
           </div>
@@ -1582,7 +1724,7 @@ button{-webkit-user-select:none;user-select:none;}
       <div class="ebtn blue hasfoot" role="button" tabindex="0" data-goto="event">
         <span class="eb-flag live"><i></i>HAPPENING NOW</span>
         <span class="eb-date"><span class="eb-mon">SEP</span><span class="eb-day">9<sup>th</sup></span></span>
-        <span class="eb-main"><span class="eb-t">Maryvale Door-Knock Launch</span><span class="eb-s">Cortez Park, Phoenix</span></span>
+        <span class="eb-main"><span class="etype canvass">CANVASS</span><span class="eb-t">Maryvale Door-Knock Launch</span><span class="eb-s">Cortez Park, Phoenix</span></span>
         <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
         <span class="eb-foot"><span>214 checked in · 4,207 doors</span><span class="eb-rsvp going">CHECKED IN</span></span>
       </div>
@@ -1591,14 +1733,14 @@ button{-webkit-user-select:none;user-select:none;}
       <div class="ebtn cyan hasfoot" role="button" tabindex="0" data-goto="event">
         <span class="eb-flag">REMOTE</span>
         <span class="eb-date"><span class="eb-mon">SEP</span><span class="eb-day">13<sup>th</sup></span></span>
-        <span class="eb-main"><span class="eb-t">Ballot Chase Call Night</span><span class="eb-s">Join from home · 6:00 PM</span></span>
+        <span class="eb-main"><span class="etype phonebank">PHONE BANK</span><span class="eb-t">Ballot Chase Call Night</span><span class="eb-s">Join from home · 6:00 PM</span></span>
         <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
         <span class="eb-foot"><span>82 going</span><button class="eb-rsvp going" data-rsvp="1">GOING</button></span>
       </div>
 
       <div class="ebtn violet hasfoot" role="button" tabindex="0" data-goto="event">
         <span class="eb-date"><span class="eb-mon">SEP</span><span class="eb-day">14<sup>th</sup></span></span>
-        <span class="eb-main"><span class="eb-t">New Canvasser Training</span><span class="eb-s">Glendale, Arizona · 90 min</span></span>
+        <span class="eb-main"><span class="etype train">TRAINING</span><span class="eb-t">New Canvasser Training</span><span class="eb-s">Glendale, Arizona · 90 min</span></span>
         <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
         <span class="eb-foot"><span>First time? Start here</span><button class="eb-rsvp" data-rsvp="1">RSVP</button></span>
       </div>
@@ -1606,14 +1748,14 @@ button{-webkit-user-select:none;user-select:none;}
       <div class="sechead">Coming up</div>
       <div class="ebtn red dots hasfoot" role="button" tabindex="0" data-goto="event">
         <span class="eb-date"><span class="eb-mon">OCT</span><span class="eb-day">3<sup>rd</sup></span></span>
-        <span class="eb-main"><span class="eb-logo sc">SUPER&#8250;&#8250;CHASE</span><span class="eb-sub">PHOENIX · HELP CHASE BALLOTS</span></span>
+        <span class="eb-main"><span class="etype canvass">CANVASS</span><span class="eb-logo sc">SUPER&#8250;&#8250;CHASE</span><span class="eb-sub">PHOENIX · HELP CHASE BALLOTS</span></span>
         <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
         <span class="eb-foot"><span>214 going · rides available</span><button class="eb-rsvp" data-rsvp="1">RSVP</button></span>
       </div>
 
       <div class="ebtn blue hasfoot" role="button" tabindex="0">
         <span class="eb-date"><span class="eb-mon">OCT</span><span class="eb-day">18<sup>th</sup></span></span>
-        <span class="eb-main"><span class="eb-t">Build the Red Wall</span><span class="eb-s">Phoenix, Arizona</span></span>
+        <span class="eb-main"><span class="etype rally">RALLY</span><span class="eb-t">Build the Red Wall</span><span class="eb-s">Phoenix, Arizona</span></span>
         <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
         <span class="eb-foot"><span>Opens tpaction.com</span><span class="eb-rsvp">REGISTER ↗</span></span>
       </div>
@@ -1682,10 +1824,10 @@ button{-webkit-user-select:none;user-select:none;}
       </div>
 
       <div class="ebar">
-        <button class="btn btn-primary" style="background:var(--blue);color:#fff;" data-toast="Checked in — your shift has started">
+        <button class="btn btn-primary" data-toast="Checked in — your shift has started">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Check in
         </button>
-        <button class="btn" style="background:var(--line-2);color:var(--ink);padding:0 15px;" data-toast="Opening directions to Cortez Park">Directions</button>
+        <button class="btn btn-dirs" data-toast="Opening directions to Cortez Park">Directions</button>
       </div>
 
       <div class="impact">
@@ -1734,9 +1876,9 @@ button{-webkit-user-select:none;user-select:none;}
 
       <div class="sechead">Watch live</div>
       <div class="postcard" style="margin-top:0;">
-        <div class="post-media">
+        <div class="vidcap">Main stage · streaming now</div>
+        <div class="post-media video">
           <div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-          <div class="post-cap">Main stage · streaming now</div>
         </div>
         <div class="post-mtr"><span>1,840 watching</span><span>Rumble</span></div>
       </div>
@@ -1759,15 +1901,15 @@ button{-webkit-user-select:none;user-select:none;}
       <div class="member">
         <div class="m-av">MG<span class="m-live"></span></div>
         <div class="m-main"><div class="m-n">Maria Gutierrez</div><div class="m-s">Checked in · Turf 7</div></div>
-        <div class="m-acts"><button class="m-btn" aria-label="Text Maria" data-toast="Opening a message to Maria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></button></div>
+        <div class="m-acts"><button class="m-btn" aria-label="Text Maria" data-toast="Opening a message to Maria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button></div>
       </div>
       <div class="member">
         <div class="m-av">RC</div>
         <div class="m-main"><div class="m-n">Ray Castillo</div><div class="m-s">Organizer · at the pavilion tent</div></div>
-        <div class="m-acts"><button class="m-btn" aria-label="Call Ray" data-toast="Calling Ray Castillo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.4 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg></button></div>
+        <div class="m-acts"><button class="m-btn" aria-label="Call Ray" data-toast="Calling Ray Castillo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button></div>
       </div>
       <div class="member">
-        <div class="m-av" style="background:var(--violet);">+3</div>
+        <div class="m-av invite">+3</div>
         <div class="m-main"><div class="m-n">Invite from your contacts</div><div class="m-s">3 people you know live within 2 miles</div></div>
         <button class="pillbtn" data-goto="people">Invite</button>
       </div>
@@ -2117,7 +2259,7 @@ button{-webkit-user-select:none;user-select:none;}
 
     <div class="navcentre">
       <button class="chasebtn" data-nav="chase" id="chaseBtn" aria-label="Chase">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16a8 8 0 1114 5"/><path d="M13 4l5 4-5 4"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 2L4.5 13.6h6.3L9.6 22l9-11.7h-6.4L13.5 2z"/></svg>
         CHASE
       </button>
     </div>
@@ -2166,7 +2308,7 @@ window.tpaLog=(function(){
   },true);
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') flush(true); });
   addEventListener('pagehide',function(){ log('app_close'); flush(true); });
-  log('app_open');
+  log('app_open','v2');
 
   return {
     log:log,
@@ -2184,7 +2326,7 @@ window.tpaLog=(function(){
 
   var screens={home:'s-home',people:'s-people',chase:'s-chase',events:'s-events',me:'s-me',
     event:'s-event',eventpast:'s-eventpast',search:'s-search',notif:'s-notif'};
-  var titles={home:'TPACTION',people:'People',chase:'Chase',events:'Events',me:'Me',
+  var titles={home:'Turning Point Action',people:'People',chase:'Chase',events:'Events',me:'Me',
     event:'Maryvale launch',eventpast:'Build the Red Wall 2025',
     search:'Search',notif:'Notifications'};
   var parentTab={event:'events',eventpast:'events'};

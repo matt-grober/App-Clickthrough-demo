@@ -8,11 +8,13 @@ override that in Me › Dark mode.
 
 ## Versions
 
-- `/` (`index.html`): the current app.
-- `/v2/` (`v2/index.html`): the Figma revisions: Montserrat, small-caps titles, Superfeed brand colors, a solid
-  `#3667F6` Chase button with a lightning bolt, and the screen-by-screen changes. Built from `index.html`; the
-  revisions are the `V2 — FIGMA REVISIONS` style block at the end of the stylesheet plus a few markup changes.
-  Both versions share `doors.html`, the Worker and the activity log (v2 logs `app_open` with detail `v2`).
+- `/` (`index.html`): the app, with the Figma revisions (Montserrat, small-caps titles, Superfeed brand colors,
+  solid `#3667F6` Chase button with a lightning bolt, flat voice mic). The revisions are the
+  `V2 — FIGMA REVISIONS` style block at the end of the stylesheet plus a few markup changes.
+- `/v1/` (`v1/index.html`): the previous design, kept so it can be restored.
+- `/v2/` redirects to `/`.
+
+All versions share `doors.html`, the Worker and the activity log; `app_open` carries `v2` or `v1`.
 
 ## Doors canvassing
 
