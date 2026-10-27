@@ -1,0 +1,2905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="TPACTION">
+<meta name="description" content="TPACTION clickable demo — Turning Point Action volunteer app with Grok voice. All data is example data.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312233F'/%3E%3Cpath d='M9 21a8 8 0 1114 5M17 9l5 4-5 4' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' transform='translate(-1 -2)'/%3E%3C/svg%3E">
+<title>TPACTION</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TPACTION HOME REDESIGN v2
+   Chase = the verb. Four modalities. Relational organizing.
+   Palette derived from the existing TPA tile set.
+   ============================================================ */
+
+:root{
+  --navy:#12233F; --navy-2:#1B2E4E;
+  --blue:#1B5FA8; --cyan:#24B6CE;
+  --red:#D31F35; --magenta:#C2186F;
+  --green:#1B8F52; --amber:#C97C08;
+  --violet:#6B4BA8;
+  --vnm:#0D9B4C;
+  --vnm-d:#0A7F3E;
+
+  --bg:#F4F6FB; --surface:#FFFFFF; --surface-2:#FAFBFE;
+  --ink:#0E1A33; --ink-2:#5A6683; --ink-3:#8B95AD;
+  --line:#E3E8F2; --line-2:#EDF1F8;
+  --tap:48px;
+}
+.dark{
+  --bg:#000; --surface:#16181C; --surface-2:#1C1F23;
+  --ink:#E8EAED; --ink-2:#8B939E; --ink-3:#6B727C;
+  --line:#2A2E35; --line-2:#22262C;
+  --navy:#0A1526; --blue:#3D8BDC; --cyan:#3ECEE4;
+  --vnm:#13B15A; --vnm-d:#0D9B4C;
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  margin:0; background:#1A1D24;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;
+  color:var(--ink);
+  display:flex; flex-direction:column; align-items:center;
+  padding:28px 16px 64px; min-height:100vh;
+}
+
+
+/* ---------- phone ---------- */
+.phone{
+  width:390px;height:844px;background:var(--bg);
+  border-radius:44px;border:11px solid #0A0C10;
+  box-shadow:0 30px 70px rgba(0,0,0,.55);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
+}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:126px;height:31px;background:#0A0C10;border-radius:0 0 18px 18px;z-index:60;}
+.statusbar{height:47px;flex:0 0 47px;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 26px 7px;font-size:14px;font-weight:640;color:var(--ink);background:var(--surface);
+  z-index:55;letter-spacing:-.1px;}
+.sb-right{display:flex;gap:5px;align-items:center;}
+
+.appbar{flex:0 0 auto;height:56px;background:var(--surface);display:flex;align-items:center;
+  gap:10px;padding:0 14px;border-bottom:1px solid var(--line-2);z-index:50;}
+.brandmark{width:31px;height:31px;flex:0 0 31px;border-radius:8px;background:var(--navy);
+  display:grid;place-items:center;}
+.brandmark svg{width:19px;height:19px;}
+.wordmark{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-size:16.5px;
+  letter-spacing:.6px;color:var(--ink);font-weight:600;flex:1;}
+.iconbtn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:none;
+  background:none;cursor:pointer;position:relative;color:var(--ink);}
+.iconbtn svg{width:21px;height:21px;}
+.dot{position:absolute;top:5px;right:5px;min-width:17px;height:17px;padding:0 4px;background:var(--red);
+  color:#fff;border-radius:9px;font-size:10.5px;font-weight:700;display:grid;place-items:center;
+  border:2px solid var(--surface);font-variant-numeric:tabular-nums;}
+.avatar-sm{width:31px;height:31px;border-radius:50%;background:linear-gradient(140deg,var(--blue),var(--navy));
+  color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;margin-left:2px;flex:0 0 31px;}
+
+/* ---------- segmented tabs ---------- */
+.segtabs{flex:0 0 auto;display:flex;background:var(--surface);border-bottom:1px solid var(--line);padding:0 4px;}
+.seg{flex:1;border:none;background:none;font:inherit;font-size:14.5px;font-weight:560;color:var(--ink-2);
+  padding:13px 0 11px;cursor:pointer;position:relative;}
+.seg.on{color:var(--ink);font-weight:680;}
+.seg.on::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:52px;height:3.5px;background:var(--blue);border-radius:2px 2px 0 0;}
+.seg .segbadge{display:inline-block;min-width:16px;height:16px;padding:0 4px;background:var(--red);
+  color:#fff;border-radius:8px;font-size:10px;font-weight:700;line-height:16px;margin-left:4px;
+  vertical-align:1px;font-variant-numeric:tabular-nums;}
+.segtabs.four .seg{font-size:13.5px;}
+.segtabs.four .seg.on::after{width:44px;}
+
+.body{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:104px;scrollbar-width:none;}
+.body::-webkit-scrollbar{display:none;}
+.screen{display:none;flex:1;flex-direction:column;min-height:0;}
+.screen.on{display:flex;}
+.pane{display:none;}
+.pane.on{display:block;}
+
+.btn{border:none;font:inherit;font-size:15px;font-weight:660;border-radius:12px;cursor:pointer;
+  min-height:var(--tap);padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:7px;}
+.btn-primary{background:var(--cyan);color:#06222A;flex:1;}
+.btn:focus-visible{outline:2px solid #fff;outline-offset:2px;}
+
+/* ---------- stat strip ---------- */
+.stats{display:flex;background:var(--surface);margin:12px 0 0;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.stat{flex:1;padding:13px 4px;text-align:center;border-right:1px solid var(--line-2);}
+.stat:last-child{border-right:none;}
+.stat-n{font-size:19px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;
+  display:block;color:var(--ink);}
+.stat-l{font-size:11px;color:var(--ink-2);margin-top:2px;display:block;}
+.stat-n.hot{color:var(--amber);}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);margin-top:9px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.card-head{display:flex;align-items:center;gap:10px;padding:13px 14px 0;}
+.ci{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex:0 0 36px;color:#fff;}
+.ci svg{width:18px;height:18px;}
+.ci.blue{background:var(--blue);} .ci.red{background:var(--red);}
+.ci.mag{background:var(--magenta);} .ci.grn{background:var(--green);}
+.ci.cy{background:var(--cyan);color:#06222A;} .ci.vio{background:var(--violet);}
+.ci.navy{background:var(--navy);}
+.card-who{flex:1;min-width:0;}
+.card-t{font-size:14.5px;font-weight:640;letter-spacing:-.15px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;}
+.card-m{font-size:12.5px;color:var(--ink-2);margin-top:1px;}
+.card-body{padding:9px 14px 0;font-size:14.5px;line-height:1.48;color:var(--ink);}
+.card-body strong{font-weight:660;}
+.muted{color:var(--ink-2);}
+.promoted{font-size:11px;font-weight:640;color:var(--ink-3);padding:9px 14px 0;letter-spacing:.2px;}
+.srcline{font-size:12.5px;color:var(--ink-3);padding:9px 14px 0;display:flex;align-items:center;gap:5px;}
+.srcline svg{width:13px;height:13px;}
+
+.chipline{display:flex;gap:7px;padding:11px 14px 0;flex-wrap:wrap;}
+.chip{font-size:12px;font-weight:600;padding:5px 10px;border-radius:7px;background:var(--line-2);color:var(--ink-2);}
+.chip.warn{background:rgba(211,31,53,.1);color:var(--red);}
+
+.card-acts{display:flex;gap:8px;padding:12px 14px 13px;}
+.act{flex:1;min-height:42px;border-radius:11px;border:1.5px solid var(--line);background:none;font:inherit;
+  font-size:14px;font-weight:620;color:var(--ink);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:6px;}
+.act:active{background:var(--line-2);}
+.act.fill{background:var(--blue);border-color:var(--blue);color:#fff;}
+.act.fill.red{background:var(--red);border-color:var(--red);}
+.act.fill.vio{background:var(--violet);border-color:var(--violet);}
+.act.slim{flex:0 0 46px;}
+.act:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+
+.thumb{height:150px;margin-top:11px;background:linear-gradient(122deg,var(--navy) 0%,var(--blue) 58%,var(--cyan) 130%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:14px;color:#fff;position:relative;}
+.thumb.ext{background:linear-gradient(122deg,#0B1A33 0%,#243B63 60%,#3D6FB5 130%);}
+.thumb-t{font-size:19px;font-weight:720;letter-spacing:-.4px;}
+.thumb-s{font-size:13px;opacity:.85;margin-top:2px;}
+.thumb-badge{position:absolute;top:12px;left:14px;background:rgba(0,0,0,.4);font-size:11.5px;
+  font-weight:640;padding:5px 9px;border-radius:7px;}
+
+.sechead{padding:19px 14px 7px;font-size:16.5px;font-weight:700;letter-spacing:-.3px;
+  display:flex;align-items:baseline;justify-content:space-between;}
+.sechead .subtle{font-size:13px;font-weight:550;color:var(--ink-2);}
+
+/* ---------- work rows ---------- */
+.work{display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);cursor:pointer;position:relative;}
+.work::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3.5px;background:transparent;}
+.work.doors::after{background:var(--blue);}
+.work.calls::after{background:var(--cyan);}
+.work.texts::after{background:var(--violet);}
+.work.mail::after{background:var(--magenta);}
+.work-main{flex:1;min-width:0;}
+.work-t{font-size:15.5px;font-weight:660;letter-spacing:-.25px;}
+.work-s{font-size:12.5px;color:var(--ink-2);margin-top:3px;}
+.work-rail{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:8px;}
+.work-rail i{display:block;height:100%;background:var(--blue);border-radius:3px;}
+.work-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;}
+.work-n{font-size:19px;font-weight:730;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1;}
+.work-nl{font-size:10.5px;color:var(--ink-2);}
+.chev{color:var(--ink-3);font-size:19px;flex:0 0 auto;}
+
+.pillbtn{border:1.5px solid var(--blue);color:var(--blue);background:none;font:inherit;font-size:13.5px;
+  font-weight:660;padding:9px 14px;border-radius:10px;cursor:pointer;min-height:42px;white-space:nowrap;}
+.pillbtn.fill{background:var(--blue);color:#fff;}
+
+.badge{font-size:11px;font-weight:680;padding:4px 8px;border-radius:6px;white-space:nowrap;}
+.b-amber{background:rgba(201,124,8,.12);color:var(--amber);}
+.b-blue{background:rgba(27,95,168,.1);color:var(--blue);}
+.b-green{background:rgba(27,143,82,.11);color:var(--green);}
+.b-red{background:rgba(211,31,53,.1);color:var(--red);}
+
+/* ---------- threads ---------- */
+.thread{display:flex;gap:12px;padding:13px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);cursor:pointer;align-items:flex-start;}
+.thread.unread{background:rgba(27,95,168,.045);}
+.tav{width:42px;height:42px;border-radius:50%;background:var(--navy-2);color:#fff;display:grid;
+  place-items:center;font-size:14px;font-weight:660;flex:0 0 42px;}
+.thread-main{flex:1;min-width:0;}
+.thread-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.thread-n{font-size:15px;font-weight:650;letter-spacing:-.2px;}
+.thread-time{font-size:11.5px;color:var(--ink-3);flex:0 0 auto;}
+.thread-p{font-size:13.5px;color:var(--ink-2);margin-top:2px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;}
+.thread.unread .thread-p{color:var(--ink);font-weight:580;}
+.unreaddot{width:9px;height:9px;border-radius:50%;background:var(--blue);flex:0 0 9px;margin-top:15px;}
+
+/* ---------- map handoff ---------- */
+.handoff{margin:12px;padding:18px 16px;border:2px dashed var(--blue);border-radius:16px;
+  background:rgba(27,95,168,.05);}
+.handoff h3{margin:0 0 6px;font-size:15.5px;font-weight:700;letter-spacing:-.2px;color:var(--blue);}
+.handoff p{margin:0;font-size:13px;line-height:1.5;color:var(--ink-2);}
+.pinkey{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+.pk{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-2);font-weight:550;}
+.pkd{width:15px;height:15px;border-radius:50% 50% 50% 3px;transform:rotate(-45deg);
+  border:2px solid var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.pkd.g{background:var(--green);} .pkd.a{background:var(--amber);} .pkd.b{background:var(--blue);}
+
+/* ---------- people ---------- */
+.matchhero{margin:12px;background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:18px 16px;text-align:center;}
+.matchhero .ci{margin:0 auto 11px;width:46px;height:46px;flex:none;}
+.matchhero .ci svg{width:23px;height:23px;}
+.matchhero h3{margin:0 0 5px;font-size:18px;font-weight:720;letter-spacing:-.35px;}
+.matchhero p{margin:0 0 14px;font-size:13.5px;line-height:1.5;color:var(--ink-2);}
+.privacy{font-size:11.5px;color:var(--ink-3);margin-top:10px;line-height:1.45;}
+
+/* ---------- events / profile ---------- */
+.evrow{display:flex;gap:13px;padding:14px;background:var(--surface);border-bottom:1px solid var(--line-2);align-items:center;}
+.evdate{flex:0 0 52px;text-align:center;border-radius:11px;background:var(--line-2);padding:7px 0;}
+.evdate.soon{background:rgba(211,31,53,.09);}
+.evmon{font-size:11px;font-weight:700;color:var(--ink-2);letter-spacing:.4px;}
+.evdate.soon .evmon{color:var(--red);}
+.evday{font-size:21px;font-weight:740;letter-spacing:-.6px;font-variant-numeric:tabular-nums;line-height:1.05;}
+.evdate.soon .evday{color:var(--red);}
+.evmain{flex:1;min-width:0;}
+.evt{font-size:15px;font-weight:660;letter-spacing:-.2px;}
+.evs{font-size:12.5px;color:var(--ink-2);margin-top:2px;}
+.collapser{width:100%;border:none;background:var(--surface);border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);font:inherit;font-size:14.5px;font-weight:620;color:var(--ink-2);
+  padding:15px 14px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;
+  align-items:center;margin-top:9px;}
+.prof{background:var(--surface);padding:22px 14px 18px;text-align:center;border-bottom:1px solid var(--line);}
+.avatar-lg{width:78px;height:78px;border-radius:50%;background:linear-gradient(140deg,var(--blue),var(--navy));
+  color:#fff;display:grid;place-items:center;font-size:29px;font-weight:700;margin:0 auto 11px;}
+.prof h2{margin:0;font-size:21px;font-weight:720;letter-spacing:-.4px;}
+.prof p{margin:3px 0 0;font-size:13.5px;color:var(--ink-2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;background:var(--line);gap:1px;border-bottom:1px solid var(--line);}
+.gcell{background:var(--surface);padding:16px 14px;}
+.gcell .stat-n{font-size:24px;text-align:left;}
+.gcell .stat-l{text-align:left;font-size:12.5px;}
+.listrow{display:flex;align-items:center;gap:12px;padding:15px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);font-size:15px;font-weight:550;cursor:pointer;}
+.listrow svg{width:20px;height:20px;color:var(--ink-2);flex:0 0 20px;}
+.listrow .chev{margin-left:auto;}
+
+/* ---------- nav with raised centre ---------- */
+.nav{position:absolute;left:0;right:0;bottom:0;height:78px;background:var(--surface);
+  border-top:1px solid var(--line);display:flex;padding-bottom:16px;z-index:50;}
+.navbtn{flex:1;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;color:var(--ink-3);font:inherit;font-size:10.5px;
+  font-weight:600;position:relative;padding-top:8px;}
+.navbtn svg{width:24px;height:24px;}
+.navbtn.on{color:var(--blue);}
+.navbtn:focus-visible{outline:2px solid var(--blue);outline-offset:-4px;border-radius:8px;}
+.navdot{position:absolute;top:5px;left:calc(50% + 7px);min-width:17px;height:17px;padding:0 4px;
+  background:var(--red);color:#fff;border-radius:9px;font-size:10px;font-weight:700;display:grid;
+  place-items:center;border:2px solid var(--surface);font-variant-numeric:tabular-nums;}
+.navcentre{flex:1;position:relative;}
+.chasebtn{position:absolute;left:50%;top:-19px;transform:translateX(-50%);
+  width:62px;height:62px;border-radius:50%;border:4px solid var(--surface);
+  background:var(--blue);color:#fff;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;font:inherit;font-size:9.5px;font-weight:700;
+  box-shadow:0 5px 16px rgba(27,95,168,.45);letter-spacing:.2px;}
+.chasebtn svg{width:23px;height:23px;}
+.chasebtn.on{background:var(--navy);box-shadow:0 5px 16px rgba(18,35,63,.5);}
+.chasebtn:focus-visible{outline:3px solid var(--cyan);outline-offset:2px;}
+
+
+/* ---------- For you: impact / goals / trend / log ---------- */
+.impact{margin:12px;background:var(--navy);border-radius:20px;padding:17px 17px 8px;color:#fff;
+  position:relative;overflow:hidden;}
+.impact::before{content:"";position:absolute;right:-62px;top:-62px;width:180px;height:180px;
+  border-radius:50%;background:rgba(36,182,206,.13);}
+.impact-k{font-size:12px;color:#9DB4D4;font-weight:580;margin-bottom:8px;}
+.impact-n{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
+.impact-n b{font-size:38px;font-weight:740;letter-spacing:-1.6px;font-variant-numeric:tabular-nums;line-height:1;}
+.impact-n span{font-size:14px;color:#A9BDD8;}
+.impact-d{font-size:12.5px;color:#7E97BA;margin-bottom:15px;}
+.flowrow{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid rgba(255,255,255,.1);}
+.flowrow:first-of-type{border-top:none;}
+.flow-l{flex:1;font-size:13px;color:#C6D6E9;display:flex;align-items:center;gap:6px;min-width:0;}
+.flow-l em{font-style:normal;color:#7E97BA;font-size:14px;}
+.flow-n{font-size:17px;font-weight:730;font-variant-numeric:tabular-nums;letter-spacing:-.4px;flex:0 0 auto;}
+.flow-bar{flex:0 0 62px;height:5px;background:rgba(255,255,255,.14);border-radius:3px;overflow:hidden;}
+.flow-bar i{display:block;height:100%;background:var(--cyan);border-radius:3px;}
+
+.goalrow{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);}
+.goal-l{flex:0 0 62px;font-size:13px;font-weight:600;color:var(--ink-2);}
+.goal-track{flex:1;height:9px;background:var(--line);border-radius:5px;overflow:hidden;}
+.goal-track i{display:block;height:100%;border-radius:5px;background:var(--blue);}
+.goal-track i.g-doors{background:var(--blue);}
+.goal-track i.g-calls{background:var(--cyan);}
+.goal-track i.g-texts{background:var(--violet);}
+.goal-track i.g-mail{background:var(--magenta);}
+.goal-v{flex:0 0 62px;text-align:right;font-size:12.5px;font-weight:640;
+  font-variant-numeric:tabular-nums;color:var(--ink);}
+.goal-v em{font-style:normal;color:var(--ink-3);font-weight:500;}
+
+.trendwrap{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:14px 14px 11px;}
+.trendbars{display:flex;align-items:flex-end;gap:8px;height:78px;}
+.tb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;height:100%;}
+.tb i{display:block;width:100%;background:var(--blue);border-radius:4px 4px 2px 2px;min-height:3px;}
+.tb.today i{background:var(--cyan);}
+.tb span{font-size:10.5px;color:var(--ink-3);font-weight:560;}
+.tb b{font-size:10.5px;font-weight:680;color:var(--ink-2);font-variant-numeric:tabular-nums;}
+
+.logrow{display:flex;gap:11px;padding:11px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);align-items:flex-start;}
+.log-t{flex:0 0 54px;font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums;padding-top:2px;}
+.log-m{flex:1;min-width:0;}
+.log-a{font-size:14px;font-weight:580;letter-spacing:-.1px;}
+.log-s{font-size:12.5px;color:var(--ink-2);margin-top:1px;}
+.log-k{flex:0 0 auto;width:9px;height:9px;border-radius:50%;margin-top:6px;}
+.log-k.d{background:var(--blue);} .log-k.c{background:var(--cyan);}
+.log-k.t{background:var(--violet);} .log-k.m{background:var(--magenta);}
+
+.records{display:flex;gap:1px;background:var(--line);border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);}
+.rec{flex:1;background:var(--surface);padding:14px 12px;}
+.rec b{display:block;font-size:20px;font-weight:730;letter-spacing:-.5px;
+  font-variant-numeric:tabular-nums;}
+.rec span{display:block;font-size:11.5px;color:var(--ink-2);margin-top:2px;}
+
+/* ---------- Feeds ---------- */
+.srcbar{display:flex;gap:7px;padding:12px 14px;overflow-x:auto;scrollbar-width:none;
+  background:var(--surface);border-bottom:1px solid var(--line);}
+.srcbar::-webkit-scrollbar{display:none;}
+.srcchip{flex:0 0 auto;border:1.5px solid var(--line);background:none;font:inherit;font-size:13px;
+  font-weight:600;color:var(--ink-2);padding:7px 13px;border-radius:999px;cursor:pointer;}
+.srcchip.on{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+.postcard{background:var(--surface);margin-top:9px;border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);padding-bottom:12px;}
+.post-h{display:flex;align-items:center;gap:10px;padding:13px 14px 0;}
+.post-av{width:38px;height:38px;border-radius:50%;flex:0 0 38px;display:grid;place-items:center;
+  color:#fff;font-size:13px;font-weight:700;}
+.post-av.x{background:#000;} .post-av.yt{background:#CC0000;} .post-av.rss{background:var(--amber);}
+.post-av svg{width:19px;height:19px;}
+.post-who{flex:1;min-width:0;}
+.post-n{font-size:14.5px;font-weight:660;letter-spacing:-.15px;}
+.post-m{font-size:12.5px;color:var(--ink-2);margin-top:1px;}
+.post-b{padding:10px 14px 0;font-size:14.5px;line-height:1.5;}
+.post-media{margin-top:11px;height:172px;position:relative;display:flex;align-items:center;
+  justify-content:center;background:linear-gradient(122deg,var(--navy),var(--blue));}
+.post-media.news{background:linear-gradient(122deg,#3A2A08,var(--amber));}
+.play{width:54px;height:54px;border-radius:50%;background:rgba(0,0,0,.55);display:grid;place-items:center;}
+.play svg{width:22px;height:22px;color:#fff;margin-left:3px;}
+.post-cap{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;color:#fff;
+  background:linear-gradient(transparent,rgba(0,0,0,.72));font-size:14px;font-weight:640;}
+.post-mtr{display:flex;gap:20px;padding:11px 14px 0;font-size:12.5px;color:var(--ink-2);
+  font-variant-numeric:tabular-nums;}
+.stub{margin:12px;padding:16px;border:2px dashed var(--ink-3);border-radius:14px;
+  background:var(--surface-2);}
+.stub h4{margin:0 0 5px;font-size:14.5px;font-weight:700;color:var(--ink-2);}
+.stub p{margin:0;font-size:13px;line-height:1.5;color:var(--ink-3);}
+
+/* ---------- Team ---------- */
+.teamgoal{margin:12px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;}
+.tg-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px;}
+.tg-t{font-size:16px;font-weight:700;letter-spacing:-.3px;}
+.tg-d{font-size:12.5px;color:var(--ink-2);}
+.tg-n{display:flex;align-items:baseline;gap:7px;margin-bottom:9px;}
+.tg-n b{font-size:30px;font-weight:740;letter-spacing:-1.1px;font-variant-numeric:tabular-nums;line-height:1;}
+.tg-n span{font-size:13.5px;color:var(--ink-2);}
+.tg-track{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-bottom:7px;}
+.tg-track i{display:block;height:100%;background:var(--blue);border-radius:5px;}
+.tg-pace{font-size:12.5px;color:var(--green);font-weight:600;}
+.tg-pace.behind{color:var(--amber);}
+
+.member{display:flex;align-items:center;gap:11px;padding:12px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);}
+.m-av{width:42px;height:42px;border-radius:50%;background:var(--navy-2);color:#fff;display:grid;
+  place-items:center;font-size:14px;font-weight:660;flex:0 0 42px;position:relative;}
+.m-av.lead{background:var(--magenta);}
+.m-live{position:absolute;bottom:-1px;right:-1px;width:13px;height:13px;border-radius:50%;
+  background:var(--green);border:2.5px solid var(--surface);}
+.m-main{flex:1;min-width:0;}
+.m-n{font-size:14.5px;font-weight:640;letter-spacing:-.15px;}
+.m-s{font-size:12.5px;color:var(--ink-2);margin-top:2px;}
+.m-acts{display:flex;gap:7px;flex:0 0 auto;}
+.m-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:none;
+  display:grid;place-items:center;cursor:pointer;color:var(--blue);}
+.m-btn svg{width:17px;height:17px;}
+.m-btn:active{background:var(--line-2);}
+.m-btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+
+.tmetrics{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.tm{background:var(--surface);padding:14px;}
+.tm b{display:block;font-size:21px;font-weight:730;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}
+.tm span{display:block;font-size:12px;color:var(--ink-2);margin-top:2px;}
+.tm i{font-style:normal;font-size:11.5px;font-weight:640;color:var(--green);margin-left:5px;}
+
+.tact{display:flex;gap:11px;padding:12px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);align-items:center;}
+.ta-av{width:34px;height:34px;border-radius:50%;background:var(--navy-2);color:#fff;display:grid;
+  place-items:center;font-size:12px;font-weight:660;flex:0 0 34px;}
+.ta-m{flex:1;min-width:0;font-size:14px;line-height:1.4;}
+.ta-m b{font-weight:660;}
+.ta-t{font-size:11.5px;color:var(--ink-3);flex:0 0 auto;}
+
+
+/* ---------- People: stacking accordions ---------- */
+.acc{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  margin-top:9px;}
+.acc-h{width:100%;display:flex;align-items:center;gap:11px;padding:14px;border:none;background:none;
+  font:inherit;cursor:pointer;text-align:left;min-height:56px;color:var(--ink);}
+.acc-h:active{background:var(--line-2);}
+.acc-h:focus-visible{outline:2px solid var(--blue);outline-offset:-3px;}
+.acc-key{width:10px;height:10px;border-radius:3px;flex:0 0 10px;}
+.acc-key.hp{background:var(--red);}
+.acc-key.lp{background:var(--amber);}
+.acc-key.ind{background:var(--violet);}
+.acc-key.all{background:var(--ink-3);}
+.acc-key.mat{background:var(--green);}
+.acc-m{flex:1;min-width:0;}
+.acc-t{font-size:15.5px;font-weight:660;letter-spacing:-.25px;}
+.acc-s{font-size:12.5px;color:var(--ink-2);margin-top:2px;}
+.acc-n{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink-2);
+  background:var(--line-2);padding:4px 9px;border-radius:999px;flex:0 0 auto;}
+.acc-x{flex:0 0 auto;color:var(--ink-3);font-size:13px;transition:transform .18s;}
+.acc.open .acc-x{transform:rotate(90deg);}
+.acc.open .acc-n{background:rgba(27,95,168,.1);color:var(--blue);}
+.acc-b{display:none;border-top:1px solid var(--line-2);}
+.acc.open .acc-b{display:block;}
+@media (prefers-reduced-motion:reduce){.acc-x{transition:none;}}
+
+.acc-why{padding:13px 14px;background:var(--surface-2);border-bottom:1px solid var(--line-2);
+  font-size:13.5px;line-height:1.5;color:var(--ink-2);}
+.acc-why b{color:var(--ink);font-weight:650;}
+.acc-more{width:100%;border:none;background:var(--surface);font:inherit;font-size:13.5px;
+  font-weight:620;color:var(--blue);padding:13px 14px;cursor:pointer;text-align:center;}
+
+/* ---------- People: value block ---------- */
+.value{margin:12px;background:linear-gradient(140deg,#3A2A63 0%,var(--violet) 68%,#8763C9 130%);
+  border-radius:20px;padding:18px 17px;color:#fff;}
+.value h3{margin:0 0 7px;font-size:19px;font-weight:730;letter-spacing:-.45px;}
+.value p{margin:0;font-size:14px;line-height:1.5;color:#E0D8F2;}
+.vstats{display:flex;gap:1px;margin-top:16px;background:rgba(255,255,255,.18);
+  border-radius:12px;overflow:hidden;}
+.vstat{flex:1;background:rgba(58,42,99,.55);padding:11px 8px;text-align:center;}
+.vstat b{display:block;font-size:20px;font-weight:730;letter-spacing:-.5px;
+  font-variant-numeric:tabular-nums;}
+.vstat span{display:block;font-size:11px;color:#CFC3EA;margin-top:2px;}
+
+
+/* ---------- Events: filters, tiers, detail ---------- */
+.evfilter{display:flex;gap:7px;padding:12px 14px;overflow-x:auto;scrollbar-width:none;
+  background:var(--surface);border-bottom:1px solid var(--line);}
+.evfilter::-webkit-scrollbar{display:none;}
+
+.evrow .evmain .etype{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.3px;
+  padding:2px 6px;border-radius:5px;margin-bottom:4px;}
+.etype.canvass{background:rgba(27,143,82,.12);color:var(--green);}
+.etype.phone{background:rgba(36,182,206,.16);color:#0E7C8E;}
+.etype.rally{background:rgba(194,24,111,.1);color:var(--magenta);}
+.etype.train{background:rgba(107,75,168,.12);color:var(--violet);}
+.evlink{flex:0 0 auto;color:var(--ink-3);display:grid;place-items:center;width:34px;height:34px;}
+.evlink svg{width:16px;height:16px;}
+
+/* event hero */
+.eh{height:196px;position:relative;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:16px;color:#fff;background:linear-gradient(140deg,#0B1A33 0%,var(--blue) 62%,var(--cyan) 140%);}
+.eh.rally{background:linear-gradient(140deg,#4A0B2C 0%,var(--magenta) 92%);}
+.eh.past{background:linear-gradient(140deg,#2A3040 0%,#4C566B 100%);}
+.eh h2{margin:0 0 4px;font-size:25px;font-weight:740;letter-spacing:-.7px;line-height:1.1;}
+.eh-s{font-size:13.5px;opacity:.9;}
+.eh-pill{position:absolute;top:14px;left:16px;display:flex;align-items:center;gap:6px;
+  background:rgba(0,0,0,.42);font-size:11.5px;font-weight:660;padding:6px 10px;border-radius:8px;}
+.eh-pill.livep{background:var(--red);}
+.eh-dot{width:7px;height:7px;border-radius:50%;background:#fff;}
+
+.ebar{display:flex;gap:9px;padding:12px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line);}
+
+/* agenda */
+.ag{display:flex;gap:12px;padding:12px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);position:relative;}
+.ag.now{background:rgba(211,31,53,.045);}
+.ag.now::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3.5px;background:var(--red);}
+.ag.done{opacity:.5;}
+.ag-t{flex:0 0 62px;font-size:12.5px;font-weight:640;color:var(--ink-2);
+  font-variant-numeric:tabular-nums;padding-top:1px;}
+.ag.now .ag-t{color:var(--red);}
+.ag-m{flex:1;min-width:0;}
+.ag-n{font-size:14.5px;font-weight:600;letter-spacing:-.15px;}
+.ag-s{font-size:12.5px;color:var(--ink-2);margin-top:2px;}
+.ag-live{font-size:10.5px;font-weight:700;color:var(--red);letter-spacing:.3px;margin-top:4px;}
+
+/* key-value logistics */
+.kv{display:flex;gap:12px;padding:13px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);align-items:flex-start;}
+.kv-i{flex:0 0 22px;color:var(--ink-2);padding-top:1px;}
+.kv-i svg{width:20px;height:20px;}
+.kv-m{flex:1;min-width:0;}
+.kv-t{font-size:14.5px;font-weight:600;letter-spacing:-.1px;}
+.kv-s{font-size:13px;color:var(--ink-2);margin-top:2px;line-height:1.45;}
+.kv-warn .kv-i{color:var(--amber);}
+.kv-warn .kv-t{color:var(--amber);}
+
+/* photos */
+.phgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;background:var(--line);}
+.ph{aspect-ratio:1;background:linear-gradient(140deg,var(--navy),var(--blue));}
+.ph:nth-child(2){background:linear-gradient(140deg,#4A0B2C,var(--magenta));}
+.ph:nth-child(3){background:linear-gradient(140deg,#0E4A2C,var(--green));}
+.ph:nth-child(4){background:linear-gradient(140deg,#3A2A63,var(--violet));}
+.ph:nth-child(5){background:linear-gradient(140deg,#3A2A08,var(--amber));}
+.ph:nth-child(6){background:linear-gradient(140deg,#0B2E38,var(--cyan));position:relative;}
+.ph:nth-child(6)::after{content:"+38";position:absolute;inset:0;display:grid;place-items:center;
+  background:rgba(0,0,0,.5);color:#fff;font-size:17px;font-weight:700;}
+
+.backbtn{display:none;}
+.detail .backbtn{display:grid;}
+
+
+/* ---------- Branded event buttons (matches the live app) ---------- */
+.ebwrap{margin:0 12px 11px;border-radius:19px;padding:0;}
+.ebwrap.grad{padding:3px;}
+.ebwrap.grad.af{background:linear-gradient(100deg,#F0246E 0%,#8B3BD6 42%,#33D2F5 100%);}
+.ebwrap.grad.sas{background:linear-gradient(145deg,#0E5B52 0%,#7FC9BC 48%,#F0A22E 100%);}
+.ebwrap.grad.ywls{background:linear-gradient(120deg,#F4EDE0 0%,#E8DCC6 55%,#8E9B78 100%);}
+
+.ebtn{position:relative;display:flex;align-items:center;gap:10px;min-height:116px;
+  margin:0 12px 11px;border-radius:16px;padding:16px 12px;color:#fff;cursor:pointer;
+  overflow:hidden;background:#1B4C96;border:none;font:inherit;text-align:left;}
+.ebwrap .ebtn{margin:0;}
+.ebtn:active{filter:brightness(1.08);}
+.ebtn:focus-visible{outline:3px solid var(--cyan);outline-offset:2px;}
+
+.ebtn.blue{background:#1B4C96;}
+.ebtn.magenta{background:#BE1A6E;}
+.ebtn.red{background:#CE2032;}
+.ebtn.teal{background:linear-gradient(135deg,#4FA79B,#6FC3B4);}
+.ebtn.rose{background:#C08B87;}
+.ebtn.ink{background:#140B3D;}
+.ebtn.cyan{background:linear-gradient(135deg,#1595AC,#2AC0D6);}
+.ebtn.violet{background:linear-gradient(135deg,#5A3C97,#7E5BC2);}
+
+.ebtn.dots::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.16) 1.5px,transparent 1.5px);
+  background-size:9px 9px;}
+
+.eb-date{display:block;flex:0 0 92px;text-align:center;position:relative;z-index:1;}
+.eb-mon{display:block;font-size:12.5px;font-weight:600;opacity:.82;letter-spacing:.6px;line-height:1.2;}
+.eb-day{display:block;font-size:30px;font-weight:800;letter-spacing:-1.1px;line-height:1.05;
+  font-variant-numeric:tabular-nums;}
+.eb-day sup{display:inline;font-size:14px;font-weight:700;letter-spacing:0;top:-.55em;}
+.eb-day em{display:inline;font-style:normal;font-size:17px;opacity:.75;margin:0 2px;}
+.eb-loc{display:block;font-size:11.5px;opacity:.78;margin-top:3px;line-height:1.25;}
+.eb-year{display:block;font-size:31px;font-weight:800;letter-spacing:-1.1px;line-height:1;
+  font-variant-numeric:tabular-nums;}
+
+.eb-main{display:block;flex:1;min-width:0;text-align:center;position:relative;z-index:1;}
+.eb-t{display:block;font-size:19px;font-weight:800;letter-spacing:-.3px;line-height:1.12;text-transform:uppercase;}
+.eb-t.sm{font-size:16.5px;}
+.eb-s{display:block;font-size:13.5px;font-weight:500;opacity:.86;margin-top:3px;line-height:1.25;}
+
+/* logo slot — real artwork drops in here; these are stand-ins */
+.eb-logo{display:block;font-size:34px;line-height:1;font-weight:700;letter-spacing:1px;}
+.eb-logo.wls{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-style:italic;
+  font-size:38px;letter-spacing:2px;}
+.eb-logo.af{font-size:23px;font-weight:800;letter-spacing:.5px;
+  background:linear-gradient(95deg,#FF4E86,#C06BFF 45%,#43D9F7);-webkit-background-clip:text;
+  background-clip:text;color:transparent;}
+.eb-logo.sc{font-size:25px;font-weight:800;font-style:italic;letter-spacing:.5px;}
+.eb-logo.sas{font-size:31px;font-weight:800;font-style:italic;letter-spacing:1px;}
+.eb-logo.ywls{font-family:"Snell Roundhand","Brush Script MT",cursive;font-size:38px;
+  color:#F6F0E4;letter-spacing:0;}
+.eb-sub{display:block;font-size:11px;font-weight:600;opacity:.8;letter-spacing:1.2px;margin-top:5px;}
+
+.eb-go{flex:0 0 40px;align-items:center;display:flex;justify-content:center;position:relative;z-index:1;opacity:.95;}
+.eb-go svg{width:36px;height:24px;}
+
+.eb-flag{position:absolute;top:10px;left:12px;z-index:2;display:flex;align-items:center;gap:5px;
+  background:rgba(0,0,0,.34);font-size:10.5px;font-weight:700;letter-spacing:.5px;
+  padding:4px 8px;border-radius:6px;}
+.eb-flag.live{background:rgba(255,255,255,.22);}
+.eb-flag i{width:6px;height:6px;border-radius:50%;background:#fff;font-style:normal;}
+
+.eb-foot{position:absolute;left:0;right:0;bottom:0;height:37px;background:rgba(0,0,0,.26);
+  display:flex;align-items:center;justify-content:space-between;padding:0 13px;z-index:2;
+  font-size:12.5px;font-weight:600;}
+.ebtn.hasfoot{padding-bottom:50px;min-height:130px;}
+.eb-rsvp{border:1.5px solid rgba(255,255,255,.7);background:none;color:#fff;font:inherit;
+  font-size:12px;font-weight:700;letter-spacing:.3px;padding:5px 13px;border-radius:999px;
+  cursor:pointer;min-height:28px;}
+.eb-rsvp.going{background:#fff;color:#12233F;border-color:#fff;}
+
+
+/* ---------- Search ---------- */
+.phone.hidebar .appbar{display:none;}
+.sbar{flex:0 0 auto;display:flex;align-items:center;gap:9px;padding:9px 11px;
+  background:var(--surface);border-bottom:1px solid var(--line);}
+.sfield{flex:1;display:flex;align-items:center;gap:9px;background:var(--line-2);
+  border-radius:999px;padding:0 14px;min-height:42px;cursor:text;}
+.sfield svg{width:17px;height:17px;color:var(--ink-3);flex:0 0 17px;}
+.sq{flex:1;font-size:15px;color:var(--ink);min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;}
+.sq.ph{color:var(--ink-3);}
+.smic{width:42px;height:42px;border-radius:50%;border:none;background:var(--blue);color:#fff;
+  display:grid;place-items:center;cursor:pointer;flex:0 0 42px;}
+.smic svg{width:19px;height:19px;}
+.smic.on{background:var(--red);}
+.smic:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+
+.sugg{padding:16px 14px 4px;}
+.sugg-h{font-size:12.5px;font-weight:660;color:var(--ink-2);letter-spacing:.3px;margin-bottom:10px;}
+.suggchip{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--surface);
+  font:inherit;font-size:14px;font-weight:500;color:var(--ink);padding:12px 14px;border-radius:12px;
+  margin-bottom:8px;cursor:pointer;line-height:1.35;display:flex;gap:10px;align-items:flex-start;}
+.suggchip:active{background:var(--line-2);}
+.suggchip svg{width:16px;height:16px;color:var(--blue);flex:0 0 16px;margin-top:2px;}
+.suggchip:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+
+.rrow{display:flex;align-items:center;gap:11px;padding:13px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);cursor:pointer;font-size:14.5px;}
+.rrow svg{width:17px;height:17px;color:var(--ink-3);flex:0 0 17px;}
+.rrow .x{margin-left:auto;color:var(--ink-3);font-size:16px;}
+
+/* listening */
+.listen{padding:52px 24px;text-align:center;}
+.lmic{width:104px;height:104px;border-radius:50%;background:var(--red);margin:0 auto 24px;
+  display:grid;place-items:center;position:relative;}
+.lmic::after{content:"";position:absolute;inset:-10px;border-radius:50%;
+  border:2px solid rgba(211,31,53,.4);animation:lring 1.8s ease-out infinite;}
+@keyframes lring{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.3);opacity:0}}
+.lmic svg{width:42px;height:42px;color:#fff;}
+.lbars{display:flex;justify-content:center;align-items:flex-end;gap:5px;height:34px;margin-bottom:18px;}
+.lb{width:5px;background:var(--blue);border-radius:3px;animation:lbar 1s ease-in-out infinite;}
+.lb:nth-child(1){animation-delay:0s}.lb:nth-child(2){animation-delay:.12s}
+.lb:nth-child(3){animation-delay:.24s}.lb:nth-child(4){animation-delay:.36s}
+.lb:nth-child(5){animation-delay:.48s}.lb:nth-child(6){animation-delay:.3s}
+.lb:nth-child(7){animation-delay:.18s}
+@keyframes lbar{0%,100%{height:8px}50%{height:32px}}
+@media (prefers-reduced-motion:reduce){.lmic::after,.lb{animation:none;}}
+.ltext{font-size:17px;font-weight:660;letter-spacing:-.3px;margin-bottom:8px;}
+.lpartial{font-size:15px;color:var(--ink-2);line-height:1.5;min-height:44px;}
+.lpartial b{color:var(--ink);font-weight:600;}
+
+/* AI answer */
+.ai{margin:12px;background:var(--navy);border-radius:18px;padding:16px;color:#fff;}
+.ai-k{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:660;
+  color:#9DB4D4;letter-spacing:.4px;margin-bottom:10px;}
+.ai-k svg{width:14px;height:14px;}
+.ai-b{font-size:15px;line-height:1.55;color:#EAF1FA;}
+.ai-b b{color:#fff;font-weight:680;}
+.ai-src{font-size:11.5px;color:#7E97BA;margin-top:11px;padding-top:11px;
+  border-top:1px solid rgba(255,255,255,.12);}
+.ai-acts{display:flex;gap:8px;margin-top:13px;}
+.ai-acts .act{border-color:rgba(255,255,255,.26);color:#fff;}
+.ai-acts .act.fill{background:var(--cyan);border-color:var(--cyan);color:#06222A;}
+
+.rgrp{padding:18px 14px 7px;font-size:12.5px;font-weight:700;color:var(--ink-2);letter-spacing:.5px;}
+.rres{display:flex;align-items:center;gap:11px;padding:12px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);cursor:pointer;}
+.rr-i{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:0 0 34px;color:#fff;}
+.rr-i svg{width:17px;height:17px;}
+.rr-m{flex:1;min-width:0;}
+.rr-t{font-size:14.5px;font-weight:620;letter-spacing:-.15px;}
+.rr-s{font-size:12.5px;color:var(--ink-2);margin-top:2px;}
+
+/* ---------- Notifications ---------- */
+.nbar{display:flex;gap:7px;padding:12px 14px;overflow-x:auto;scrollbar-width:none;
+  background:var(--surface);border-bottom:1px solid var(--line);}
+.nbar::-webkit-scrollbar{display:none;}
+.nhead{display:flex;justify-content:space-between;align-items:baseline;padding:18px 14px 7px;}
+.nhead b{font-size:16.5px;font-weight:700;letter-spacing:-.3px;}
+.nhead button{border:none;background:none;font:inherit;font-size:13.5px;font-weight:620;
+  color:var(--blue);cursor:pointer;padding:0;}
+
+.nrow{display:flex;gap:11px;padding:13px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line-2);cursor:pointer;align-items:flex-start;}
+.nrow.unread{background:rgba(27,95,168,.05);}
+.n-i{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:0 0 38px;color:#fff;}
+.n-i svg{width:18px;height:18px;}
+.n-i.blue{background:var(--blue);} .n-i.red{background:var(--red);}
+.n-i.mag{background:var(--magenta);} .n-i.grn{background:var(--green);}
+.n-i.vio{background:var(--violet);} .n-i.cy{background:var(--cyan);color:#06222A;}
+.n-i.yt{background:#CC0000;} .n-i.x{background:#000;}
+.n-m{flex:1;min-width:0;}
+.n-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;}
+.n-t{font-size:14.5px;font-weight:620;letter-spacing:-.15px;line-height:1.35;}
+.n-t b{font-weight:720;}
+.n-time{font-size:11.5px;color:var(--ink-3);flex:0 0 auto;}
+.n-b{font-size:13.5px;color:var(--ink-2);margin-top:3px;line-height:1.45;}
+.n-b strong{color:var(--ink);font-weight:620;}
+.n-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;}
+.n-tag{font-size:11px;font-weight:660;padding:3px 7px;border-radius:5px;
+  background:var(--line-2);color:var(--ink-2);}
+.n-tag.hot{background:rgba(211,31,53,.1);color:var(--red);}
+.n-acts{display:flex;gap:7px;margin-top:10px;}
+.n-acts .act{min-height:36px;font-size:13px;border-radius:9px;}
+.n-dot{width:9px;height:9px;border-radius:50%;background:var(--blue);flex:0 0 9px;margin-top:14px;}
+
+
+/* ---------- Default campaign: Voters Near Me (pinned) ---------- */
+.vnm{display:block;width:100%;text-align:left;border:none;font:inherit;cursor:pointer;
+  background:var(--vnm);color:#fff;border-radius:16px;margin:11px 12px 4px;padding:15px 15px 14px;
+  position:relative;overflow:hidden;}
+.vnm::before{content:"";position:absolute;right:-54px;top:-54px;width:150px;height:150px;
+  border-radius:50%;background:rgba(255,255,255,.09);}
+.vnm:active{background:var(--vnm-d);}
+.vnm:focus-visible{outline:3px solid var(--navy);outline-offset:2px;}
+.vnm-k{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:720;
+  letter-spacing:.6px;color:rgba(255,255,255,.88);margin-bottom:9px;position:relative;z-index:1;}
+.vnm-k svg{width:13px;height:13px;}
+.vnm-t{display:block;font-size:21px;font-weight:760;letter-spacing:-.5px;line-height:1.1;
+  position:relative;z-index:1;}
+.vnm-s{display:block;font-size:13.5px;color:rgba(255,255,255,.9);margin-top:4px;
+  position:relative;z-index:1;}
+.vnm-go{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-top:14px;position:relative;z-index:1;}
+.vnm-btn{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--vnm-d);
+  font-size:14.5px;font-weight:700;padding:0 16px;min-height:40px;border-radius:10px;}
+.vnm-btn svg{width:16px;height:16px;}
+.vnm-n{font-size:12.5px;color:rgba(255,255,255,.82);text-align:right;line-height:1.3;}
+.vnm-pin{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink-3);
+  padding:0 14px 10px;margin-top:2px;}
+.vnm-pin svg{width:12px;height:12px;}
+
+
+.toast{position:absolute;left:50%;bottom:104px;transform:translateX(-50%) translateY(14px);
+  background:var(--navy);color:#fff;font-size:13.5px;font-weight:580;padding:11px 17px;border-radius:12px;
+  z-index:80;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:320px;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+
+/* ============================================================
+   NATIVE SHELL — full-screen on phones, framed on desktop
+   ============================================================ */
+html{background:#1A1D24;-webkit-text-size-adjust:100%;}
+body{display:flex;align-items:center;justify-content:center;flex-direction:row;
+  min-height:100vh;min-height:100dvh;padding:24px 16px;overscroll-behavior:none;touch-action:manipulation;}
+.phone{max-height:calc(100dvh - 48px);-webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;}
+.body{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+button{-webkit-user-select:none;user-select:none;}
+
+@media (max-width:520px){
+  html,body{background:var(--bg);}
+  body{display:block;padding:0;min-height:0;}
+  .phone{width:100%;height:100vh;height:100dvh;max-height:none;border:0;border-radius:0;box-shadow:none;}
+  .notch{display:none;}
+  .statusbar{height:env(safe-area-inset-top,0px);flex-basis:env(safe-area-inset-top,0px);padding:0;}
+  .statusbar > *{display:none;}
+  .nav{height:calc(62px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);}
+  .micfab{bottom:calc(76px + env(safe-area-inset-bottom,0px));}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px));}
+}
+
+/* long screen titles stay on one line */
+.wordmark{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+
+/* ---------- switch row (Me › Appearance) ---------- */
+.switch{margin-left:auto;width:46px;height:28px;border-radius:14px;background:var(--line);
+  position:relative;flex:0 0 46px;transition:background .18s;}
+.switch i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .18s;}
+[aria-checked="true"] .switch{background:var(--green);}
+[aria-checked="true"] .switch i{transform:translateX(18px);}
+.listrow:focus-visible{outline:2px solid var(--blue);outline-offset:-3px;}
+.listrow .rowhint{margin-left:auto;font-size:13px;color:var(--ink-3);font-weight:550;}
+.listrow .rowhint + .chev{margin-left:6px;}
+
+/* ---------- doors canvassing (doors.html, full screen over the app) ---------- */
+.doorsview{position:absolute;inset:0;z-index:86;background:#0D1B2E;display:none;}
+.doorsview.on{display:block;}
+.doorsview iframe{border:0;width:100%;height:100%;display:block;}
+.phone.doors-on .micfab{display:none;}
+
+/* ---------- big mic button ---------- */
+.micfab{position:absolute;right:16px;bottom:94px;width:70px;height:70px;border-radius:50%;border:none;
+  background:linear-gradient(150deg,#E8354B 0%,var(--red) 45%,#8E1022 100%);color:#fff;cursor:pointer;
+  display:grid;place-items:center;z-index:58;box-shadow:0 10px 26px rgba(211,31,53,.42),0 2px 6px rgba(0,0,0,.2);
+  transition:transform .15s;}
+.micfab:active{transform:scale(.93);}
+.micfab svg{width:31px;height:31px;}
+.micfab::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(211,31,53,.35);
+  animation:fabring 2.6s ease-out infinite;}
+@keyframes fabring{0%{transform:scale(.92);opacity:.9}70%,100%{transform:scale(1.22);opacity:0}}
+.micfab:focus-visible{outline:3px solid var(--cyan);outline-offset:3px;}
+.phone.hidebar .micfab,.phone.voice-on .micfab{display:none;}
+
+/* ---------- voice sheet ---------- */
+.voice{position:absolute;inset:0;z-index:90;display:flex;flex-direction:column;color:#fff;
+  background:radial-gradient(120% 70% at 50% 30%,#1D3A66 0%,var(--navy) 55%,#08111F 100%);
+  padding:58px 0 22px;
+  transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.8,.2,1);visibility:hidden;
+  -webkit-user-select:text;user-select:text;}
+.voice.show{transform:none;visibility:visible;}
+.v-top{display:flex;align-items:center;gap:10px;padding:0 14px;}
+.v-x{width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;
+  display:grid;place-items:center;cursor:pointer;}
+.v-x svg{width:18px;height:18px;}
+.v-title{flex:1;font-size:16px;font-weight:700;letter-spacing:-.2px;}
+.v-pill{font-size:11.5px;font-weight:700;letter-spacing:.4px;padding:5px 10px;border-radius:999px;
+  background:rgba(255,255,255,.14);color:#CFE0F5;text-transform:uppercase;}
+.v-pill.live{background:var(--green);color:#fff;}
+.v-pill.err{background:var(--red);color:#fff;}
+.v-stage{display:flex;flex-direction:column;align-items:center;padding:34px 24px 14px;}
+.v-orb{--lvl:0;width:132px;height:132px;border-radius:50%;display:grid;place-items:center;position:relative;
+  background:radial-gradient(circle at 35% 30%,#4FD3E8 0%,var(--blue) 55%,#0E3570 100%);
+  box-shadow:0 0 calc(30px + var(--lvl) * 60px) rgba(36,182,206,calc(.25 + var(--lvl) * .5));
+  transform:scale(calc(1 + var(--lvl) * .22));transition:transform .08s linear,box-shadow .08s linear;}
+.v-orb svg{width:46px;height:46px;}
+.v-orb.speaking{background:radial-gradient(circle at 35% 30%,#FF7A8C 0%,var(--red) 55%,#6E0B1A 100%);
+  box-shadow:0 0 calc(30px + var(--lvl) * 60px) rgba(211,31,53,calc(.25 + var(--lvl) * .5));}
+.v-orb.idle{background:radial-gradient(circle at 35% 30%,#7B8AA3 0%,#3B4A66 60%,#1B2538 100%);box-shadow:none;}
+.v-orb.connecting::after{content:"";position:absolute;inset:-9px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.15);border-top-color:#fff;animation:vspin 1s linear infinite;}
+@keyframes vspin{to{transform:rotate(360deg)}}
+.v-status{margin-top:26px;font-size:21px;font-weight:720;letter-spacing:-.4px;text-align:center;}
+.v-hint{margin-top:6px;font-size:14px;color:#9DB4D4;text-align:center;line-height:1.45;max-width:30ch;}
+.v-log{flex:1;overflow-y:auto;padding:6px 16px 10px;display:flex;flex-direction:column;gap:8px;
+  scrollbar-width:none;overscroll-behavior:contain;}
+.v-log::-webkit-scrollbar{display:none;}
+.v-msg{max-width:84%;padding:10px 13px;border-radius:16px;font-size:14.5px;line-height:1.45;}
+.v-msg.user{align-self:flex-end;background:rgba(255,255,255,.14);border-bottom-right-radius:5px;}
+.v-msg.asst{align-self:flex-start;background:rgba(36,182,206,.18);border-bottom-left-radius:5px;color:#EAF6FA;}
+.v-msg.sys{align-self:center;background:none;color:#9DB4D4;font-size:12.5px;text-align:center;padding:4px;}
+.v-sugg{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;padding:0 16px 12px;}
+.v-note{font-size:11.5px;color:#7E97BA;text-align:center;padding:0 24px 10px;line-height:1.4;}
+.v-sugg span{font-size:12.5px;color:#CFE0F5;border:1px solid rgba(255,255,255,.2);padding:6px 11px;border-radius:999px;}
+.v-bar{display:flex;gap:12px;justify-content:center;align-items:center;padding:8px 16px 0;}
+.v-btn{width:58px;height:58px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;
+  display:grid;place-items:center;cursor:pointer;}
+.v-btn svg{width:24px;height:24px;}
+.v-btn[aria-pressed="true"]{background:#fff;color:var(--navy);}
+.v-end{height:58px;padding:0 30px;border-radius:29px;border:none;background:var(--red);color:#fff;
+  font:inherit;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;}
+.v-end svg{width:20px;height:20px;}
+.v-btn:focus-visible,.v-end:focus-visible,.v-x:focus-visible{outline:3px solid var(--cyan);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){
+  .micfab::before,.v-orb.connecting::after{animation:none;}
+  .voice,.v-orb{transition:none;}
+}
+@media (max-width:520px){
+  .voice{padding:calc(14px + env(safe-area-inset-top,0px)) 0 calc(18px + env(safe-area-inset-bottom,0px));}
+}
+
+/* ============================================================
+   V2 — FIGMA REVISIONS (Superfeed brand colors, Montserrat)
+   ============================================================ */
+:root{
+  --brand:#3667F6; --dkblue:#03129C; --cherry:#E53268; --aqua:#9AFCFD; --sky:#69A6FA;
+  --gray2:#909AB1; --lgray:#E6E5E8; --ink-dk:#2C2B2B; --yellow:#F3B85C; --mint:#7EF698;
+  --purple:#9E1FC5; --indigo:#4226C7; --warn:#EB4035;
+  --tint-pink:#FCE3EB; --tint-yellow:#FDF1DE; --tint-blue:#E4EBFE;
+  /* existing tokens remapped to the brand */
+  --navy:#03129C; --navy-2:#03129C; --blue:#3667F6; --red:#E53268; --cyan:#9AFCFD;
+  --magenta:#E53268; --amber:#F3B85C; --green:#7EF698; --violet:#9E1FC5;
+}
+.dark{ --navy:#03129C; --blue:#3667F6; --cyan:#9AFCFD; }
+body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;}
+
+/* header: logo square, then the screen title in small caps */
+.brandmark{border-radius:6px;background:var(--dkblue);}
+.wordmark{font-family:"Montserrat",sans-serif;text-transform:uppercase;font-weight:800;font-size:13px;letter-spacing:.05em;line-height:1.15;
+  white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.seg{text-transform:uppercase;letter-spacing:.07em;font-size:12.5px;font-weight:600;}
+.seg.on{font-weight:800;}
+.segtabs.four .seg{font-size:11.5px;}
+.navbtn{text-transform:uppercase;letter-spacing:.05em;font-size:9.5px;font-weight:700;}
+
+/* badges and alerts */
+.dot,.navdot,.segbadge{background:var(--cherry);}
+.n-tag.hot{background:var(--tint-pink);color:var(--cherry);}
+
+/* avatars and initials: solid dark blue */
+.avatar-sm,.avatar-lg,.tav,.m-av,.m-av.lead,.ta-av{background:var(--dkblue);}
+
+/* tab underline + selected highlight */
+.seg.on::after{background:var(--brand);}
+.srcchip{background:#fff;border-color:var(--gray2);color:var(--gray2);}
+.srcchip.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+
+/* primary buttons: brand, rounder */
+.btn{border-radius:16px;}
+.btn-primary{background:var(--brand);color:#fff;}
+.pillbtn,.pillbtn.fill{background:var(--brand);border-color:var(--brand);color:#fff;border-radius:999px;}
+.act{border-radius:14px;}
+.act.fill{background:var(--brand);border-color:var(--brand);}
+.act.fill.red{background:var(--cherry);border-color:var(--cherry);}
+.act.fill.vio{background:var(--dkblue);border-color:var(--dkblue);}
+
+/* center Chase button: solid brand, no ring; turns aqua when Chase is the active tab */
+.chasebtn{border:none;background:var(--brand);box-shadow:0 6px 16px rgba(54,103,246,.45);}
+.chasebtn.on{background:var(--aqua);color:var(--dkblue);box-shadow:0 6px 16px rgba(3,18,156,.25);}
+.navbtn.on{color:var(--aqua);}
+
+/* pills and tags: colored text on a lighter tint of the same color */
+.b-red{background:var(--tint-pink);color:var(--cherry);}
+.b-amber{background:var(--tint-yellow);color:#B57A14;}
+.b-blue,.b-green{background:var(--tint-blue);color:var(--brand);}
+.chip.warn{background:var(--tint-pink);color:var(--cherry);}
+.etype{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.06em;padding:3px 7px;border-radius:6px;margin-bottom:5px;}
+.etype.canvass{background:var(--tint-pink);color:var(--cherry);}
+.etype.train{background:var(--tint-yellow);color:#B57A14;}
+.etype.rally,.etype.phonebank{background:var(--tint-blue);color:var(--brand);}
+
+/* ---------- Home ---------- */
+.impact{background:var(--brand);color:var(--aqua);}
+.impact::before{background:rgba(154,252,253,.14);}
+.impact-k,.impact-n span,.impact-d,.flow-l,.flow-l em,.flow-n,.impact-n b{color:var(--aqua);}
+.flow-bar{background:rgba(255,255,255,.22);}
+.flow-bar i{background:var(--aqua);}
+.goal-track i.g-doors{background:var(--brand);}
+.goal-track i.g-calls{background:var(--cherry);}
+.goal-track i.g-texts{background:var(--dkblue);}
+.goal-track i.g-mail{background:var(--aqua);}
+.log-k.d{background:var(--brand);} .log-k.c{background:var(--cherry);}
+.log-k.t{background:var(--dkblue);} .log-k.m{background:var(--aqua);}
+.stat-n.hot{color:var(--yellow);}
+.tb i{background:var(--dkblue);}
+.tb.today i{background:var(--brand);}
+.tg-track i{background:var(--brand);}
+.tg-pace{color:var(--brand);}
+.tm i{color:var(--brand);}
+
+/* ---------- People ---------- */
+.matchhero .ci.vio{background:var(--brand);}
+.matchhero h3{text-transform:uppercase;letter-spacing:.06em;font-size:16px;font-weight:800;}
+.acc-key.mat{background:var(--mint);}
+.acc-key.hp{background:var(--warn);}      /* Republican categories may use red */
+.acc-key.lp{background:var(--yellow);}
+.acc-key.ind{background:var(--purple);}
+.acc-key.all{background:var(--gray2);}
+.acc.open .acc-n{background:var(--tint-blue);color:var(--brand);}
+.acc-more{color:var(--brand);}
+.value{background:var(--brand);}
+.value p{color:#fff;}
+.vstats{background:transparent;gap:8px;}
+.vstat{background:var(--sky);border-radius:12px;}
+.vstat span{color:#fff;}
+.m-btn{border:1.5px solid var(--lgray);color:var(--brand);}
+.m-btn svg{width:18px;height:18px;}
+
+/* ---------- Chase ---------- */
+.work.calls::after{background:var(--cherry);}
+.work.texts::after{background:var(--cherry);}   /* "Ballot reminder" batch bar */
+.work.mail::after{background:var(--aqua);}
+.work-rail i{background:var(--brand);}
+.thread.unread{box-shadow:inset 3.5px 0 0 var(--cherry);}
+.unreaddot,.n-dot{background:var(--brand);}
+
+/* ---------- Events ---------- */
+.eb-rsvp{background:var(--brand);border-color:var(--brand);color:#fff;border-radius:999px;padding:6px 15px;}
+.eb-rsvp.going{background:#fff;border-color:#fff;color:var(--dkblue);}
+.eb-flag.live{background:var(--cherry);}
+
+/* event detail */
+.eh{background:linear-gradient(180deg,var(--brand) 0%,var(--dkblue) 100%);}
+.eh-pill.livep{background:var(--cherry);}
+#s-event .impact,#s-eventpast .impact{background:var(--dkblue);}
+#s-event .impact-k,#s-event .impact-d,#s-event .flow-l{color:#B9C4F2;}
+#s-event .impact-n b,#s-event .flow-n{color:#fff;}
+.ag.now{background:rgba(229,50,104,.06);}
+.ag.now::after{background:var(--cherry);}
+.ag.now .ag-t,.ag-live{color:var(--cherry);}
+.kv-warn .kv-i{color:var(--yellow);}
+.kv-warn .kv-t{color:var(--ink);}
+.m-live{background:var(--mint);}
+.m-av.invite{background:#fff;border:1.5px solid var(--gray2);color:var(--gray2);}
+.btn-dirs{background:var(--lgray);color:var(--ink-dk);padding:0 15px;}
+.vidcap{padding:0 14px 8px;font-size:13.5px;font-weight:700;color:var(--ink);}
+.post-media.video{background:#000;}
+
+/* misc surfaces tied to old accents */
+.evdate.soon{background:var(--tint-pink);}
+.n-i.red{background:var(--cherry);} .n-i.mag{background:var(--cherry);}
+.n-i.vio{background:var(--dkblue);} .n-i.grn{background:var(--mint);color:var(--dkblue);}
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+  <div class="notch"></div>
+
+  <div class="statusbar">
+    <span id="clock">9:41</span>
+    <span class="sb-right">
+      <svg viewBox="0 0 20 14" width="17" height="12" fill="currentColor"><rect x="0" y="9" width="3" height="5" rx="1"/><rect x="5" y="6" width="3" height="8" rx="1"/><rect x="10" y="3" width="3" height="11" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+      <svg viewBox="0 0 16 12" width="15" height="11" fill="currentColor"><path d="M8 10.5a1.4 1.4 0 100-2.8 1.4 1.4 0 000 2.8zM4.6 7.1a4.9 4.9 0 016.8 0l1.1-1.2a6.5 6.5 0 00-9 0l1.1 1.2zM1.4 3.9a9.4 9.4 0 0113.2 0l1.1-1.2a11 11 0 00-15.4 0l1.1 1.2z"/></svg>
+      <svg viewBox="0 0 26 13" width="24" height="12" fill="none"><rect x=".5" y=".5" width="21" height="12" rx="3.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="16" height="9" rx="2" fill="currentColor"/><path d="M23 4.5v4a2.5 2.5 0 000-4z" fill="currentColor" opacity=".4"/></svg>
+    </span>
+  </div>
+
+  <div class="appbar">
+    <button class="iconbtn backbtn" id="backBtn" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></button>
+    <div class="brandmark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16a8 8 0 1114 5"/><path d="M13 4l5 4-5 4"/></svg>
+    </div>
+    <div class="wordmark" id="wordmark">Turning Point Action</div>
+    <button class="iconbtn" aria-label="Search" data-goto="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+    <button class="iconbtn" aria-label="Notifications" data-goto="notif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 10-12 0c0 6-2 7-2 7h16s-2-1-2-7"/><path d="M13.7 20a2 2 0 01-3.4 0"/></svg><span class="dot" id="bellDot">6</span></button>
+    <button class="avatar-sm" style="border:none;font:inherit;font-size:12px;font-weight:700;cursor:pointer;" aria-label="Open my profile" data-goto="me">MR</button>
+  </div>
+
+  <!-- ==================== HOME ==================== -->
+  <div class="screen on" id="s-home">
+    <div class="segtabs">
+      <button class="seg on" data-hseg="0">For you</button>
+      <button class="seg" data-hseg="1">Feeds</button>
+      <button class="seg" data-hseg="2">Team</button>
+    </div>
+
+    <div class="body">
+
+      <!-- ---------- FOR YOU ---------- -->
+      <div class="pane on" id="h-you">
+
+        <div class="stats">
+          <div class="stat"><span class="stat-n">58</span><span class="stat-l">Doors</span></div>
+          <div class="stat"><span class="stat-n">31</span><span class="stat-l">Calls</span></div>
+          <div class="stat"><span class="stat-n">88</span><span class="stat-l">Texts</span></div>
+          <div class="stat"><span class="stat-n">12</span><span class="stat-l">Cards</span></div>
+          <div class="stat"><span class="stat-n hot">4</span><span class="stat-l">Streak</span></div>
+        </div>
+
+        <div class="impact">
+          <div class="impact-k">Your impact this week</div>
+          <div class="impact-n"><b>18</b><span>voters moved forward a stage</span></div>
+          <div class="impact-d">Up from 11 last week · 4th on the Phoenix West board</div>
+          <div class="flowrow">
+            <div class="flow-l">Requested <em>→</em> Received</div>
+            <div class="flow-bar"><i style="width:78%"></i></div>
+            <div class="flow-n">7</div>
+          </div>
+          <div class="flowrow">
+            <div class="flow-l">Received <em>→</em> Returned</div>
+            <div class="flow-bar"><i style="width:100%"></i></div>
+            <div class="flow-n">9</div>
+          </div>
+          <div class="flowrow">
+            <div class="flow-l">Needs cure <em>→</em> Verified</div>
+            <div class="flow-bar"><i style="width:22%"></i></div>
+            <div class="flow-n">2</div>
+          </div>
+        </div>
+
+        <div class="sechead">Weekly goals<span class="subtle">3 days left</span></div>
+        <div class="goalrow">
+          <span class="goal-l">Doors</span>
+          <span class="goal-track"><i class="g-doors" style="width:78%"></i></span>
+          <span class="goal-v">312<em>/400</em></span>
+        </div>
+        <div class="goalrow">
+          <span class="goal-l">Calls</span>
+          <span class="goal-track"><i class="g-calls" style="width:41%"></i></span>
+          <span class="goal-v">62<em>/150</em></span>
+        </div>
+        <div class="goalrow">
+          <span class="goal-l">Texts</span>
+          <span class="goal-track"><i class="g-texts" style="width:100%"></i></span>
+          <span class="goal-v">340<em>/300</em></span>
+        </div>
+        <div class="goalrow">
+          <span class="goal-l">Postcards</span>
+          <span class="goal-track"><i class="g-mail" style="width:24%"></i></span>
+          <span class="goal-v">12<em>/50</em></span>
+        </div>
+
+        <div class="sechead">Last 7 days<span class="subtle">all activity</span></div>
+        <div class="trendwrap">
+          <div class="trendbars">
+            <div class="tb"><b>41</b><i style="height:38%"></i><span>Thu</span></div>
+            <div class="tb"><b>0</b><i style="height:2%"></i><span>Fri</span></div>
+            <div class="tb"><b>96</b><i style="height:88%"></i><span>Sat</span></div>
+            <div class="tb"><b>72</b><i style="height:66%"></i><span>Sun</span></div>
+            <div class="tb"><b>28</b><i style="height:26%"></i><span>Mon</span></div>
+            <div class="tb"><b>54</b><i style="height:50%"></i><span>Tue</span></div>
+            <div class="tb today"><b>58</b><i style="height:54%"></i><span>Wed</span></div>
+          </div>
+        </div>
+
+        <div class="sechead">Today's activity<span class="subtle">14 entries</span></div>
+        <div class="logrow">
+          <span class="log-t">2:41 PM</span>
+          <span class="log-m"><span class="log-a">Ballot marked returned</span><span class="log-s">T. Nguyen · 1412 N 49th Dr</span></span>
+          <span class="log-k d"></span>
+        </div>
+        <div class="logrow">
+          <span class="log-t">2:33 PM</span>
+          <span class="log-m"><span class="log-a">Talked at the door</span><span class="log-s">1412 N 49th Dr · Maryvale Turf 3</span></span>
+          <span class="log-k d"></span>
+        </div>
+        <div class="logrow">
+          <span class="log-t">2:19 PM</span>
+          <span class="log-m"><span class="log-a">No answer</span><span class="log-s">1408 N 49th Dr · left literature</span></span>
+          <span class="log-k d"></span>
+        </div>
+        <div class="logrow">
+          <span class="log-t">11:52 AM</span>
+          <span class="log-m"><span class="log-a">Reply received</span><span class="log-s">R. Alvarez · confirmed she mailed it</span></span>
+          <span class="log-k t"></span>
+        </div>
+        <div class="logrow">
+          <span class="log-t">9:07 AM</span>
+          <span class="log-m"><span class="log-a">Call completed</span><span class="log-s">D. Okoro · requested a replacement ballot</span></span>
+          <span class="log-k c"></span>
+        </div>
+
+        <div class="sechead">Personal records</div>
+        <div class="records">
+          <div class="rec"><b>96</b><span>Best single day</span></div>
+          <div class="rec"><b>412</b><span>Best week</span></div>
+          <div class="rec"><b>38%</b><span>Contact rate</span></div>
+        </div>
+      </div>
+
+      <!-- ---------- FEEDS ---------- -->
+      <div class="pane" id="h-feeds">
+        <div class="srcbar">
+          <button class="srcchip on">All</button>
+          <button class="srcchip">X</button>
+          <button class="srcchip">YouTube</button>
+          <button class="srcchip">News</button>
+          <button class="srcchip">Podcasts</button>
+        </div>
+
+        <div class="postcard">
+          <div class="post-h">
+            <div class="post-av x"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.2 2h3.3l-7.2 8.3L22.8 22h-6.6l-5.2-6.8L5 22H1.7l7.7-8.8L1.2 2h6.8l4.7 6.2L18.2 2zm-1.2 18h1.8L7.1 3.9H5.1L17 20z"/></svg></div>
+            <div class="post-who">
+              <div class="post-n">Turning Point Action</div>
+              <div class="post-m">@TPAction · 22m</div>
+            </div>
+          </div>
+          <div class="post-b">Ballot chase weekend starts Friday in Maricopa. Every returned ballot is a vote that can't be lost in the mail.</div>
+          <div class="post-mtr"><span>412 replies</span><span>1.8K reposts</span><span>9.4K likes</span></div>
+        </div>
+
+
+        <div class="card">
+          <div class="promoted">Promoted by Turning Point Action</div>
+          <div class="card-head">
+            <div class="ci navy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6M10 14L21 3"/></svg></div>
+            <div class="card-who">
+              <div class="card-t">Attend a Super Chase</div>
+              <div class="card-m">Register for the October events</div>
+            </div>
+          </div>
+          <div class="thumb ext">
+            <div class="thumb-badge">External</div>
+            <div class="thumb-t">Super Chase 2026</div>
+            <div class="thumb-s">Find an event and help chase ballots</div>
+          </div>
+          <div class="srcline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14L21 3"/><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/></svg>
+            From tpaction.com
+          </div>
+          <div class="card-acts">
+            <button class="act fill" data-toast="Opening tpaction.com in an in-app browser">Open</button>
+            <button class="act slim" aria-label="Dismiss" data-toast="Dismissed">✕</button>
+          </div>
+        </div>
+        <div class="postcard">
+          <div class="post-h">
+            <div class="post-av yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5a3 3 0 00-2.1-2.1C19 4.8 12 4.8 12 4.8s-7 0-8.9.6A3 3 0 001 7.5C.4 9.4.4 12 .4 12s0 2.6.6 4.5a3 3 0 002.1 2.1c1.9.6 8.9.6 8.9.6s7 0 8.9-.6a3 3 0 002.1-2.1c.6-1.9.6-4.5.6-4.5s0-2.6-.6-4.5zM9.8 15.5v-7l5.8 3.5-5.8 3.5z"/></svg></div>
+            <div class="post-who">
+              <div class="post-n">Turning Point USA</div>
+              <div class="post-m">YouTube · 3 hours ago</div>
+            </div>
+          </div>
+          <div class="post-media">
+            <div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+            <div class="post-cap">Field report: what 10,000 doors in Maricopa taught us</div>
+          </div>
+          <div class="post-mtr"><span>18:24</span><span>84K views</span></div>
+        </div>
+
+        <div class="postcard">
+          <div class="post-h">
+            <div class="post-av rss"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6.2" cy="17.8" r="2.2"/><path d="M4 10.6v3a6.4 6.4 0 016.4 6.4h3A9.4 9.4 0 004 10.6zM4 4.4v3A12.6 12.6 0 0116.6 20h3A15.6 15.6 0 004 4.4z"/></svg></div>
+            <div class="post-who">
+              <div class="post-n">Arizona field update</div>
+              <div class="post-m">RSS · 5 hours ago</div>
+            </div>
+          </div>
+          <div class="post-media news">
+            <div class="post-cap">Early ballot returns tracking ahead of 2024 pace in three counties</div>
+          </div>
+          <div class="post-mtr"><span>4 min read</span></div>
+        </div>
+
+      </div>
+
+      <!-- ---------- TEAM ---------- -->
+      <div class="pane" id="h-team">
+        <div class="teamgoal">
+          <div class="tg-top"><span class="tg-t">Phoenix West</span><span class="tg-d">Week of Sep 7</span></div>
+          <div class="tg-n"><b>2,847</b><span>of 4,000 doors</span></div>
+          <div class="tg-track"><i style="width:71%"></i></div>
+          <div class="tg-pace">On pace · 1,153 to go, 3 days left</div>
+        </div>
+
+        <div class="tmetrics">
+          <div class="tm"><b>2,847</b><span>Doors<i>+18%</i></span></div>
+          <div class="tm"><b>1,204</b><span>Calls<i>+6%</i></span></div>
+          <div class="tm"><b>5,610</b><span>Texts<i>+31%</i></span></div>
+          <div class="tm"><b>214</b><span>Ballots advanced<i>+12%</i></span></div>
+        </div>
+
+        <div class="sechead">Field leadership</div>
+        <div class="member">
+          <div class="m-av lead">SB</div>
+          <div class="m-main"><div class="m-n">Sandra Beltran</div><div class="m-s">Regional director · Arizona</div></div>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Sandra" data-toast="Calling Sandra Beltran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Sandra" data-toast="Opening a message to Sandra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+        <div class="member">
+          <div class="m-av lead">RC</div>
+          <div class="m-main"><div class="m-n">Ray Castillo</div><div class="m-s">Field organizer · Phoenix West</div></div>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Ray" data-toast="Calling Ray Castillo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Ray" data-toast="Opening a message to Ray"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+
+        <div class="sechead">Your team<span class="subtle">12 activists</span></div>
+        <div class="member">
+          <div class="m-av">MG<span class="m-live"></span></div>
+          <div class="m-main"><div class="m-n">Maria Gutierrez</div><div class="m-s">Knocking Turf 7 now · 1,412 doors this month</div></div>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Maria" data-toast="Calling Maria Gutierrez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Maria" data-toast="Opening a message to Maria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+        <div class="member">
+          <div class="m-av">DS<span class="m-live"></span></div>
+          <div class="m-main"><div class="m-n">Deshan Silva</div><div class="m-s">On a call queue now · 806 calls this month</div></div>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Deshan" data-toast="Calling Deshan Silva"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Deshan" data-toast="Opening a message to Deshan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+        <div class="member">
+          <div class="m-av">AL</div>
+          <div class="m-main"><div class="m-n">Ana Lopez</div><div class="m-s">Last active yesterday · 512 doors this month</div></div>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Ana" data-toast="Calling Ana Lopez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Ana" data-toast="Opening a message to Ana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+
+        <div class="sechead">Team activity</div>
+        <div class="tact">
+          <div class="ta-av">MG</div>
+          <div class="ta-m"><b>Maria Gutierrez</b> passed 1,000 doors this month</div>
+          <div class="ta-t">25m</div>
+        </div>
+        <div class="tact">
+          <div class="ta-av">DS</div>
+          <div class="ta-m"><b>Deshan Silva</b> cleared the Maricopa chase queue</div>
+          <div class="ta-t">1h</div>
+        </div>
+        <div class="tact">
+          <div class="ta-av">RC</div>
+          <div class="ta-m"><b>Ray Castillo</b> released 4 new turfs in Estrella Village</div>
+          <div class="ta-t">3h</div>
+        </div>
+        <div class="tact">
+          <div class="ta-av">AL</div>
+          <div class="ta-m"><b>Ana Lopez</b> mailed 50 postcards</div>
+          <div class="ta-t">Yesterday</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== PEOPLE ==================== -->
+  <div class="screen" id="s-people">
+    <div class="segtabs">
+      <button class="seg on" data-pseg="0">Match</button>
+      <button class="seg" data-pseg="1">Connect</button>
+    </div>
+
+    <div class="body">
+
+      <!-- ---------- MATCH ---------- -->
+      <div class="pane on" id="pp-match">
+        <div class="matchhero">
+          <div class="ci vio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
+          <h3>Match my contacts</h3>
+          <p>Check your phone contacts against the voter file. People respond to someone they know far more often than to a stranger at the door.</p>
+          <button class="btn btn-primary" style="width:100%;" data-toast="Matched 247 contacts — 14 found on the voter file">Match my contacts</button>
+          <div class="privacy">Matching happens on your device. Contact details are never uploaded, and you choose who to add. Last run 2 days ago.</div>
+        </div>
+
+        <div class="acc" id="acc-all">
+          <button class="acc-h" data-acc="acc-all">
+            <span class="acc-key all"></span>
+            <span class="acc-m">
+              <span class="acc-t">All my contacts</span>
+              <span class="acc-s">Everything uploaded from your phone</span>
+            </span>
+            <span class="acc-n">247</span>
+            <span class="acc-x">›</span>
+          </button>
+          <div class="acc-b">
+        <div class="member">
+          <div class="m-av">RA</div>
+          <div class="m-main"><div class="m-n">Rosa Alvarez</div><div class="m-s">(602) 555‑0142 · on the voter file</div></div>
+          <span class="badge b-green">Matched</span>
+        </div>
+        <div class="member">
+          <div class="m-av">JM</div>
+          <div class="m-main"><div class="m-n">Jesse Moreno</div><div class="m-s">(602) 555‑0118 · on the voter file</div></div>
+          <span class="badge b-green">Matched</span>
+        </div>
+        <div class="member">
+          <div class="m-av">BW</div>
+          <div class="m-main"><div class="m-n">Ben Whitaker</div><div class="m-s">(480) 555‑0177 · address not found</div></div>
+          <button class="pillbtn" data-toast="Invite sent">Invite</button>
+        </div>
+        <div class="member">
+          <div class="m-av">KP</div>
+          <div class="m-main"><div class="m-n">Kyle Park</div><div class="m-s">(602) 555‑0193 · no match</div></div>
+          <button class="pillbtn" data-toast="Invite sent">Invite</button>
+        </div>
+        <div class="member">
+          <div class="m-av">SD</div>
+          <div class="m-main"><div class="m-n">Sofia Duarte</div><div class="m-s">(623) 555‑0106 · no match</div></div>
+          <button class="pillbtn" data-toast="Invite sent">Invite</button>
+        </div>
+            <button class="acc-more" data-toast="Loading the next 50 contacts">Show 242 more</button>
+          </div>
+        </div>
+
+        <div class="acc open" id="acc-matched">
+          <button class="acc-h" data-acc="acc-matched">
+            <span class="acc-key mat"></span>
+            <span class="acc-m">
+              <span class="acc-t">Matched contacts</span>
+              <span class="acc-s">Found on the voter file</span>
+            </span>
+            <span class="acc-n">14</span>
+            <span class="acc-x">›</span>
+          </button>
+          <div class="acc-b">
+        <div class="member">
+          <div class="m-av">RA</div>
+          <div class="m-main"><div class="m-n">Rosa Alvarez</div><div class="m-s">Requested a ballot · not returned · 7 days</div></div>
+          <span class="badge b-red">Chase</span>
+        </div>
+        <div class="member">
+          <div class="m-av">JM</div>
+          <div class="m-main"><div class="m-n">Jesse Moreno</div><div class="m-s">Registered · no ballot requested</div></div>
+          <span class="badge b-amber">Ask</span>
+        </div>
+        <div class="member">
+          <div class="m-av">CT</div>
+          <div class="m-main"><div class="m-n">Carla Tran</div><div class="m-s">Ballot returned · verified Sep 4</div></div>
+          <span class="badge b-green">Done</span>
+        </div>
+        <div class="member">
+          <div class="m-av">MS</div>
+          <div class="m-main"><div class="m-n">Miguel Santos</div><div class="m-s">Requested a ballot · not returned · 4 days</div></div>
+          <span class="badge b-red">Chase</span>
+        </div>
+        <div class="member">
+          <div class="m-av">PR</div>
+          <div class="m-main"><div class="m-n">Priya Raman</div><div class="m-s">Registered · no ballot requested</div></div>
+          <span class="badge b-amber">Ask</span>
+        </div>
+            <button class="acc-more" data-toast="Showing all 14 matched contacts">Show 9 more</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- CONNECT ---------- -->
+      <div class="pane" id="pp-connect">
+        <div class="value">
+          <h3>Your contacts are your best list</h3>
+          <p>A stranger at the door gets a few seconds. A message from you gets read, and often answered. These 14 people already know you — that is the whole advantage, and no other list in the app has it.</p>
+          <div class="vstats">
+            <div class="vstat"><b>14</b><span>Matched</span></div>
+            <div class="vstat"><b>6</b><span>Need action</span></div>
+            <div class="vstat"><b>3</b><span>Already voted</span></div>
+          </div>
+        </div>
+
+        <div class="acc open" id="acc-lp">
+          <button class="acc-h" data-acc="acc-lp">
+            <span class="acc-key lp"></span>
+            <span class="acc-m">
+              <span class="acc-t">Low propensity Republicans</span>
+              <span class="acc-s">Agree with you, vote inconsistently</span>
+            </span>
+            <span class="acc-n">6</span>
+            <span class="acc-x">›</span>
+          </button>
+          <div class="acc-b">
+            <div class="acc-why"><b>Start here.</b> This is the highest-value group in the app. They already agree — the gap is turnout, not persuasion, and a personal nudge from someone they know is the most effective thing you can do. Keep it short and specific: ask whether they've got their ballot yet.</div>
+        <div class="member">
+          <div class="m-av">MS</div>
+          <div class="m-main"><div class="m-n">Miguel Santos</div><div class="m-s">Voted 1 of last 4 · ballot not returned</div></div>
+          <span class="badge b-red">Chase</span>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Miguel Santos" data-toast="Calling Miguel Santos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Miguel Santos" data-toast="Opening a message to Miguel Santos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+        <div class="member">
+          <div class="m-av">PR</div>
+          <div class="m-main"><div class="m-n">Priya Raman</div><div class="m-s">Voted 2 of last 4 · no ballot requested</div></div>
+          <span class="badge b-amber">Ask</span>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Priya Raman" data-toast="Calling Priya Raman"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Priya Raman" data-toast="Opening a message to Priya Raman"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+        <div class="member">
+          <div class="m-av">WB</div>
+          <div class="m-main"><div class="m-n">Walter Boyd</div><div class="m-s">Voted 1 of last 4 · no ballot requested</div></div>
+          <span class="badge b-amber">Ask</span>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Walter Boyd" data-toast="Calling Walter Boyd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Walter Boyd" data-toast="Opening a message to Walter Boyd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+            <button class="acc-more" data-toast="Showing all 6">Show 3 more</button>
+          </div>
+        </div>
+
+        <div class="acc" id="acc-hp">
+          <button class="acc-h" data-acc="acc-hp">
+            <span class="acc-key hp"></span>
+            <span class="acc-m">
+              <span class="acc-t">High propensity Republicans</span>
+              <span class="acc-s">Reliable voters</span>
+            </span>
+            <span class="acc-n">5</span>
+            <span class="acc-x">›</span>
+          </button>
+          <div class="acc-b">
+            <div class="acc-why"><b>They will vote.</b> The ask is timing — get the ballot back early so it isn't at risk of arriving late. These are also your best recruits: the fastest way to grow this program is asking them to match their own contacts.</div>
+        <div class="member">
+          <div class="m-av">CT</div>
+          <div class="m-main"><div class="m-n">Carla Tran</div><div class="m-s">Voted 4 of last 4 · returned Sep 4</div></div>
+          <span class="badge b-green">Done</span>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Carla Tran" data-toast="Calling Carla Tran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Carla Tran" data-toast="Opening a message to Carla Tran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+        <div class="member">
+          <div class="m-av">RA</div>
+          <div class="m-main"><div class="m-n">Rosa Alvarez</div><div class="m-s">Voted 4 of last 4 · ballot not returned</div></div>
+          <span class="badge b-red">Chase</span>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Rosa Alvarez" data-toast="Calling Rosa Alvarez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Rosa Alvarez" data-toast="Opening a message to Rosa Alvarez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+        <div class="member">
+          <div class="m-av">DK</div>
+          <div class="m-main"><div class="m-n">Dana Keller</div><div class="m-s">Voted 3 of last 4 · returned Sep 2</div></div>
+          <span class="badge b-green">Done</span>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Dana Keller" data-toast="Calling Dana Keller"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Dana Keller" data-toast="Opening a message to Dana Keller"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+            <button class="acc-more" data-toast="Showing all 5">Show 2 more</button>
+          </div>
+        </div>
+
+        <div class="acc" id="acc-ind">
+          <button class="acc-h" data-acc="acc-ind">
+            <span class="acc-key ind"></span>
+            <span class="acc-m">
+              <span class="acc-t">Independents</span>
+              <span class="acc-s">No party affiliation on file</span>
+            </span>
+            <span class="acc-n">3</span>
+            <span class="acc-x">›</span>
+          </button>
+          <div class="acc-b">
+            <div class="acc-why"><b>A different conversation.</b> This is persuasion rather than turnout, so don't lead with a ballot ask. The relationship is what makes the conversation possible at all — that's an advantage a canvasser at the door will never have.</div>
+        <div class="member">
+          <div class="m-av">JM</div>
+          <div class="m-main"><div class="m-n">Jesse Moreno</div><div class="m-s">Voted 3 of last 4 · no ballot requested</div></div>
+          <span class="badge b-blue">Talk</span>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Jesse Moreno" data-toast="Calling Jesse Moreno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Jesse Moreno" data-toast="Opening a message to Jesse Moreno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+        <div class="member">
+          <div class="m-av">AN</div>
+          <div class="m-main"><div class="m-n">Aisha Noor</div><div class="m-s">Voted 2 of last 4 · ballot not returned</div></div>
+          <span class="badge b-blue">Talk</span>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Aisha Noor" data-toast="Calling Aisha Noor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Aisha Noor" data-toast="Opening a message to Aisha Noor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+        <div class="member">
+          <div class="m-av">TF</div>
+          <div class="m-main"><div class="m-n">Tomas Ferreira</div><div class="m-s">Voted 4 of last 4 · returned Aug 30</div></div>
+          <span class="badge b-green">Done</span>
+          <div class="m-acts">
+            <button class="m-btn" aria-label="Call Tomas Ferreira" data-toast="Calling Tomas Ferreira"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button>
+            <button class="m-btn" aria-label="Text Tomas Ferreira" data-toast="Opening a message to Tomas Ferreira"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button>
+          </div>
+        </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== CHASE ==================== -->
+  <div class="screen" id="s-chase">
+    <div class="segtabs four">
+      <button class="seg on" data-cseg="0">Doors</button>
+      <button class="seg" data-cseg="1">Calls</button>
+      <button class="seg" data-cseg="2">Texts<span class="segbadge">3</span></button>
+      <button class="seg" data-cseg="3">Mail</button>
+    </div>
+
+    <div class="body">
+
+      <div class="pane on" id="p-doors">
+        <button class="vnm" data-doors="vnm">
+          <span class="vnm-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M19 10c0 6-7 11-7 11s-7-5-7-11a7 7 0 0114 0z"/></svg>ALWAYS AVAILABLE</span>
+          <span class="vnm-t">Voters Near Me</span>
+          <span class="vnm-s">184 doors within 2 miles of you</span>
+          <span class="vnm-go">
+            <span class="vnm-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Start knocking</span>
+            <span class="vnm-n">Updates as<br>you move</span>
+          </span>
+        </button>
+        <div class="vnm-pin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2l1.4 1.4-1.1 1.1 4.2 4.2 1.1-1.1L21 9l-4.6 4.6 1.1 1.1-1.4 1.4-4.2-4.2L5 19.6 4.4 19l6.7-6.9-4.2-4.2L5.5 9 6.9 7.6 8 8.7 14 2z"/></svg>Pinned — always at the top of this list</div>
+
+        <div class="sechead">Your turfs<span class="subtle">2 assigned</span></div>
+        <div class="work doors" data-doors="maryvale3">
+          <div class="work-main">
+            <div class="work-t">Maryvale — Turf 3</div>
+            <div class="work-s">W Osborn &amp; N 51st Ave · 1.2 mi · worked 2h ago</div>
+            <div class="work-rail"><i style="width:58%"></i></div>
+          </div>
+          <div class="work-right"><span class="work-n">42</span><span class="work-nl">left</span></div>
+          <span class="chev">›</span>
+        </div>
+        <div class="work doors" data-doors="estrella9">
+          <div class="work-main">
+            <div class="work-t">Estrella Village — Turf 9</div>
+            <div class="work-s">0.8 mi · claimed yesterday · not started</div>
+            <div class="work-rail"><i style="width:0%"></i></div>
+          </div>
+          <div class="work-right"><span class="work-n">140</span><span class="work-nl">doors</span></div>
+          <span class="chev">›</span>
+        </div>
+
+        <div class="sechead">Available near you<span class="subtle">within 3 mi</span></div>
+        <div class="work">
+          <div class="work-main"><div class="work-t">Alhambra — Turf 2</div><div class="work-s">0.6 mi · 120 doors · high propensity</div></div>
+          <button class="pillbtn" data-toast="Turf 2 claimed — it's in Your turfs now">Claim</button>
+        </div>
+        <div class="work">
+          <div class="work-main"><div class="work-t">Encanto — Turf 5</div><div class="work-s">1.4 mi · 95 doors · 40% Spanish preferred</div></div>
+          <button class="pillbtn" data-toast="Turf 5 claimed — it's in Your turfs now">Claim</button>
+        </div>
+      </div>
+
+      <div class="pane" id="p-calls">
+        <button class="vnm" data-toast="Starting Voters Near Me — 320 voters nearby">
+          <span class="vnm-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M19 10c0 6-7 11-7 11s-7-5-7-11a7 7 0 0114 0z"/></svg>ALWAYS AVAILABLE</span>
+          <span class="vnm-t">Voters Near Me</span>
+          <span class="vnm-s">320 voters you can call right now</span>
+          <span class="vnm-go">
+            <span class="vnm-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Start calling</span>
+            <span class="vnm-n">Updates as<br>you move</span>
+          </span>
+        </button>
+        <div class="vnm-pin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2l1.4 1.4-1.1 1.1 4.2 4.2 1.1-1.1L21 9l-4.6 4.6 1.1 1.1-1.4 1.4-4.2-4.2L5 19.6 4.4 19l6.7-6.9-4.2-4.2L5.5 9 6.9 7.6 8 8.7 14 2z"/></svg>Pinned — always at the top of this list</div>
+        <div class="sechead">Continue<span class="subtle">paused</span></div>
+        <div class="work calls" data-toast="Resuming queue — 74 remaining">
+          <div class="work-main">
+            <div class="work-t">Maricopa ballot chase</div>
+            <div class="work-s">Paused yesterday · avg 90 sec per call</div>
+            <div class="work-rail"><i style="width:23%"></i></div>
+          </div>
+          <div class="work-right"><span class="work-n">74</span><span class="work-nl">left</span></div>
+          <span class="chev">›</span>
+        </div>
+
+        <div class="sechead">Available lists</div>
+        <div class="work calls" data-toast="Opening queue — 14 people you know">
+          <div class="work-main"><div class="work-t">People you know</div><div class="work-s">Matched from your contacts · personal script</div></div>
+          <div class="work-right"><span class="work-n">14</span><span class="work-nl">to call</span></div>
+          <span class="chev">›</span>
+        </div>
+        <div class="work calls" data-toast="Opening queue — 210 turnout calls">
+          <div class="work-main"><div class="work-t">Super Chase turnout</div><div class="work-s">Event reminder script · about 2.5 hrs</div></div>
+          <div class="work-right"><span class="work-n">210</span><span class="work-nl">to call</span></div>
+          <span class="chev">›</span>
+        </div>
+      </div>
+
+      <div class="pane" id="p-texts">
+        <button class="vnm" data-toast="Starting Voters Near Me — 540 voters nearby">
+          <span class="vnm-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M19 10c0 6-7 11-7 11s-7-5-7-11a7 7 0 0114 0z"/></svg>ALWAYS AVAILABLE</span>
+          <span class="vnm-t">Voters Near Me</span>
+          <span class="vnm-s">540 voters in your area</span>
+          <span class="vnm-go">
+            <span class="vnm-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Start texting</span>
+            <span class="vnm-n">Updates as<br>you move</span>
+          </span>
+        </button>
+        <div class="vnm-pin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2l1.4 1.4-1.1 1.1 4.2 4.2 1.1-1.1L21 9l-4.6 4.6 1.1 1.1-1.4 1.4-4.2-4.2L5 19.6 4.4 19l6.7-6.9-4.2-4.2L5.5 9 6.9 7.6 8 8.7 14 2z"/></svg>Pinned — always at the top of this list</div>
+
+        <div class="sechead">Needs your reply<span class="subtle">3 waiting</span></div>
+        <div class="thread unread" data-toast="Opening conversation with Rosa">
+          <div class="tav">RA</div>
+          <div class="thread-main">
+            <div class="thread-top"><span class="thread-n">Rosa Alvarez</span><span class="thread-time">12m</span></div>
+            <div class="thread-p">yes i mailed it friday, does it take long?</div>
+          </div>
+          <span class="unreaddot"></span>
+        </div>
+        <div class="thread unread" data-toast="Opening conversation with Thomas">
+          <div class="tav">TN</div>
+          <div class="thread-main">
+            <div class="thread-top"><span class="thread-n">Thomas Nguyen</span><span class="thread-time">40m</span></div>
+            <div class="thread-p">where do i drop it off?</div>
+          </div>
+          <span class="unreaddot"></span>
+        </div>
+        <div class="thread unread" data-toast="Opt-out recorded — Danielle will receive no further messages">
+          <div class="tav">DO</div>
+          <div class="thread-main">
+            <div class="thread-top"><span class="thread-n">Danielle Okoro</span><span class="thread-time">2h</span></div>
+            <div class="thread-p">stop texting me</div>
+          </div>
+          <span class="unreaddot"></span>
+        </div>
+
+        <div class="sechead">Batches to send</div>
+        <div class="work texts" data-toast="Opening 340-message batch for review">
+          <div class="work-main"><div class="work-t">Ballot reminder — Maryvale</div><div class="work-s">Review the script, then send in batches of 25</div></div>
+          <div class="work-right"><span class="work-n">340</span><span class="work-nl">queued</span></div>
+          <span class="chev">›</span>
+        </div>
+      </div>
+
+      <div class="pane" id="p-mail">
+        <button class="vnm" data-toast="Starting Voters Near Me — 96 addresses nearby">
+          <span class="vnm-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M19 10c0 6-7 11-7 11s-7-5-7-11a7 7 0 0114 0z"/></svg>ALWAYS AVAILABLE</span>
+          <span class="vnm-t">Voters Near Me</span>
+          <span class="vnm-s">96 addresses near you</span>
+          <span class="vnm-go">
+            <span class="vnm-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Start writing</span>
+            <span class="vnm-n">Updates as<br>you move</span>
+          </span>
+        </button>
+        <div class="vnm-pin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2l1.4 1.4-1.1 1.1 4.2 4.2 1.1-1.1L21 9l-4.6 4.6 1.1 1.1-1.4 1.4-4.2-4.2L5 19.6 4.4 19l6.7-6.9-4.2-4.2L5.5 9 6.9 7.6 8 8.7 14 2z"/></svg>Pinned — always at the top of this list</div>
+        <div class="sechead">In progress</div>
+        <div class="work mail" data-toast="Opening your postcard batch">
+          <div class="work-main">
+            <div class="work-t">Maryvale high-propensity</div>
+            <div class="work-s">Assigned Sep 6 · mail by Sep 20</div>
+            <div class="work-rail"><i style="width:24%"></i></div>
+          </div>
+          <div class="work-right"><span class="work-n">38</span><span class="work-nl">to write</span></div>
+          <span class="chev">›</span>
+        </div>
+
+        <div class="sechead">Available batches</div>
+        <div class="work mail">
+          <div class="work-main"><div class="work-t">Estrella Village — new registrants</div><div class="work-s">75 addresses · welcome script</div></div>
+          <button class="pillbtn" data-toast="Batch claimed — addresses ready to print">Claim</button>
+        </div>
+        <div class="work mail">
+          <div class="work-main"><div class="work-t">Request supplies</div><div class="work-s">Cards, stamps and address labels by mail</div></div>
+          <span class="chev">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== EVENTS ==================== -->
+  <div class="screen" id="s-events">
+    <div class="evfilter">
+      <button class="srcchip on">All</button>
+      <button class="srcchip">Canvass</button>
+      <button class="srcchip">Phone bank</button>
+      <button class="srcchip">Rally</button>
+      <button class="srcchip">Training</button>
+      <button class="srcchip">Remote</button>
+    </div>
+    <div class="body">
+
+      <div class="sechead">Today</div>
+      <div class="ebtn blue hasfoot" role="button" tabindex="0" data-goto="event">
+        <span class="eb-flag live"><i></i>HAPPENING NOW</span>
+        <span class="eb-date"><span class="eb-mon">SEP</span><span class="eb-day">9<sup>th</sup></span></span>
+        <span class="eb-main"><span class="etype canvass">CANVASS</span><span class="eb-t">Maryvale Door-Knock Launch</span><span class="eb-s">Cortez Park, Phoenix</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        <span class="eb-foot"><span>214 checked in · 4,207 doors</span><span class="eb-rsvp going">CHECKED IN</span></span>
+      </div>
+
+      <div class="sechead">This week</div>
+      <div class="ebtn cyan hasfoot" role="button" tabindex="0" data-goto="event">
+        <span class="eb-flag">REMOTE</span>
+        <span class="eb-date"><span class="eb-mon">SEP</span><span class="eb-day">13<sup>th</sup></span></span>
+        <span class="eb-main"><span class="etype phonebank">PHONE BANK</span><span class="eb-t">Ballot Chase Call Night</span><span class="eb-s">Join from home · 6:00 PM</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        <span class="eb-foot"><span>82 going</span><button class="eb-rsvp going" data-rsvp="1">GOING</button></span>
+      </div>
+
+      <div class="ebtn violet hasfoot" role="button" tabindex="0" data-goto="event">
+        <span class="eb-date"><span class="eb-mon">SEP</span><span class="eb-day">14<sup>th</sup></span></span>
+        <span class="eb-main"><span class="etype train">TRAINING</span><span class="eb-t">New Canvasser Training</span><span class="eb-s">Glendale, Arizona · 90 min</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        <span class="eb-foot"><span>First time? Start here</span><button class="eb-rsvp" data-rsvp="1">RSVP</button></span>
+      </div>
+
+      <div class="sechead">Coming up</div>
+      <div class="ebtn red dots hasfoot" role="button" tabindex="0" data-goto="event">
+        <span class="eb-date"><span class="eb-mon">OCT</span><span class="eb-day">3<sup>rd</sup></span></span>
+        <span class="eb-main"><span class="etype canvass">CANVASS</span><span class="eb-logo sc">SUPER&#8250;&#8250;CHASE</span><span class="eb-sub">PHOENIX · HELP CHASE BALLOTS</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        <span class="eb-foot"><span>214 going · rides available</span><button class="eb-rsvp" data-rsvp="1">RSVP</button></span>
+      </div>
+
+      <div class="ebtn blue hasfoot" role="button" tabindex="0">
+        <span class="eb-date"><span class="eb-mon">OCT</span><span class="eb-day">18<sup>th</sup></span></span>
+        <span class="eb-main"><span class="etype rally">RALLY</span><span class="eb-t">Build the Red Wall</span><span class="eb-s">Phoenix, Arizona</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        <span class="eb-foot"><span>Opens tpaction.com</span><span class="eb-rsvp">REGISTER ↗</span></span>
+      </div>
+
+      <div class="sechead">You went last year<span class="subtle">2 events</span></div>
+      <div class="ebtn blue hasfoot" role="button" tabindex="0" data-goto="eventpast">
+        <span class="eb-date"><span class="eb-year">2025</span></span>
+        <span class="eb-main"><span class="eb-t">Build the Red Wall</span><span class="eb-s">Phoenix, Arizona</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        <span class="eb-foot"><span>You knocked 96 doors</span><span class="eb-rsvp">VIEW RECAP</span></span>
+      </div>
+
+      <div class="sechead">Past events</div>
+      <div class="ebtn magenta" role="button" tabindex="0">
+        <span class="eb-date"><span class="eb-mon">JUN</span><span class="eb-day">5<sup>th</sup><em>&#9656;</em>7<sup>th</sup></span><span class="eb-loc">San Antonio, TX</span></span>
+        <span class="eb-main"><span class="eb-logo wls">WLS</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+      </div>
+
+      <div class="ebwrap grad af">
+        <div class="ebtn ink" role="button" tabindex="0">
+          <span class="eb-date"><span class="eb-year">2025</span></span>
+          <span class="eb-main"><span class="eb-logo af">AMERICA FEST</span><span class="eb-sub">A TURNING POINT USA EVENT</span></span>
+          <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+
+      <div class="ebwrap grad sas">
+        <div class="ebtn teal" role="button" tabindex="0">
+          <span class="eb-date"><span class="eb-year">2025</span></span>
+          <span class="eb-main"><span class="eb-logo sas">SAS</span><span class="eb-sub">STUDENT ACTION SUMMIT</span></span>
+          <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+
+      <div class="ebwrap grad ywls">
+        <div class="ebtn rose" role="button" tabindex="0">
+          <span class="eb-date"><span class="eb-year">2025</span></span>
+          <span class="eb-main"><span class="eb-logo ywls">ywls</span></span>
+          <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+
+      <div class="ebtn blue" role="button" tabindex="0">
+        <span class="eb-date"><span class="eb-year">2025</span></span>
+        <span class="eb-main"><span class="eb-t sm">Building a Legacy: Remembering Charlie</span><span class="eb-s">Glendale, Arizona</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+      </div>
+
+      <div class="ebtn blue" role="button" tabindex="0">
+        <span class="eb-date"><span class="eb-year">2025</span></span>
+        <span class="eb-main"><span class="eb-t">Biggs for Governor Rally</span><span class="eb-s">Phoenix, Arizona</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ EVENT DETAIL (day-of / live) ============ -->
+  <div class="screen" id="s-event">
+    <div class="body">
+      <div class="eh">
+        <div class="eh-pill livep"><span class="eh-dot"></span>Happening now</div>
+        <h2>Maryvale door-knock launch</h2>
+        <div class="eh-s">Cortez Park · 3434 W Dunlap Ave · 8:00 AM – 2:00 PM</div>
+      </div>
+
+      <div class="ebar">
+        <button class="btn btn-primary" data-toast="Checked in — your shift has started">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Check in
+        </button>
+        <button class="btn btn-dirs" data-toast="Opening directions to Cortez Park">Directions</button>
+      </div>
+
+      <div class="impact">
+        <div class="impact-k">Group total, updating live</div>
+        <div class="impact-n"><b>4,207</b><span>doors knocked today</span></div>
+        <div class="impact-d">214 people checked in · 62 still in the field</div>
+        <div class="flowrow">
+          <div class="flow-l">Your contribution</div>
+          <div class="flow-bar"><i style="width:44%"></i></div>
+          <div class="flow-n">58</div>
+        </div>
+      </div>
+
+      <div class="sechead">Your assignment</div>
+      <div class="work doors" data-doors="maryvale3">
+        <div class="work-main">
+          <div class="work-t">Maryvale — Turf 3</div>
+          <div class="work-s">Assigned at check-in · 0.4 mi from the park</div>
+          <div class="work-rail"><i style="width:58%"></i></div>
+        </div>
+        <div class="work-right"><span class="work-n">42</span><span class="work-nl">left</span></div>
+        <span class="chev">›</span>
+      </div>
+
+      <div class="sechead">Agenda<span class="subtle">live</span></div>
+      <div class="ag done">
+        <div class="ag-t">8:00 AM</div>
+        <div class="ag-m"><div class="ag-n">Doors open, coffee</div><div class="ag-s">Main pavilion</div></div>
+      </div>
+      <div class="ag done">
+        <div class="ag-t">8:30 AM</div>
+        <div class="ag-m"><div class="ag-n">Kickoff and training</div><div class="ag-s">First-timers, start here</div></div>
+      </div>
+      <div class="ag now">
+        <div class="ag-t">9:00 AM</div>
+        <div class="ag-m"><div class="ag-n">Turf assignments and launch</div><div class="ag-s">Pick up literature at the tent</div><div class="ag-live">HAPPENING NOW</div></div>
+      </div>
+      <div class="ag">
+        <div class="ag-t">12:30 PM</div>
+        <div class="ag-m"><div class="ag-n">Lunch and check-in</div><div class="ag-s">Back at the pavilion</div></div>
+      </div>
+      <div class="ag">
+        <div class="ag-t">1:45 PM</div>
+        <div class="ag-m"><div class="ag-n">Final count and close</div><div class="ag-s">Turn in materials</div></div>
+      </div>
+
+      <div class="sechead">Watch live</div>
+      <div class="postcard" style="margin-top:0;">
+        <div class="vidcap">Main stage · streaming now</div>
+        <div class="post-media video">
+          <div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="post-mtr"><span>1,840 watching</span><span>Rumble</span></div>
+      </div>
+
+      <div class="sechead">Before you go</div>
+      <div class="kv kv-warn">
+        <span class="kv-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></span>
+        <span class="kv-m"><span class="kv-t">104°F by 1 PM — heat advisory</span><span class="kv-s">Bring two litres of water minimum. Shade tent at the pavilion. Organisers will call a stop if it hits 108.</span></span>
+      </div>
+      <div class="kv">
+        <span class="kv-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v6a6 6 0 01-12 0V2z"/><path d="M9 20h6M12 14v6"/></svg></span>
+        <span class="kv-m"><span class="kv-t">What to bring</span><span class="kv-s">Charged phone, water, comfortable shoes, hat. Literature and door hangers are provided.</span></span>
+      </div>
+      <div class="kv">
+        <span class="kv-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="8" rx="2"/><path d="M5 11l2-5h10l2 5M7 19v2M17 19v2"/></svg></span>
+        <span class="kv-m"><span class="kv-t">Parking and carpool</span><span class="kv-s">Free lot on Dunlap. Three drivers have seats open from Glendale.</span></span>
+      </div>
+
+      <div class="sechead">Who's going<span class="subtle">214 · 6 from your team</span></div>
+      <div class="member">
+        <div class="m-av">MG<span class="m-live"></span></div>
+        <div class="m-main"><div class="m-n">Maria Gutierrez</div><div class="m-s">Checked in · Turf 7</div></div>
+        <div class="m-acts"><button class="m-btn" aria-label="Text Maria" data-toast="Opening a message to Maria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg></button></div>
+      </div>
+      <div class="member">
+        <div class="m-av">RC</div>
+        <div class="m-main"><div class="m-n">Ray Castillo</div><div class="m-s">Organizer · at the pavilion tent</div></div>
+        <div class="m-acts"><button class="m-btn" aria-label="Call Ray" data-toast="Calling Ray Castillo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></button></div>
+      </div>
+      <div class="member">
+        <div class="m-av invite">+3</div>
+        <div class="m-main"><div class="m-n">Invite from your contacts</div><div class="m-s">3 people you know live within 2 miles</div></div>
+        <button class="pillbtn" data-goto="people">Invite</button>
+      </div>
+
+      <div class="acc" id="acc-faq1">
+        <button class="acc-h" data-acc="acc-faq1">
+          <span class="acc-m"><span class="acc-t">Questions</span><span class="acc-s">First time canvassing?</span></span>
+          <span class="acc-n">6</span><span class="acc-x">›</span>
+        </button>
+        <div class="acc-b">
+          <div class="acc-why"><b>Do I need experience?</b> No. The 8:30 training covers everything, and first-timers are paired with someone experienced.</div>
+          <div class="acc-why"><b>What if nobody answers?</b> Log it as no answer and leave a door hanger. That still counts.</div>
+          <div class="acc-why"><b>Can I leave early?</b> Yes. Check out in the app so your turf goes back in the pool.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ EVENT RECAP (past) ============ -->
+  <div class="screen" id="s-eventpast">
+    <div class="body">
+      <div class="eh past">
+        <div class="eh-pill">April 17, 2025</div>
+        <h2>Build the Red Wall 2025</h2>
+        <div class="eh-s">Phoenix Convention Center · you attended</div>
+      </div>
+
+      <div class="sechead">What you did</div>
+      <div class="stats">
+        <div class="stat"><span class="stat-n">96</span><span class="stat-l">Doors</span></div>
+        <div class="stat"><span class="stat-n">31</span><span class="stat-l">Talked</span></div>
+        <div class="stat"><span class="stat-n">7</span><span class="stat-l">Ballots</span></div>
+        <div class="stat"><span class="stat-n">5.5</span><span class="stat-l">Hours</span></div>
+      </div>
+
+      <div class="impact">
+        <div class="impact-k">What the group did</div>
+        <div class="impact-n"><b>18,400</b><span>doors in one day</span></div>
+        <div class="impact-d">1,240 people · your best event turnout of 2025</div>
+      </div>
+
+      <div class="sechead">Photos<span class="subtle">44</span></div>
+      <div class="phgrid">
+        <div class="ph"></div><div class="ph"></div><div class="ph"></div>
+        <div class="ph"></div><div class="ph"></div><div class="ph"></div>
+      </div>
+
+      <div class="sechead">Watch the replay</div>
+      <div class="postcard" style="margin-top:0;">
+        <div class="post-media">
+          <div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="post-cap">Main stage · full programme</div>
+        </div>
+        <div class="post-mtr"><span>2:14:08</span><span>128K views</span></div>
+      </div>
+
+      <div class="sechead">This year's is coming</div>
+      <div class="ebtn blue hasfoot" role="button" tabindex="0" data-goto="event">
+        <span class="eb-date"><span class="eb-mon">OCT</span><span class="eb-day">18<sup>th</sup></span></span>
+        <span class="eb-main"><span class="eb-t">Build the Red Wall</span><span class="eb-s">Phoenix, Arizona · same venue</span></span>
+        <span class="eb-go"><svg viewBox="0 0 36 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l6 6-6 6"/><path d="M15 6l6 6-6 6"/><path d="M25 6l6 6-6 6"/></svg></span>
+        <span class="eb-foot"><span>312 going</span><button class="eb-rsvp" data-rsvp="1">RSVP</button></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ME ==================== -->
+  <div class="screen" id="s-me">
+    <div class="body">
+      <div class="prof">
+        <div class="avatar-lg">MR</div>
+        <h2>Matt Ramirez</h2>
+        <p>Phoenix West · Field activist since Mar 2024</p>
+      </div>
+      <div class="grid2">
+        <div class="gcell"><span class="stat-n">3,847</span><span class="stat-l">Doors knocked</span></div>
+        <div class="gcell"><span class="stat-n">1,102</span><span class="stat-l">Calls made</span></div>
+        <div class="gcell"><span class="stat-n">2,640</span><span class="stat-l">Texts sent</span></div>
+        <div class="gcell"><span class="stat-n">218</span><span class="stat-l">Postcards mailed</span></div>
+      </div>
+      <div class="listrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Hours &amp; shift log<span class="chev">›</span></div>
+      <div class="listrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.4.8-4.7 4.3 1.3 6.3L12 17l-5.6 3 1.3-6.3L3 9.4l6.4-.8L12 3z"/></svg>Badges &amp; milestones<span class="chev">›</span></div>
+      <div class="listrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>My contacts &amp; matching<span class="chev">›</span></div>
+      <div class="listrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Turf &amp; list history<span class="chev">›</span></div>
+      <div class="listrow" data-voice="1" role="button" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v4"/></svg>Voice assistant<span class="rowhint">Grok</span><span class="chev">›</span></div>
+      <div class="listrow" id="themeRow" role="switch" aria-checked="false" tabindex="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>Dark mode<span class="switch"><i></i></span></div>
+      <div class="listrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20 12a8 8 0 00-.2-1.8l2-1.5-2-3.4-2.3 1a8 8 0 00-3-1.8L14 2h-4l-.5 2.5a8 8 0 00-3 1.8l-2.3-1-2 3.4 2 1.5a8 8 0 000 3.6l-2 1.5 2 3.4 2.3-1a8 8 0 003 1.8L10 22h4l.5-2.5a8 8 0 003-1.8l2.3 1 2-3.4-2-1.5A8 8 0 0020 12z"/></svg>Settings<span class="chev">›</span></div>
+    </div>
+  </div>
+
+  <!-- ==================== SEARCH ==================== -->
+  <div class="screen" id="s-search">
+    <div class="sbar">
+      <button class="iconbtn" aria-label="Close search" data-searchback="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></button>
+      <div class="sfield" data-sstate="results">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <span class="sq ph" id="sqText">Search turfs, voters, events, people</span>
+      </div>
+      <button class="smic" id="micBtn" aria-label="Search by voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v4M8 22h8"/></svg></button>
+    </div>
+
+    <div class="body">
+      <!-- empty / suggestions -->
+      <div class="pane on" id="sp-empty">
+        <div class="sugg">
+          <div class="sugg-h">TRY ASKING</div>
+          <button class="suggchip" data-sstate="results"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.6L19.5 9l-5.6 1.4L12 16l-1.9-5.6L4.5 9l5.6-1.4L12 2z"/><path d="M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/></svg><span>Who on my turf still hasn't returned a ballot?</span></button>
+          <button class="suggchip" data-sstate="results"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.6L19.5 9l-5.6 1.4L12 16l-1.9-5.6L4.5 9l5.6-1.4L12 2z"/><path d="M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/></svg><span>Show me turfs near me with Spanish-speaking households</span></button>
+          <button class="suggchip" data-sstate="results"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.6L19.5 9l-5.6 1.4L12 16l-1.9-5.6L4.5 9l5.6-1.4L12 2z"/><path d="M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/></svg><span>When is the next phone bank I can join from home?</span></button>
+          <button class="suggchip" data-sstate="results"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.6L19.5 9l-5.6 1.4L12 16l-1.9-5.6L4.5 9l5.6-1.4L12 2z"/><path d="M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/></svg><span>How many doors did I knock last week?</span></button>
+        </div>
+        <div class="sechead">Recent</div>
+        <div class="rrow" data-sstate="results">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Maryvale Turf 3<span class="x">✕</span>
+        </div>
+        <div class="rrow" data-sstate="results">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Rosa Alvarez<span class="x">✕</span>
+        </div>
+        <div class="rrow" data-sstate="results">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Super Chase Phoenix<span class="x">✕</span>
+        </div>
+      </div>
+
+      <!-- listening -->
+      <div class="pane" id="sp-listen">
+        <div class="listen">
+          <div class="lmic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v4M8 22h8"/></svg></div>
+          <div class="lbars">
+            <span class="lb"></span><span class="lb"></span><span class="lb"></span>
+            <span class="lb"></span><span class="lb"></span><span class="lb"></span><span class="lb"></span>
+          </div>
+          <div class="ltext">Listening…</div>
+          <div class="lpartial" id="lPartial">Say what you're looking for</div>
+        </div>
+      </div>
+
+      <!-- results -->
+      <div class="pane" id="sp-results">
+        <div class="ai">
+          <div class="ai-k"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.6L19.5 9l-5.6 1.4L12 16l-1.9-5.6L4.5 9l5.6-1.4L12 2z"/><path d="M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/></svg>ANSWER</div>
+          <div class="ai-b"><b>23 voters</b> on your turfs requested a ballot and haven't returned it. Nine are on streets you've already walked in Maryvale Turf 3, and the Maricopa deadline is <b>6 days</b> away.</div>
+          <div class="ai-src">From your assigned turfs, ballot status and chase list · updated 4 min ago</div>
+          <div class="ai-acts">
+            <button class="act fill" data-chase="1">Call them</button>
+            <button class="act" data-toast="Added 9 chase stops to Turf 3">Add to route</button>
+          </div>
+        </div>
+
+        <div class="rgrp">VOTERS · 23</div>
+        <div class="rres" data-doors="maryvale3">
+          <span class="rr-i" style="background:var(--red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
+          <span class="rr-m"><span class="rr-t">Rosa Alvarez</span><span class="rr-s">1408 N 49th Dr · requested Sep 2 · 0.2 mi</span></span>
+          <span class="chev">›</span>
+        </div>
+        <div class="rres" data-doors="maryvale3">
+          <span class="rr-i" style="background:var(--red);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
+          <span class="rr-m"><span class="rr-t">Thomas Nguyen</span><span class="rr-s">1412 N 49th Dr · requested Sep 2 · 0.2 mi</span></span>
+          <span class="chev">›</span>
+        </div>
+
+        <div class="rgrp">TURFS · 2</div>
+        <div class="rres" data-doors="maryvale3">
+          <span class="rr-i" style="background:var(--green);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg></span>
+          <span class="rr-m"><span class="rr-t">Maryvale — Turf 3</span><span class="rr-s">42 doors left · 9 chase stops on route</span></span>
+          <span class="chev">›</span>
+        </div>
+
+        <div class="rgrp">EVENTS · 1</div>
+        <div class="rres" data-goto="event">
+          <span class="rr-i" style="background:var(--magenta);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+          <span class="rr-m"><span class="rr-t">Ballot Chase Call Night</span><span class="rr-s">Sun Sep 13 · remote · you're going</span></span>
+          <span class="chev">›</span>
+        </div>
+
+        <div class="rgrp">PEOPLE YOU KNOW · 4</div>
+        <div class="rres" data-goto="people">
+          <span class="rr-i" style="background:var(--violet);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+          <span class="rr-m"><span class="rr-t">4 matched contacts need a nudge</span><span class="rr-s">Low propensity · ballot not returned</span></span>
+          <span class="chev">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== NOTIFICATIONS ==================== -->
+  <div class="screen" id="s-notif">
+    <div class="nbar">
+      <button class="srcchip on">All</button>
+      <button class="srcchip">Campaigns</button>
+      <button class="srcchip">Events</button>
+      <button class="srcchip">Actions</button>
+      <button class="srcchip">Feeds</button>
+    </div>
+    <div class="body">
+      <div class="nhead"><b>Today</b><button id="markAll">Mark all read</button></div>
+
+      <div class="nrow unread">
+        <span class="n-i blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v3H9z"/><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 12h6M9 16h4"/></svg></span>
+        <span class="n-m">
+          <span class="n-top"><span class="n-t"><b>Ray Castillo</b> assigned you a campaign</span><span class="n-time">12m</span></span>
+          <span class="n-b"><strong>Maryvale Ballot Chase</strong> — door knocking · 140 doors · due Oct 24</span>
+          <span class="n-meta"><span class="n-tag">Door knocking</span><span class="n-tag">Phoenix West</span></span>
+          <span class="n-acts">
+            <button class="act fill" data-toast="Campaign accepted — it's in Chase › Doors">Accept</button>
+            <button class="act" data-chase="0">View turf</button>
+          </span>
+        </span>
+        <span class="n-dot"></span>
+      </div>
+
+      <div class="nrow unread">
+        <span class="n-i red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 002-2V6h14v1a2 2 0 000 4v1H5v-1a2 2 0 00-2-2z"/><path d="M9 6v12M19 12v5a2 2 0 01-2 2H7a2 2 0 01-2-2v-5"/></svg></span>
+        <span class="n-m">
+          <span class="n-top"><span class="n-t">Get your Freedom Ticket today</span><span class="n-time">1h</span></span>
+          <span class="n-b">Claim before Oct 31 — free entry to every TPA event this season</span>
+          <span class="n-meta"><span class="n-tag hot">Ends in 13 days</span><span class="n-tag">tpaction.com</span></span>
+          <span class="n-acts">
+            <button class="act fill red" data-toast="Opening tpaction.com in an in-app browser">Claim ↗</button>
+            <button class="act" data-toast="Dismissed">Not now</button>
+          </span>
+        </span>
+        <span class="n-dot"></span>
+      </div>
+
+      <div class="nrow unread">
+        <span class="n-i mag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+        <span class="n-m">
+          <span class="n-top"><span class="n-t">New event near you</span><span class="n-time">2h</span></span>
+          <span class="n-b"><strong>Super Chase Phoenix</strong> · Sat Oct 3, 8:00 AM · Deer Valley · 214 going</span>
+          <span class="n-acts">
+            <button class="act" data-rsvp="1">RSVP</button>
+            <button class="act" data-goto="event">See details</button>
+          </span>
+        </span>
+        <span class="n-dot"></span>
+      </div>
+
+      <div class="nrow unread">
+        <span class="n-i yt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5a3 3 0 00-2.1-2.1C19 4.8 12 4.8 12 4.8s-7 0-8.9.6A3 3 0 001 7.5C.4 9.4.4 12 .4 12s0 2.6.6 4.5a3 3 0 002.1 2.1c1.9.6 8.9.6 8.9.6s7 0 8.9-.6a3 3 0 002.1-2.1c.6-1.9.6-4.5.6-4.5s0-2.6-.6-4.5zM9.8 15.5v-7l5.8 3.5-5.8 3.5z"/></svg></span>
+        <span class="n-m">
+          <span class="n-top"><span class="n-t"><b>Turning Point USA</b> posted a new video</span><span class="n-time">3h</span></span>
+          <span class="n-b">Field report: what 10,000 doors in Maricopa taught us · 18:24</span>
+          <span class="n-meta"><span class="n-tag">Following</span></span>
+        </span>
+        <span class="n-dot"></span>
+      </div>
+
+      <div class="nrow unread">
+        <span class="n-i vio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.9 8.9 0 01-4-.9L3 21l2-4.4A8.4 8.4 0 1121 11.5z"/></svg></span>
+        <span class="n-m">
+          <span class="n-top"><span class="n-t"><b>Rosa Alvarez</b> replied</span><span class="n-time">4h</span></span>
+          <span class="n-b">"yes i mailed it friday, does it take long?"</span>
+          <span class="n-acts"><button class="act fill vio" data-chase="2">Reply</button></span>
+        </span>
+        <span class="n-dot"></span>
+      </div>
+
+      <div class="nrow unread">
+        <span class="n-i red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        <span class="n-m">
+          <span class="n-top"><span class="n-t">6 days to the Maricopa ballot deadline</span><span class="n-time">6h</span></span>
+          <span class="n-b">23 voters on your list still haven't returned a ballot</span>
+          <span class="n-acts"><button class="act fill red" data-chase="1">Open chase list</button></span>
+        </span>
+        <span class="n-dot"></span>
+      </div>
+
+      <div class="nhead"><b>Earlier</b></div>
+
+      <div class="nrow">
+        <span class="n-i grn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        <span class="n-m">
+          <span class="n-top"><span class="n-t"><b>Maria Gutierrez</b> passed 1,000 doors</span><span class="n-time">1d</span></span>
+          <span class="n-b">Phoenix West · she's 38 ahead of you this week</span>
+        </span>
+      </div>
+
+      <div class="nrow">
+        <span class="n-i blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v3H9z"/><rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M9 12h6M9 16h4"/></svg></span>
+        <span class="n-m">
+          <span class="n-top"><span class="n-t"><b>Ray Castillo</b> assigned you a campaign</span><span class="n-time">2d</span></span>
+          <span class="n-b"><strong>Estrella Village — Turf 9</strong> — door knocking · 140 doors · accepted</span>
+          <span class="n-meta"><span class="n-tag">Door knocking</span></span>
+        </span>
+      </div>
+
+      <div class="nrow">
+        <span class="n-i x"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.2 2h3.3l-7.2 8.3L22.8 22h-6.6l-5.2-6.8L5 22H1.7l7.7-8.8L1.2 2h6.8l4.7 6.2L18.2 2zm-1.2 18h1.8L7.1 3.9H5.1L17 20z"/></svg></span>
+        <span class="n-m">
+          <span class="n-top"><span class="n-t"><b>@TPAction</b> posted</span><span class="n-time">2d</span></span>
+          <span class="n-b">Ballot chase weekend starts Friday in Maricopa…</span>
+          <span class="n-meta"><span class="n-tag">Following</span></span>
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== DOORS CANVASSING ==================== -->
+  <div class="doorsview" id="doorsView" aria-hidden="true">
+    <iframe id="doorsFrame" title="Doors canvassing" allow="microphone"></iframe>
+  </div>
+
+  <!-- ==================== VOICE ==================== -->
+  <button class="micfab" id="micFab" aria-label="Talk to Grok">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v4M8 22h8"/></svg>
+  </button>
+
+  <div class="voice" id="voice" role="dialog" aria-modal="true" aria-labelledby="vTitle" aria-hidden="true">
+    <div class="v-top">
+      <button class="v-x" id="vClose" aria-label="Close voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="v-title" id="vTitle">Ask Grok</div>
+      <span class="v-pill" id="vPill">Ready</span>
+    </div>
+    <div class="v-stage">
+      <div class="v-orb idle" id="vOrb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v4M8 22h8"/></svg></div>
+      <div class="v-status" id="vStatus">Connecting…</div>
+      <div class="v-hint" id="vHint">Ask about your turf, ballots, events or your team</div>
+    </div>
+    <div class="v-log" id="vLog" aria-live="polite"></div>
+    <div class="v-sugg" id="vSugg">
+      <span>“Who still hasn't returned a ballot?”</span>
+      <span>“What's my next door?”</span>
+      <span>“When's the next phone bank?”</span>
+    </div>
+    <div class="v-note">This demo records voice conversations, names and taps in the app.</div>
+    <div class="v-bar">
+      <button class="v-btn" id="vMute" aria-label="Mute microphone" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v4"/></svg></button>
+      <button class="v-end" id="vEnd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>End</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- ==================== NAV ==================== -->
+  <div class="nav">
+    <button class="navbtn on" data-nav="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home
+    </button>
+    <button class="navbtn" data-nav="people">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.9"/><path d="M16 3.1a4 4 0 010 7.8"/></svg>People
+      <span class="navdot">14</span>
+    </button>
+
+    <div class="navcentre">
+      <button class="chasebtn" data-nav="chase" id="chaseBtn" aria-label="Chase">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 2L4.5 13.6h6.3L9.6 22l9-11.7h-6.4L13.5 2z"/></svg>
+        CHASE
+      </button>
+    </div>
+
+    <button class="navbtn" data-nav="events">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Events
+    </button>
+    <button class="navbtn" data-nav="me">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Me
+    </button>
+  </div>
+</div>
+
+<script>
+/* ---- activity log: what people say and do, sent in batches to the Worker's /log ---- */
+window.tpaLog=(function(){
+  // Same Worker as TOKEN_URL in the voice code below.
+  var LOG_URL='https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/log';
+  function uid(){ return window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2); }
+  function keep(store,key){ try{ var v=store.getItem(key); if(!v){ v=uid(); store.setItem(key,v); } return v; }catch(e){ return uid(); } }
+  var visitor=keep(window.localStorage,'tpa-visitor'), session=keep(window.sessionStorage,'tpa-session');
+  var name=null; try{ name=sessionStorage.getItem('tpa-name'); }catch(e){}
+  var queue=[], screen='home', timer=0;
+
+  function log(type,detail){
+    queue.push({t:new Date().toISOString(),type:type,detail:detail==null?null:String(detail).slice(0,1000),screen:screen,name:name});
+    if(queue.length>=40) flush(); else if(!timer) timer=setTimeout(flush,4000);
+  }
+  function flush(leaving){
+    clearTimeout(timer); timer=0;
+    if(!queue.length||!LOG_URL) return;
+    // text/plain keeps this a simple request, so it also works as a beacon while the page closes.
+    var body=JSON.stringify({visitor:visitor,session:session,name:name,events:queue.splice(0,40)});
+    if(leaving&&navigator.sendBeacon&&navigator.sendBeacon(LOG_URL,new Blob([body],{type:'text/plain'}))) return;
+    fetch(LOG_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:body,keepalive:true}).catch(function(){});
+    if(queue.length) flush(leaving);
+  }
+
+  // Every tap on something interactive, with the result shown to the user when there is one.
+  document.addEventListener('click',function(e){
+    var el=e.target.closest&&e.target.closest('button,[role="button"],[role="switch"],[data-goto],[data-toast],[data-sstate],.work,.thread');
+    if(!el) return;
+    var title=el.querySelector('.work-t,.thread-n,.rr-t,.eb-t,.eb-logo,.vnm-t,.m-n');
+    var label=(el.getAttribute('aria-label')||(title||el).textContent||'').replace(/\s+/g,' ').trim().slice(0,120);
+    log('tap',label+(el.dataset.toast?' → '+el.dataset.toast:''));
+  },true);
+  document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') flush(true); });
+  addEventListener('pagehide',function(){ log('app_close'); flush(true); });
+  log('app_open','v2');
+
+  return {
+    log:log,
+    setScreen:function(s){ screen=s; },
+    getName:function(){ return name; },
+    setName:function(n){ name=n; try{ sessionStorage.setItem('tpa-name',n); }catch(e){} log('name_given',n); }
+  };
+})();
+</script>
+<script>
+(function(){
+  var phone=document.getElementById('phone'), toastEl=document.getElementById('toast'), tT;
+  function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(tT);
+    tT=setTimeout(function(){toastEl.classList.remove('show');},2000);}
+
+  var screens={home:'s-home',people:'s-people',chase:'s-chase',events:'s-events',me:'s-me',
+    event:'s-event',eventpast:'s-eventpast',search:'s-search',notif:'s-notif'};
+  var titles={home:'Turning Point Action',people:'People',chase:'Chase',events:'Events',me:'Me',
+    event:'Maryvale launch',eventpast:'Build the Red Wall 2025',
+    search:'Search',notif:'Notifications'};
+  var parentTab={event:'events',eventpast:'events'};
+  var navbtns=document.querySelectorAll('.navbtn');
+  var chaseBtn=document.getElementById('chaseBtn');
+  var lastMode=0, lastDetailParent=null;
+  var panes=['p-doors','p-calls','p-texts','p-mail'];
+
+  var overlays={search:1,notif:1};
+  var returnTo='home', current='home';
+
+  function go(key){
+    if(overlays[key] && !overlays[current]) returnTo=current;
+    current=key;
+    tpaLog.setScreen(key); tpaLog.log('screen',titles[key]);
+    if(key==='search'){ clearMic(); setSearch('empty'); }
+    Object.keys(screens).forEach(function(k){
+      document.getElementById(screens[k]).classList.toggle('on',k===key);
+    });
+    var tab=parentTab[key]||(overlays[key]?(parentTab[returnTo]||returnTo):key);
+    navbtns.forEach(function(b){b.classList.toggle('on',b.dataset.nav===tab);});
+    chaseBtn.classList.toggle('on',tab==='chase');
+    phone.classList.toggle('detail',!!parentTab[key]||key==='notif');
+    phone.classList.toggle('hidebar',key==='search');
+    lastDetailParent=parentTab[key]||null;
+    document.getElementById('wordmark').textContent=titles[key];
+    var b=document.getElementById(screens[key]).querySelector('.body');
+    if(b) b.scrollTop=0;
+  }
+
+  function setMode(i){
+    lastMode=i;
+    document.querySelectorAll('[data-cseg]').forEach(function(x,n){x.classList.toggle('on',n===i);});
+    panes.forEach(function(p,n){document.getElementById(p).classList.toggle('on',n===i);});
+  }
+
+  navbtns.forEach(function(b){b.addEventListener('click',function(){go(b.dataset.nav);});});
+  document.addEventListener('keydown',function(e){
+    if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('ebtn')){
+      e.preventDefault(); e.target.click();
+    }
+  });
+  document.getElementById('backBtn').addEventListener('click',function(){
+    if(overlays[current]) go(returnTo); else go(lastDetailParent||'home');
+  });
+  chaseBtn.addEventListener('click',function(){go('chase');setMode(lastMode);});
+
+  var hpanes=['h-you','h-feeds','h-team'];
+  function setHomePane(i){
+    document.querySelectorAll('[data-hseg]').forEach(function(x,n){x.classList.toggle('on',n===i);});
+    hpanes.forEach(function(p,n){document.getElementById(p).classList.toggle('on',n===i);});
+    var b=document.getElementById('s-home').querySelector('.body');
+    if(b) b.scrollTop=0;
+  }
+  document.querySelectorAll('[data-hseg]').forEach(function(s){
+    s.addEventListener('click',function(){setHomePane(+s.dataset.hseg);});
+  });
+
+  var ppanes=['pp-match','pp-connect'];
+  document.querySelectorAll('[data-pseg]').forEach(function(x){
+    x.addEventListener('click',function(){
+      var i=+x.dataset.pseg;
+      document.querySelectorAll('[data-pseg]').forEach(function(y,n){y.classList.toggle('on',n===i);});
+      ppanes.forEach(function(pp,n){document.getElementById(pp).classList.toggle('on',n===i);});
+      var b=document.getElementById('s-people').querySelector('.body');
+      if(b) b.scrollTop=0;
+    });
+  });
+
+  document.querySelectorAll('[data-acc]').forEach(function(h){
+    h.addEventListener('click',function(){
+      document.getElementById(h.dataset.acc).classList.toggle('open');
+    });
+  });
+
+  document.querySelectorAll('.srcbar .srcchip,.evfilter .srcchip').forEach(function(c){
+    c.addEventListener('click',function(){
+      c.parentNode.querySelectorAll('.srcchip').forEach(function(x){x.classList.remove('on');});
+      c.classList.add('on'); toast('Filtered to '+c.textContent);
+    });
+  });
+
+  document.querySelectorAll('[data-cseg]').forEach(function(s){
+    s.addEventListener('click',function(){setMode(+s.dataset.cseg);});
+  });
+
+  /* ---- doors canvassing: doors.html opens full screen for the chosen campaign ---- */
+  var doorsView=document.getElementById('doorsView'), doorsFrame=document.getElementById('doorsFrame');
+  var doorsNames={vnm:'Voters Near Me',maryvale3:'Maryvale — Turf 3',estrella9:'Estrella Village — Turf 9'};
+  function openDoors(c){
+    doorsFrame.src='../doors.html?c='+encodeURIComponent(c);
+    doorsView.classList.add('on'); doorsView.setAttribute('aria-hidden','false');
+    phone.classList.add('doors-on');
+    tpaLog.setScreen('doors'); tpaLog.log('screen','Doors — '+(doorsNames[c]||c));
+  }
+  function closeDoors(){
+    doorsView.classList.remove('on'); doorsView.setAttribute('aria-hidden','true');
+    phone.classList.remove('doors-on');
+    doorsFrame.src='about:blank';
+    tpaLog.setScreen(current); tpaLog.log('screen',titles[current]);
+  }
+  window.addEventListener('message',function(e){
+    if(e.source!==doorsFrame.contentWindow||!e.data||e.data.source!=='tpa-doors') return;
+    if(e.data.type==='close') closeDoors();
+    else if(e.data.type==='tap') tpaLog.log('tap',e.data.detail);
+    else if(e.data.type==='result') tpaLog.log('doors_result',e.data.detail);
+  });
+
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('[data-toast],[data-goto],[data-rsvp],[data-chase],[data-doors]');
+    if(!t) return;
+    if(t.dataset.doors){ openDoors(t.dataset.doors); return; }
+    if(t.hasAttribute('data-chase')){
+      go('chase'); setMode(+t.dataset.chase);
+      if(t.dataset.toast) toast(t.dataset.toast);
+      return;
+    }
+    if(t.dataset.goto){go(t.dataset.goto);return;}
+    if(t.hasAttribute('data-rsvp')){
+      var on=t.classList.toggle('fill');
+      t.textContent=on?'Going':'RSVP';
+      toast(on?"You're on the list":'RSVP removed');
+      return;
+    }
+    if(t.dataset.toast) toast(t.dataset.toast);
+  });
+
+  /* ---- search: states, dictation, result entry ---- */
+  var spanes=['sp-empty','sp-listen','sp-results'], micTimers=[];
+  function clearMic(){ micTimers.forEach(clearTimeout); micTimers=[]; }
+  function setSearch(state){
+    var idx={empty:0,listen:1,results:2}[state];
+    spanes.forEach(function(x,n){ document.getElementById(x).classList.toggle('on',n===idx); });
+    var q=document.getElementById('sqText');
+    if(state==='empty'){ q.textContent='Search turfs, voters, events, people'; q.classList.add('ph'); }
+    if(state==='listen'){ q.textContent='Listening…'; q.classList.remove('ph'); }
+    if(state==='results'){ q.textContent="Who still hasn't returned a ballot?"; q.classList.remove('ph'); }
+    document.getElementById('micBtn').classList.toggle('on',state==='listen');
+    var b=document.getElementById('s-search').querySelector('.body');
+    if(b) b.scrollTop=0;
+  }
+
+  document.getElementById('micBtn').addEventListener('click',function(){
+    if(current!=='search'){ go('search'); }
+    if(document.getElementById('sp-listen').classList.contains('on')){ clearMic(); setSearch('empty'); return; }
+    setSearch('listen');
+    var steps=["who","who still","who still hasn't","who still hasn't returned a",
+               "who still hasn't returned a ballot?"];
+    steps.forEach(function(t,i){
+      micTimers.push(setTimeout(function(){
+        document.getElementById('lPartial').innerHTML='<b>'+t+'</b>';
+      },340+i*400));
+    });
+    micTimers.push(setTimeout(function(){ setSearch('results'); },340+steps.length*400+480));
+  });
+
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('[data-sstate],[data-searchback]');
+    if(!t) return;
+    if(t.hasAttribute('data-searchback')){ clearMic(); go(returnTo); return; }
+    clearMic(); setSearch(t.dataset.sstate);
+  });
+
+  /* ---- notifications: mark all read ---- */
+  document.getElementById('markAll').addEventListener('click',function(){
+    document.querySelectorAll('#s-notif .nrow.unread').forEach(function(r){
+      r.classList.remove('unread');
+      var d=r.querySelector('.n-dot'); if(d) d.remove();
+    });
+    var bd=document.getElementById('bellDot'); if(bd) bd.remove();
+    toast('All caught up');
+  });
+
+  document.querySelectorAll('.nbar .srcchip').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('.nbar .srcchip').forEach(function(x){x.classList.remove('on');});
+      c.classList.add('on'); toast('Filtered to '+c.textContent);
+    });
+  });
+
+  /* ---- appearance: follow the system, overridable in Me ---- */
+  var root=document.documentElement, themeRow=document.getElementById('themeRow');
+  var meta=document.querySelector('meta[name="theme-color"]'), mq=window.matchMedia('(prefers-color-scheme: dark)');
+  var saved=null; try{ saved=localStorage.getItem('tpa-theme'); }catch(e){}
+  function applyTheme(dark){
+    root.classList.toggle('dark',dark);
+    themeRow.setAttribute('aria-checked',String(dark));
+    if(meta) meta.setAttribute('content',dark?'#16181C':'#FFFFFF');
+  }
+  applyTheme(saved?saved==='dark':mq.matches);
+  if(mq.addEventListener) mq.addEventListener('change',function(e){ if(!saved) applyTheme(e.matches); });
+  function toggleTheme(){
+    var dark=!root.classList.contains('dark'); saved=dark?'dark':'light';
+    try{ localStorage.setItem('tpa-theme',saved); }catch(e){}
+    applyTheme(dark);
+  }
+  themeRow.addEventListener('click',toggleTheme);
+  themeRow.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleTheme(); } });
+
+  /* ---- status bar clock (framed desktop view) ---- */
+  function tick(){ var d=new Date(), h=d.getHours()%12||12, mm=('0'+d.getMinutes()).slice(-2);
+    document.getElementById('clock').textContent=h+':'+mm; }
+  tick(); setInterval(tick,15000);
+})();
+</script>
+<script>
+/* ============================================================
+   GROK REALTIME VOICE
+   The page never holds an xAI key. It asks the Cloudflare Worker
+   (worker/token-worker.js) for a short-lived client secret, then
+   opens the realtime socket with that secret.
+   ============================================================ */
+(function(){
+  // Set this to your deployed Worker, e.g. 'https://tpa-voice-token.<you>.workers.dev/token'
+  var TOKEN_URL='https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/token';
+  var REALTIME_URL='wss://api.x.ai/v1/realtime';
+  var RATE=24000;
+  // Close the session after this much quiet, so an open line isn't billed while nobody talks.
+  var IDLE_MS=8000;
+
+  var INSTRUCTIONS=[
+    "You are the voice assistant inside TPACTION, the Turning Point Action volunteer app.",
+    "You're talking with Matt Ramirez, a field activist on the Phoenix West team. This is a demo, so everything below is example data.",
+    "Speak naturally and briefly: one to three short sentences, no lists or markdown. Offer one next step when it helps.",
+    "Example data:",
+    "- This week: 58 doors, 31 calls, 88 texts, 12 postcards, 4-day streak. 18 voters moved forward a ballot stage, up from 11.",
+    "- Weekly goals: doors 312 of 400, calls 62 of 150, texts 340 of 300, postcards 12 of 50. Three days left.",
+    "- Turfs: Maryvale Turf 3, 42 doors left of 100, 9 ballot-chase stops, next door 1408 N 49th Dr (Rosa Alvarez, mailed her ballot Friday; husband Hector hasn't filled his out). Estrella Village Turf 9, 140 doors, not started. Available nearby: Alhambra Turf 2 (120 doors), Encanto Turf 5 (95 doors).",
+    "- Chase list: 23 voters on Matt's turfs requested a ballot and haven't returned it. The Maricopa deadline is 6 days away.",
+    "- Calls: Maricopa ballot chase paused with 74 left. People you know: 14. Super Chase turnout: 210.",
+    "- Texts waiting: Rosa Alvarez asked whether mailing takes long; Thomas Nguyen asked where to drop his ballot off; Danielle Okoro opted out.",
+    "- Matched contacts: 14 of 247. Low-propensity: Miguel Santos, Priya Raman, Walter Boyd.",
+    "- Team Phoenix West: 2,847 of 4,000 doors this week. Leaders: Sandra Beltran (regional director), Ray Castillo (field organizer). Maria Gutierrez is knocking Turf 7 now.",
+    "- Events: Maryvale Door-Knock Launch today at Cortez Park (heat advisory, 104F by 1 PM). Ballot Chase Call Night Sep 13, remote, 6 PM. New Canvasser Training Sep 14, Glendale. Super Chase Phoenix Oct 3. Build the Red Wall Oct 18.",
+    "For official voting rules, deadlines or drop-off locations, tell the volunteer to confirm with the county elections office. Don't make up facts beyond this data."
+  ].join("\n");
+
+  function instructionsFor(name){
+    return INSTRUCTIONS+"\n"+(name?
+      "The volunteer's first name is "+name+". Don't ask for it again; use it naturally now and then.":
+      "Start the conversation yourself: in one short sentence, greet them as the TPACTION assistant and ask for their first name. "+
+      "When they tell you, call save_name with it, then ask how you can help. If they'd rather not say, carry on without it.");
+  }
+
+  var NAME_TOOL={type:'function',name:'save_name',
+    description:"Save the volunteer's first name as soon as they tell you.",
+    parameters:{type:'object',properties:{name:{type:'string',description:'First name as the volunteer said it'}},required:['name']}};
+
+  var phone=document.getElementById('phone');
+  var sheet=document.getElementById('voice'), fab=document.getElementById('micFab');
+  var orb=document.getElementById('vOrb'), pill=document.getElementById('vPill');
+  var statusEl=document.getElementById('vStatus'), hintEl=document.getElementById('vHint');
+  var logEl=document.getElementById('vLog'), suggEl=document.getElementById('vSugg');
+  var muteBtn=document.getElementById('vMute');
+
+  var gen=0, S=null;
+
+  function setState(state,msg){
+    if(state==='error') tpaLog.log('voice_error',msg);
+    var text={connecting:'Connecting…',listening:'Listening',speaking:'Grok is speaking',
+      muted:'Microphone muted',paused:'Voice paused',error:"Couldn't start voice"}[state];
+    statusEl.textContent=text;
+    if(msg!==undefined) hintEl.textContent=msg;
+    pill.textContent={connecting:'Connecting',listening:'Live',speaking:'Live',muted:'Live',paused:'Paused',error:'Offline'}[state];
+    pill.className='v-pill'+(state==='error'?' err':(state==='connecting'||state==='paused'?'':' live'));
+    orb.className='v-orb'+(state==='speaking'?' speaking':'')+(state==='connecting'?' connecting idle':'')+
+      (state==='error'||state==='muted'||state==='paused'?' idle':'');
+    if(S) S.state=state;
+  }
+
+  function addMsg(kind,text){
+    var d=document.createElement('div');
+    d.className='v-msg '+kind; d.textContent=text;
+    logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight;
+    suggEl.style.display='none';
+    return d;
+  }
+
+  function open(){
+    phone.classList.add('voice-on');
+    sheet.classList.add('show'); sheet.setAttribute('aria-hidden','false'); sheet.inert=false;
+    logEl.textContent=''; suggEl.style.display='';
+    document.getElementById('vEnd').focus();
+    start();
+  }
+
+  function close(){
+    if(S) tpaLog.log('voice_end');
+    stop();
+    phone.classList.remove('voice-on');
+    sheet.classList.remove('show'); sheet.setAttribute('aria-hidden','true'); sheet.inert=true;
+    fab.focus();
+  }
+
+  async function start(){
+    var my=++gen;
+    tpaLog.log('voice_start');
+    S={ws:null,ctx:null,stream:null,nodes:[],sources:[],nextT:0,muted:false,pending:[],pendingN:0,
+       asst:{},calls:{},raf:0,state:'connecting',last:Date.now(),userTalking:false,busy:false,idleT:0};
+    muteBtn.setAttribute('aria-pressed','false'); muteBtn.setAttribute('aria-label','Mute microphone');
+    setState('connecting','Ask about your turf, ballots, events or your team');
+
+    if(!TOKEN_URL){
+      setState('error','Voice isn\'t connected yet — add the Worker URL to TOKEN_URL in index.html.');
+      return;
+    }
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.WebSocket){
+      setState('error','This browser can\'t do live voice. Try Safari or Chrome.');
+      return;
+    }
+    try{
+      // Created inside the tap so iOS lets audio play.
+      var AC=window.AudioContext||window.webkitAudioContext, ctx;
+      try{ ctx=new AC({sampleRate:RATE}); }catch(e){ ctx=new AC(); }
+      S.ctx=ctx; await ctx.resume();
+
+      var stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+      if(my!==gen){ stream.getTracks().forEach(function(t){t.stop();}); return; }
+      S.stream=stream;
+
+      var res=await fetch(TOKEN_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+      if(!res.ok){
+        var why=''; try{ var b=await res.json(); why=b.error?': '+b.error+(b.status?' '+b.status:''):''; }catch(e){}
+        throw new Error('token '+res.status+why);
+      }
+      var pass=await res.json();
+      if(my!==gen) return;
+      if(!pass.token) throw new Error('token missing');
+
+      var url=REALTIME_URL+(pass.model?'?model='+encodeURIComponent(pass.model):'');
+      var ws=new WebSocket(url,['xai-client-secret.'+pass.token]);
+      S.ws=ws;
+      ws.onopen=function(){
+        if(my!==gen) return;
+        ws.send(JSON.stringify({type:'session.update',session:{
+          voice:pass.voice||'Ara',
+          instructions:instructionsFor(tpaLog.getName()),
+          turn_detection:{type:'server_vad'},
+          audio:{input:{format:{type:'audio/pcm',rate:RATE}},output:{format:{type:'audio/pcm',rate:RATE}}}
+        }}));
+        // Tools go in their own update so the session above still applies if they're refused.
+        ws.send(JSON.stringify({type:'session.update',session:{tools:[NAME_TOOL]}}));
+        if(!tpaLog.getName()) ws.send(JSON.stringify({type:'response.create'}));
+        tpaLog.log('voice_connected');
+        startCapture(my);
+        setState('listening','Go ahead — Grok is listening');
+        S.last=Date.now();
+        S.idleT=setInterval(function(){ if(my===gen) checkIdle(); },250);
+      };
+      ws.onmessage=function(e){ if(my===gen) onEvent(JSON.parse(e.data)); };
+      ws.onclose=function(e){
+        if(my!==gen) return;
+        var wasLive=S.state!=='connecting';
+        stopMedia();
+        setState('error',wasLive?'The voice session ended. Tap the orb to start again.':
+          'Grok refused the connection'+(e.code?' ('+e.code+')':'')+'. Check the Worker and xAI key.');
+      };
+    }catch(err){
+      if(my!==gen) return;
+      stopMedia();
+      var m=String(err&&err.message||err);
+      setState('error',
+        /NotAllowed|Permission|denied/i.test(err&&err.name+m)?'Microphone access was blocked. Allow it in your browser settings and try again.':
+        /^token/.test(m)?'Couldn\'t get a voice pass from the server ('+m.replace('token ','')+').':
+        'Something went wrong starting voice. Tap the orb to try again.');
+    }
+  }
+
+  function startCapture(my){
+    var ctx=S.ctx, src=ctx.createMediaStreamSource(S.stream);
+    var an=ctx.createAnalyser(); an.fftSize=512; src.connect(an); S.micAn=an;
+    var sink=ctx.createGain(); sink.gain.value=0; sink.connect(ctx.destination);
+    var chunk=Math.round(ctx.sampleRate*0.1);
+    function onFrames(f){
+      if(my!==gen||S.muted||!S.ws||S.ws.readyState!==1) return;
+      S.pending.push(f); S.pendingN+=f.length;
+      if(S.pendingN<chunk) return;
+      var all=new Float32Array(S.pendingN), o=0;
+      S.pending.forEach(function(p){all.set(p,o);o+=p.length;});
+      S.pending=[]; S.pendingN=0;
+      S.ws.send(JSON.stringify({type:'input_audio_buffer.append',audio:toB64(resample(all,ctx.sampleRate,RATE))}));
+    }
+    function scriptTap(){
+      var sp=ctx.createScriptProcessor(4096,1,1);
+      sp.onaudioprocess=function(e){onFrames(new Float32Array(e.inputBuffer.getChannelData(0)));};
+      src.connect(sp); sp.connect(sink); S.nodes.push(sp);
+    }
+    if(ctx.audioWorklet&&window.AudioWorkletNode){
+      var code="registerProcessor('pcm-tap',class extends AudioWorkletProcessor{process(i){var c=i[0]&&i[0][0];if(c)this.port.postMessage(c.slice(0));return true;}});";
+      var blobUrl=URL.createObjectURL(new Blob([code],{type:'application/javascript'}));
+      ctx.audioWorklet.addModule(blobUrl).then(function(){
+        if(my!==gen) return;
+        var node=new AudioWorkletNode(ctx,'pcm-tap');
+        node.port.onmessage=function(e){onFrames(e.data);};
+        src.connect(node); node.connect(sink); S.nodes.push(node);
+      },function(){ if(my===gen) scriptTap(); }).finally(function(){ URL.revokeObjectURL(blobUrl); });
+    }else{
+      scriptTap();
+    }
+    S.nodes.push(src,an,sink);
+    var out=ctx.createAnalyser(); out.fftSize=512; out.connect(ctx.destination); S.outAn=out; S.nodes.push(out);
+    meter(my);
+  }
+
+  function touch(){ if(S) S.last=Date.now(); }
+
+  // Quiet time only counts while nobody is talking: not while the user speaks,
+  // not while Grok is working on a reply, and not while its audio plays.
+  function checkIdle(){
+    var now=Date.now(), quiet=now-S.last;
+    if(S.sources.length){ touch(); return; }
+    if((S.userTalking||S.busy)&&quiet<60000) return;
+    if(quiet>=IDLE_MS){ sleep(); return; }
+    var left=Math.ceil((IDLE_MS-quiet)/1000);
+    if(left<=3&&(S.state==='listening'||S.state==='muted'))
+      hintEl.textContent='Pausing in '+left+'s to save minutes — say something to keep going';
+  }
+
+  function sleep(){
+    tpaLog.log('voice_paused','idle '+(IDLE_MS/1000)+'s');
+    stop();
+    setState('paused','Closed after '+(IDLE_MS/1000)+' seconds of quiet, so you aren\'t charged. Tap the orb to pick up again.');
+  }
+
+  function onEvent(ev){
+    switch(ev.type){
+      case 'response.output_audio.delta':
+      case 'response.audio.delta':
+        touch(); play(ev.delta); break;
+      case 'response.output_audio_transcript.delta':
+      case 'response.audio_transcript.delta':
+      case 'response.output_text.delta':
+      case 'response.text.delta':
+        touch();
+        var id=ev.response_id||ev.item_id||'r';
+        if(!S.asst[id]) S.asst[id]=addMsg('asst','');
+        S.asst[id].textContent+=ev.delta||'';
+        logEl.scrollTop=logEl.scrollHeight;
+        break;
+      case 'conversation.item.input_audio_transcription.completed':
+        if(ev.transcript&&ev.transcript.trim()){ addMsg('user',ev.transcript.trim()); tpaLog.log('user_said',ev.transcript.trim()); }
+        break;
+      case 'response.function_call_arguments.done':
+        onToolCall(ev.call_id,ev.name,ev.arguments);
+        break;
+      case 'response.output_item.done':
+        if(ev.item&&ev.item.type==='function_call') onToolCall(ev.item.call_id,ev.item.name,ev.item.arguments);
+        break;
+      case 'input_audio_buffer.speech_started':
+        S.userTalking=true; touch();
+        stopPlayback();
+        if(!S.muted) setState('listening','');
+        break;
+      case 'input_audio_buffer.speech_stopped':
+        S.userTalking=false; S.busy=true; touch();
+        break;
+      case 'response.created':
+        S.busy=true; touch();
+        break;
+      case 'response.done':
+        S.busy=false; touch(); logReplies();
+        if(S.followUp&&S.ws&&S.ws.readyState===1){ S.followUp=false; S.ws.send(JSON.stringify({type:'response.create'})); }
+        break;
+      case 'error':
+        addMsg('sys',(ev.error&&ev.error.message)||'Grok reported an error');
+        break;
+    }
+  }
+
+  // Grok's replies are logged once each, when the response finishes or the session closes.
+  function logReplies(){
+    if(!S) return;
+    Object.keys(S.asst).forEach(function(k){
+      var el=S.asst[k];
+      if(!el.dataset.logged&&el.textContent.trim()){ el.dataset.logged='1'; tpaLog.log('grok_said',el.textContent.trim()); }
+    });
+  }
+
+  function onToolCall(callId,name,args){
+    if(!callId||S.calls[callId]) return;
+    S.calls[callId]=1;
+    var out={ok:false};
+    if(name==='save_name'){
+      try{ var n=String(JSON.parse(args||'{}').name||'').trim().slice(0,60); if(n){ tpaLog.setName(n); out={ok:true,name:n}; } }catch(e){}
+    }
+    if(!S.ws||S.ws.readyState!==1) return;
+    S.ws.send(JSON.stringify({type:'conversation.item.create',item:{type:'function_call_output',call_id:callId,output:JSON.stringify(out)}}));
+    S.followUp=true;  // Grok continues once the response that made the call has finished
+  }
+
+  function play(b64){
+    if(!b64) return;
+    var ctx=S.ctx, bin=atob(b64), n=bin.length>>1, f=new Float32Array(n);
+    for(var i=0;i<n;i++){ var v=bin.charCodeAt(2*i)|(bin.charCodeAt(2*i+1)<<8); f[i]=(v>=32768?v-65536:v)/32768; }
+    var buf=ctx.createBuffer(1,n,RATE); buf.getChannelData(0).set(f);
+    var s=ctx.createBufferSource(); s.buffer=buf; s.connect(S.outAn);
+    var t=Math.max(ctx.currentTime+0.04,S.nextT); s.start(t); S.nextT=t+buf.duration;
+    S.sources.push(s);
+    s.onended=function(){
+      S.sources=S.sources.filter(function(x){return x!==s;});
+      if(!S.sources.length){ touch(); if(S.state==='speaking') setState(S.muted?'muted':'listening',''); }
+    };
+    if(S.state!=='speaking') setState('speaking','Talk any time to interrupt');
+  }
+
+  function stopPlayback(){
+    if(!S) return;
+    S.sources.forEach(function(s){ try{s.onended=null;s.stop();}catch(e){} });
+    S.sources=[]; S.nextT=0;
+  }
+
+  function meter(my){
+    var data=new Uint8Array(256);
+    function lvl(an){ if(!an) return 0; an.getByteTimeDomainData(data); var sum=0;
+      for(var i=0;i<data.length;i++){ var x=(data[i]-128)/128; sum+=x*x; } return Math.min(1,Math.sqrt(sum/data.length)*4); }
+    (function tick(){
+      if(my!==gen) return;
+      var l=S.state==='speaking'?lvl(S.outAn):(S.muted?0:lvl(S.micAn));
+      orb.style.setProperty('--lvl',l.toFixed(3));
+      S.raf=requestAnimationFrame(tick);
+    })();
+  }
+
+  function stopMedia(){
+    if(!S) return;
+    cancelAnimationFrame(S.raf); clearInterval(S.idleT); orb.style.setProperty('--lvl','0');
+    stopPlayback();
+    if(S.stream) S.stream.getTracks().forEach(function(t){t.stop();});
+    S.nodes.forEach(function(n){ try{n.disconnect();}catch(e){} });
+    S.nodes=[];
+    if(S.ctx&&S.ctx.state!=='closed') S.ctx.close();
+    S.ctx=null; S.stream=null;
+  }
+
+  function stop(){
+    gen++;
+    if(!S) return;
+    logReplies();
+    if(S.ws){ S.ws.onclose=null; try{S.ws.close();}catch(e){} }
+    stopMedia();
+    S=null;
+  }
+
+  function resample(input,from,to){
+    if(from===to) return input;
+    var ratio=from/to, len=Math.floor(input.length/ratio), out=new Float32Array(len);
+    for(var i=0;i<len;i++){ var p=i*ratio, j=Math.floor(p), k=Math.min(j+1,input.length-1), w=p-j;
+      out[i]=input[j]*(1-w)+input[k]*w; }
+    return out;
+  }
+
+  function toB64(f32){
+    var bytes=new Uint8Array(f32.length*2);
+    for(var i=0;i<f32.length;i++){ var s=Math.max(-1,Math.min(1,f32[i])), v=s<0?s*0x8000:s*0x7FFF;
+      v=v|0; bytes[2*i]=v&255; bytes[2*i+1]=(v>>8)&255; }
+    var bin='', step=0x8000;
+    for(var o=0;o<bytes.length;o+=step) bin+=String.fromCharCode.apply(null,bytes.subarray(o,o+step));
+    return btoa(bin);
+  }
+
+  sheet.inert=true;
+  fab.addEventListener('click',open);
+  document.querySelectorAll('[data-voice]').forEach(function(b){ b.addEventListener('click',open); });
+  document.getElementById('vEnd').addEventListener('click',close);
+  document.getElementById('vClose').addEventListener('click',close);
+  orb.setAttribute('role','button'); orb.tabIndex=0; orb.setAttribute('aria-label','Restart voice');
+  function retry(){ if(sheet.classList.contains('show')&&(!S||S.state==='error')) start(); }
+  orb.addEventListener('click',retry);
+  orb.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); retry(); } });
+  muteBtn.addEventListener('click',function(){
+    if(!S||S.state==='error'||S.state==='connecting') return;
+    S.muted=!S.muted; S.pending=[]; S.pendingN=0; touch();
+    if(S.stream) S.stream.getAudioTracks().forEach(function(t){t.enabled=!S.muted;});
+    muteBtn.setAttribute('aria-pressed',String(S.muted));
+    muteBtn.setAttribute('aria-label',S.muted?'Unmute microphone':'Mute microphone');
+    if(S.state!=='speaking') setState(S.muted?'muted':'listening',S.muted?'Tap the mic to talk again':'');
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&sheet.classList.contains('show')) close(); });
+  window.addEventListener('pagehide',stop);
+})();
+</script>
+</body>
+</html>

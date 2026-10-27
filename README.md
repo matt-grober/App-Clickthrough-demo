@@ -6,6 +6,14 @@ search, notifications, turf map). All names, numbers and addresses are example d
 screen; on a desktop it shows inside a phone frame. It follows the system light/dark setting, and you can
 override that in Me › Dark mode.
 
+## Versions
+
+- `/` (`index.html`): the current app.
+- `/v2/` (`v2/index.html`): the Figma revisions: Montserrat, small-caps titles, Superfeed brand colors, a solid
+  `#3667F6` Chase button with a lightning bolt, and the screen-by-screen changes. Built from `index.html`; the
+  revisions are the `V2 — FIGMA REVISIONS` style block at the end of the stylesheet plus a few markup changes.
+  Both versions share `doors.html`, the Worker and the activity log (v2 logs `app_open` with detail `v2`).
+
 ## Doors canvassing
 
 `doors.html` is the canvassing map (voter sheet, stages, skips, voter record, contact log), kept as designed. The app
