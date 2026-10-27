@@ -13,8 +13,11 @@ override that in Me › Dark mode.
   `V2 — FIGMA REVISIONS` style block at the end of the stylesheet plus a few markup changes.
 - `/v1/` (`v1/index.html`): the previous design, kept so it can be restored.
 - `/v2/` redirects to `/`.
+- `/v3/` (`v3/index.html` + `v3/doors.html`): the main app with the Canvassing V3 map behind Chase → Doors
+  (Montserrat, brand-blue header and buttons, new stage colors, green talked / red tried marks, red NOT HOME,
+  yellow SKIP). The main app at `/` still uses `doors.html`.
 
-All versions share `doors.html`, the Worker and the activity log; `app_open` carries `v2` or `v1`.
+All versions share `doors.html`, the Worker and the activity log; `app_open` carries `v3`, `v2` or `v1`.
 
 ## Doors canvassing
 
