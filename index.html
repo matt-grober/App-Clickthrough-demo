@@ -2308,7 +2308,7 @@ window.tpaLog=(function(){
   },true);
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') flush(true); });
   addEventListener('pagehide',function(){ log('app_close'); flush(true); });
-  log('app_open','v2');
+  log('app_open','v3');
 
   return {
     log:log,

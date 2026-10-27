@@ -8,16 +8,14 @@ override that in Me › Dark mode.
 
 ## Versions
 
-- `/` (`index.html`): the app, with the Figma revisions (Montserrat, small-caps titles, Superfeed brand colors,
-  solid `#3667F6` Chase button with a lightning bolt, flat voice mic). The revisions are the
-  `V2 — FIGMA REVISIONS` style block at the end of the stylesheet plus a few markup changes.
-- `/v1/` (`v1/index.html`): the previous design, kept so it can be restored.
-- `/v2/` redirects to `/`.
-- `/v3/` (`v3/index.html` + `v3/doors.html`): the main app with the Canvassing V3 map behind Chase → Doors
-  (Montserrat, brand-blue header and buttons, new stage colors, green talked / red tried marks, red NOT HOME,
-  yellow SKIP). The main app at `/` still uses `doors.html`.
+- `/` (`index.html` + `doors.html`): the main app. Figma revisions (Montserrat, small caps, Superfeed brand
+  colors, flat voice mic) with the Canvassing V3 map behind Chase → Doors.
+- `/v2/`: the previous main version, the Figma revisions with the earlier navy canvassing map.
+- `/v1/`: the original design with the earlier canvassing map.
+- `/v3/` redirects to `/`.
 
-All versions share `doors.html`, the Worker and the activity log; `app_open` carries `v3`, `v2` or `v1`.
+Each version folder has its own `doors.html`. All versions share the Worker and the activity log;
+`app_open` carries `v3`, `v2` or `v1`.
 
 ## Doors canvassing
 

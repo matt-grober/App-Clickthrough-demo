@@ -2275,7 +2275,7 @@ window.tpaLog=(function(){
   var doorsView=document.getElementById('doorsView'), doorsFrame=document.getElementById('doorsFrame');
   var doorsNames={vnm:'Voters Near Me',maryvale3:'Maryvale — Turf 3',estrella9:'Estrella Village — Turf 9'};
   function openDoors(c){
-    doorsFrame.src='../doors.html?c='+encodeURIComponent(c);
+    doorsFrame.src='doors.html?c='+encodeURIComponent(c);
     doorsView.classList.add('on'); doorsView.setAttribute('aria-hidden','false');
     phone.classList.add('doors-on');
     tpaLog.setScreen('doors'); tpaLog.log('screen','Doors — '+(doorsNames[c]||c));

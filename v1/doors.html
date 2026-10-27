@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TPACTION Canvassing V3</title>
+<title>TPACTION — Map with stage waypoints + contact history</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#3667F6;
-    --navy-deep:#03129C;
+    --navy:#173A6B;
+    --navy-deep:#12305A;
     --ink:#1B1B1F;
     --muted:#8A8F98;
     --sheet:#F2F6FC;
-    --green:#7EF698;
-    --red:#EB4035;
-    --done:#25A53A;
-    --tried:#EB4035;
+    --green:#8CE39C;
+    --red:#E03B3B;
+    --done:#2E7D4F;
+    --tried:#B0700F;
     --map-bg:#EDEDE9;
     --street:#FFFFFF;
     --street-edge:#E2E2DE;
@@ -30,7 +30,7 @@
   html,body{height:100%}
   body{
     margin:0;
-    font-family:'Montserrat','Avenir Next','Segoe UI',system-ui,sans-serif;
+    font-family:'Poppins','Avenir Next','Segoe UI',system-ui,sans-serif;
     background:#0D1B2E;
     color:var(--ink);
     display:flex;
@@ -67,7 +67,7 @@
   .map{position:absolute;inset:0;z-index:0}
   .map svg{width:100%;height:100%;display:block}
   .streetlabel{
-    font-family:'Montserrat',sans-serif;font-size:9.5px;fill:#9BA0A8;font-weight:500;
+    font-family:'Poppins',sans-serif;font-size:9.5px;fill:#9BA0A8;font-weight:500;
     letter-spacing:.2px;
   }
 
@@ -217,7 +217,7 @@
     background:#EEF2F8;color:#4A5162;font-style:normal;
   }
   .lrow .tag.warn{background:#FCF3E3;color:#B0700F}
-  .lrow .tag.ok{background:#E4F3E9;color:#25A53A}
+  .lrow .tag.ok{background:#E4F3E9;color:#2E7D4F}
   .lrow .lright{flex:none;display:grid;place-items:center;color:#C2CAD8}
   .lrow.done{background:#F7F9FD}
   .lrow.done .lname{color:#5A6372}
@@ -300,7 +300,7 @@
     background:#EAF0FA;color:var(--navy);
   }
   .hent .ht{font-size:12.5px;line-height:1.55;color:#3A4152}
-  .hent.mine3{border-left-color:#25A53A}
+  .hent.mine3{border-left-color:#2E7D4F}
   .hgroup{font-size:8.5px;letter-spacing:.17em;color:var(--muted);font-weight:700;margin:16px 4px 2px}
   .hempty{
     background:#fff;border-radius:13px;padding:20px;text-align:center;
@@ -308,7 +308,7 @@
   }
   .hent.ownedit{cursor:pointer}
   .hent .edtag{
-    font-size:8px;letter-spacing:.12em;font-weight:700;color:#25A53A;
+    font-size:8px;letter-spacing:.12em;font-weight:700;color:#2E7D4F;
     background:#E4F3E9;border-radius:5px;padding:3px 6px;
   }
   .hent .hwin{font-size:10px;color:var(--muted);font-weight:500;margin-top:6px}
@@ -323,8 +323,8 @@
     padding:11px 12px;font-size:12.5px;font-weight:600;letter-spacing:.01em;
   }
   .worked.on{display:flex}
-  .worked.contact{background:#E6F8EA;color:var(--done)}
-  .worked.attempt{background:#FDECEA;color:var(--tried)}
+  .worked.contact{background:#E4F3E9;color:var(--done)}
+  .worked.attempt{background:#FCF3E3;color:var(--tried)}
   .worked .wchk{
     width:24px;height:24px;display:grid;place-items:center;flex:none;
   }
@@ -374,7 +374,6 @@
     font-family:inherit;font-size:13.5px;color:var(--muted);text-align:center;
     cursor:pointer;letter-spacing:.01em;
   }
-  .hhline.multi{color:var(--navy);font-weight:500}
   .hhline .car{display:inline-block;margin-left:6px;font-size:10px;transition:transform .2s ease}
   .hhline.open .car{transform:rotate(180deg)}
   .hhlist{max-height:0;overflow:hidden;transition:max-height .25s ease}
@@ -393,8 +392,8 @@
   .hhlist .row .sub{display:block}
   .hhlist .row .tick2{flex:none;display:grid;place-items:center}
   .hhlist .row .swap{
-    font-size:8.5px;letter-spacing:.14em;font-weight:700;color:#fff;
-    background:var(--navy);border-radius:7px;padding:6px 8px;flex:none;
+    font-size:8.5px;letter-spacing:.14em;font-weight:700;color:var(--navy);
+    background:#EAF0FA;border-radius:7px;padding:6px 8px;flex:none;
   }
   .vflag{
     display:none;margin-top:12px;text-align:center;font-size:11px;font-weight:600;
@@ -431,8 +430,7 @@
 
   /* action triad */
   .triad{margin-top:18px;display:flex;flex-direction:column;gap:11px}
-  .btn-skip{border-color:#F3B85C;color:#F3B85C;background:#fff}
-  #notHomeBtn{border-color:var(--red);color:var(--red)}
+  .btn-skip{border-color:#D98A1F;color:#B0700F;background:#fff}
 
   /* skip + stub sheets */
   .skiphead{margin:0 0 4px;font-size:17px;font-weight:600}
@@ -504,10 +502,10 @@
   .frow .v{flex:1.25;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.35;word-break:break-word}
   .frow .v.empty{color:#B9C0CC;font-weight:500}
   .frow .lock{flex:none;opacity:.4;margin-top:2px}
-  .frow.dirty{box-shadow:inset 0 0 0 1.6px #25A53A}
+  .frow.dirty{box-shadow:inset 0 0 0 1.6px #2E7D4F}
   .frow .mine{
     display:inline-block;margin-left:7px;font-size:8px;letter-spacing:.12em;font-weight:700;
-    color:#25A53A;background:#E4F3E9;border-radius:5px;padding:2px 5px;vertical-align:1px;
+    color:#2E7D4F;background:#E4F3E9;border-radius:5px;padding:2px 5px;vertical-align:1px;
   }
   .frow .sens{
     display:inline-block;margin-left:6px;font-size:8px;letter-spacing:.1em;font-weight:700;
@@ -624,7 +622,7 @@
     width:38px;height:38px;border-radius:50%;border:0;background:var(--navy);color:#fff;
     display:grid;place-items:center;cursor:pointer;flex:none;
   }
-  .mic.live{background:#EB4035;animation:mp 1.3s infinite}
+  .mic.live{background:#C0392B;animation:mp 1.3s infinite}
   @keyframes mp{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.5)}70%{box-shadow:0 0 0 11px rgba(192,57,43,0)}}
   .chint{flex:1;font-size:11px;color:var(--muted);line-height:1.4}
   .ccount{font-size:11px;color:#B9C0CC;font-weight:600;flex:none}
@@ -645,7 +643,7 @@
     background:#EAF0FA;color:var(--navy);
   }
   .logitem .txt{font-size:13.5px;line-height:1.6;color:#3A4152}
-  .logitem.mine2{border-left-color:#25A53A}
+  .logitem.mine2{border-left-color:#2E7D4F}
   .logempty{
     background:#fff;border-radius:14px;padding:20px;text-align:center;
     font-size:12.5px;color:var(--muted);line-height:1.6;
@@ -860,7 +858,7 @@
         <span id="vName">—</span><span class="chev">»»</span>
       </button>
       <button class="hB" id="hB" aria-label="Contact history">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3667F6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 2"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#173A6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 2"/></svg>
         <span class="hBn" id="hBn">0</span>
       </button>
     </div>
@@ -950,12 +948,12 @@
       </button>
       <div class="wkey">
         <span class="kitem">
-          <span class="kdot" style="background:#25A53A">
+          <span class="kdot" style="background:#2E7D4F">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
           </span>Talked — logged
         </span>
         <span class="kitem">
-          <span class="kdot" style="background:#EB4035">
+          <span class="kdot" style="background:#B0700F">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
           </span>Tried — no answer or skip
         </span>
@@ -1000,7 +998,7 @@
 
       <div class="accord" id="scriptAcc">
         <button class="ah">
-          <span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3667F6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-7-4-7 4z"/></svg></span>
+          <span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#173A6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-7-4-7 4z"/></svg></span>
           <span class="tt"><span class="t1">Script and survey</span><span class="t2" id="scriptSub">Open if you need it</span></span>
           <svg class="car" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
         </button>
@@ -1062,20 +1060,20 @@ function tickDisc(size,color){
 
 /* ---------------- stages ---------------- */
 const STAGES = [
-  {id:'disengaged',   name:'Disengaged',               color:'#E53935', g:'ban',    grp:'Entry criteria'},
-  {id:'inactive',     name:'Inactive',                 color:'#FF703A', g:'bang',   grp:'Entry criteria'},
-  {id:'new',          name:'New Voter',                color:'#FF8C1D', g:'bolt',   grp:'Entry criteria'},
-  {id:'indep',        name:'Independent Leads',        color:'#FDA532', g:'tack',   grp:'Entry criteria'},
-  {id:'initial',      name:'Initial Contact',          color:'#80BE46', g:'person', grp:'Engagement'},
-  {id:'followup',     name:'Follow-Up',                color:'#25A53A', g:'chat',   grp:'Engagement'},
-  {id:'pchase',       name:'Primary Chase',            color:'#168C7C', g:'bars',   grp:'Primary', cyc:'P'},
-  {id:'pcast',        name:'Cast Ballot in Primary',   color:'#1CB3CD', g:'check',  grp:'Primary', cyc:'P'},
-  {id:'pnocast',      name:'Did Not Cast in Primary',  color:'#1AA3D6', g:'ex',     grp:'Primary', cyc:'P'},
-  {id:'community',    name:'Community Follow-Up',      color:'#1892DF', g:'chats',  grp:'Engagement'},
-  {id:'commit',       name:'Commit to Vote',           color:'#5B31AC', g:'clip',   grp:'Engagement'},
-  {id:'gchase',       name:'General Chase',            color:'#7022A7', g:'bars',   grp:'General', cyc:'G'},
-  {id:'gcast',        name:'Cast Ballot in General',   color:'#8C0FA1', g:'check',  grp:'General', cyc:'G'},
-  {id:'gnocast',      name:'Did Not Cast in General',  color:'#D00057', g:'ex',     grp:'General', cyc:'G'}
+  {id:'disengaged',   name:'Disengaged',               color:'#C0392B', g:'ban',    grp:'Entry criteria'},
+  {id:'inactive',     name:'Inactive',                 color:'#CF4A2C', g:'bang',   grp:'Entry criteria'},
+  {id:'new',          name:'New Voter',                color:'#E2622A', g:'bolt',   grp:'Entry criteria'},
+  {id:'indep',        name:'Independent Leads',        color:'#E8A128', g:'tack',   grp:'Entry criteria'},
+  {id:'initial',      name:'Initial Contact',          color:'#7DB33F', g:'person', grp:'Engagement'},
+  {id:'followup',     name:'Follow-Up',                color:'#2E7D4F', g:'chat',   grp:'Engagement'},
+  {id:'pchase',       name:'Primary Chase',            color:'#1F7A87', g:'bars',   grp:'Primary', cyc:'P'},
+  {id:'pcast',        name:'Cast Ballot in Primary',   color:'#2E86DE', g:'check',  grp:'Primary', cyc:'P'},
+  {id:'pnocast',      name:'Did Not Cast in Primary',  color:'#4A90D9', g:'ex',     grp:'Primary', cyc:'P'},
+  {id:'community',    name:'Community Follow-Up',      color:'#2F6FD0', g:'chats',  grp:'Engagement'},
+  {id:'commit',       name:'Commit to Vote',           color:'#33408C', g:'clip',   grp:'Engagement'},
+  {id:'gchase',       name:'General Chase',            color:'#5B3E9B', g:'bars',   grp:'General', cyc:'G'},
+  {id:'gcast',        name:'Cast Ballot in General',   color:'#7B2D8E', g:'check',  grp:'General', cyc:'G'},
+  {id:'gnocast',      name:'Did Not Cast in General',  color:'#C2185B', g:'ex',     grp:'General', cyc:'G'}
 ];
 const S = Object.fromEntries(STAGES.map(s=>[s.id,s]));
 
@@ -1115,12 +1113,12 @@ const person     = id=>PEOPLE.find(p=>p.id===id);
 ['pcast','pnocast','gcast','gnocast'].forEach(id => S[id].src = 'file');
 
 const SKIPS = [
-  {id:'later',    lbl:'Nobody available right now', hint:'Back in tomorrow’s route',      c:'#3667F6', ic:'chat',  keep:true, note:'Nobody available'},
-  {id:'gated',    lbl:'Gated or no access',         hint:'Back in tomorrow’s route',      c:'#3667F6', ic:'ban',   keep:true, note:'Gated — no access'},
-  {id:'dog',      lbl:'Aggressive dog',             hint:'Back in tomorrow’s route',      c:'#3667F6', ic:'bang',  keep:true, note:'Dog on the property'},
-  {id:'unsafe',   lbl:'Unsafe area',                hint:'Flags the block for everyone',  c:'#EB4035', ic:'bang',  keep:false, alert:true},
-  {id:'vacant',   lbl:'Vacant or wrong address',    hint:'Removes the whole address',     c:'#909AB1', ic:'ex',    keep:false, scope:'address'},
-  {id:'moved',    lbl:'Voter has moved',            hint:'Removes the door from turf',    c:'#909AB1', ic:'ex',    keep:false},
+  {id:'later',    lbl:'Nobody available right now', hint:'Back in tomorrow’s route',      c:'#3E7BC4', ic:'chat',  keep:true, note:'Nobody available'},
+  {id:'gated',    lbl:'Gated or no access',         hint:'Back in tomorrow’s route',      c:'#3E7BC4', ic:'ban',   keep:true, note:'Gated — no access'},
+  {id:'dog',      lbl:'Aggressive dog',             hint:'Back in tomorrow’s route',      c:'#3E7BC4', ic:'bang',  keep:true, note:'Dog on the property'},
+  {id:'unsafe',   lbl:'Unsafe area',                hint:'Flags the block for everyone',  c:'#C0392B', ic:'bang',  keep:false, alert:true},
+  {id:'vacant',   lbl:'Vacant or wrong address',    hint:'Removes the whole address',     c:'#8A8F98', ic:'ex',    keep:false, scope:'address'},
+  {id:'moved',    lbl:'Voter has moved',            hint:'Removes the door from turf',    c:'#8A8F98', ic:'ex',    keep:false},
   {id:'dnc',      lbl:'Asked not to be contacted',  hint:'Suppresses this voter everywhere', c:'#1B1B1F', ic:'ban', keep:false}
 ];
 
@@ -1147,7 +1145,7 @@ function doorState(v){
   if(hh.some(p=>p.done)) return 'attempt';
   return null;
 }
-const markColor = t => t==='contact' ? '#25A53A' : '#EB4035';
+const markColor = t => t==='contact' ? '#2E7D4F' : '#B0700F';
 const workedDoors = ()=>doors().filter(v=>doorState(v));
 
 /* ---------------- pin rendering ---------------- */
@@ -1161,7 +1159,7 @@ function pinSVG(stage,mk){
   /* keep the stage readable once the pin is recoloured: cycle letter, or a stage-colour dot */
   const corner = stage.cyc
     ? `<circle cx="30" cy="30" r="9.5" fill="#fff"/>
-       <text x="30" y="33.6" text-anchor="middle" font-family="Montserrat,sans-serif"
+       <text x="30" y="33.6" text-anchor="middle" font-family="Poppins,sans-serif"
              font-size="11" font-weight="700" fill="${stage.color}">${stage.cyc}</text>`
     : (mk ? `<circle cx="30" cy="30" r="8" fill="#fff"/>
              <circle cx="30" cy="30" r="4.6" fill="${stage.color}"/>` : '');
@@ -1396,7 +1394,6 @@ function openVoter(id){
     hh.style.display='block';
     hh.innerHTML='Only registered voter at this address';
   }
-  hh.classList.toggle('multi', total>1);
   hh.classList.remove('open'); hl.classList.remove('open');
 
   const bd=document.getElementById('vBadge');
