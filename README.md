@@ -1,6 +1,8 @@
 # App-Clickthrough-demo
 App Redesign Clickable Demo
 
+See [CHANGELOG.md](CHANGELOG.md) for every change, version by version.
+
 `index.html` is a self-contained phone web app demo of the TPACTION redesign (Home, People, Chase, Events, Me,
 search, notifications, turf map). All names, numbers and addresses are example data. On a phone it runs full
 screen; on a desktop it shows inside a phone frame. It follows the system light/dark setting, and you can
