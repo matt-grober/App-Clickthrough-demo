@@ -3,10 +3,13 @@
 TPACTION clickthrough demo: a phone web app for Turning Point Action volunteers, with Grok voice,
 a canvassing map and an activity log. All voter names, addresses and notes are example data.
 
-Live: https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/ (older designs at `/v2/` and `/v1/`).
-Every change below is a commit on `main`; the hash links each entry to its exact code change.
+Live: https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/ (earlier versions at `/v3/`, `/v2/` and `/v1/`).
+Every change below is a commit on `main`; the hash identifies its exact code change
+(`https://github.com/matt-grober/App-Clickthrough-demo/commit/<hash>`).
 
 ## Fix: canvassing map under the phone's status bar (Nov 16, 2026)
+
+Commit `fa80170`.
 
 - Inside the app, the canvassing map no longer shows the design mockup's sample status bar ("2:03", battery 79)
   under the phone's real one, and no longer runs up beneath the real status bar. Its header, list, filter chip,
@@ -15,12 +18,16 @@ Every change below is a commit on `main`; the hash links each entry to its exact
 
 ## Fix: search screen (Nov 16, 2026)
 
+Commit `f33771e`.
+
 - The search bar no longer turns into a large pink square when tapped. Its placeholder text shared a class name
   (`ph`) with the event photo tiles; it now uses its own (`sq-empty`).
 - The search field shrinks so the mic button stays on screen, and search results show each name above its
   details. Fixed in all versions (`/`, `/v1/`, `/v2/`, `/v3/`).
 
 ## V4.2: "What's next" opens the voter on the map (Nov 16, 2026)
+
+Commit `254c239`.
 
 - When asked what to do next, where to go or who to chase, Grok must call `show_next_door` and recommend the voter
   it returns; it never names a voter or address without opening them on the map. The fixed "next door" line in
@@ -32,6 +39,8 @@ Every change below is a commit on `main`; the hash links each entry to its exact
   also goes to them. Tapping another door or ✕ ends the single-out. Asking for a voter by name works the same way.
 
 ## V4.1: Voice reaches every campaign and can find content (Nov 16, 2026)
+
+Commit `76d29f6`.
 
 - **`open_campaign`**: Grok can take people to any campaign type: door walk lists; Calls (Voters Near Me,
   Maricopa ballot chase, People you know, Super Chase turnout); Texts (Voters Near Me, Needs your reply,
@@ -45,6 +54,8 @@ Every change below is a commit on `main`; the hash links each entry to its exact
 
 ## V4: Voice navigation (Nov 16, 2026)
 
+Commit `a633abc`.
+
 - **Grok can drive the app.** New voice tools: `go_to_screen` (any screen or tab), `open_walk_list` (map or list;
   "last used" is remembered on the device), `show_next_door` (the closest door not worked today, with its voter
   sheet open), `open_voter` (find a voter by name across the walk lists) and `close_walk_list`. Each tool tells
@@ -54,6 +65,8 @@ Every change below is a commit on `main`; the hash links each entry to its exact
 - Voice actions are logged as `voice_action`. The previous main version is kept at `/v3/`.
 
 ## Sign-in screen (Nov 16, 2026)
+
+Commit `522c960`.
 
 - **Sign in or sign up on every launch** (main app only; `/v1/` and `/v2/` unchanged). Required: first name,
   last name, mobile phone and ZIP code, with inline errors, automatic phone formatting and a 5-digit ZIP.
