@@ -612,7 +612,7 @@ body{
 .sfield svg{width:17px;height:17px;color:var(--ink-3);flex:0 0 17px;}
 .sq{flex:1;font-size:15px;color:var(--ink);min-width:0;overflow:hidden;
   text-overflow:ellipsis;white-space:nowrap;}
-.sq.ph{color:var(--ink-3);}
+.sq.sq-empty{color:var(--ink-3);}
 .smic{width:42px;height:42px;border-radius:50%;border:none;background:var(--blue);color:#fff;
   display:grid;place-items:center;cursor:pointer;flex:0 0 42px;}
 .smic svg{width:19px;height:19px;}
@@ -1025,6 +1025,10 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
 .gate-fine{font-size:12px;line-height:1.5;color:var(--ink-3);text-align:center;margin:0;}
 .gate-fine b{color:var(--ink-2);font-weight:600;}
 @media (max-width:520px){ .gate-top{padding-top:calc(30px + env(safe-area-inset-top,0px));} .gate-card{padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));} }
+
+/* search screen: the field shrinks so the mic button fits; result titles sit above their details */
+.sfield{min-width:0;}
+.rr-t,.rr-s{display:block;}
 </style>
 </head>
 <body>
@@ -2039,7 +2043,7 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
       <button class="iconbtn" aria-label="Close search" data-searchback="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></button>
       <div class="sfield" data-sstate="results">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <span class="sq ph" id="sqText">Search turfs, voters, events, people</span>
+        <span class="sq sq-empty" id="sqText">Search turfs, voters, events, people</span>
       </div>
       <button class="smic" id="micBtn" aria-label="Search by voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0"/><path d="M12 18v4M8 22h8"/></svg></button>
     </div>
@@ -2527,9 +2531,9 @@ window.tpaLog=(function(){
     var idx={empty:0,listen:1,results:2}[state];
     spanes.forEach(function(x,n){ document.getElementById(x).classList.toggle('on',n===idx); });
     var q=document.getElementById('sqText');
-    if(state==='empty'){ q.textContent='Search turfs, voters, events, people'; q.classList.add('ph'); }
-    if(state==='listen'){ q.textContent='Listening…'; q.classList.remove('ph'); }
-    if(state==='results'){ q.textContent="Who still hasn't returned a ballot?"; q.classList.remove('ph'); }
+    if(state==='empty'){ q.textContent='Search turfs, voters, events, people'; q.classList.add('sq-empty'); }
+    if(state==='listen'){ q.textContent='Listening…'; q.classList.remove('sq-empty'); }
+    if(state==='results'){ q.textContent="Who still hasn't returned a ballot?"; q.classList.remove('sq-empty'); }
     document.getElementById('micBtn').classList.toggle('on',state==='listen');
     var b=document.getElementById('s-search').querySelector('.body');
     if(b) b.scrollTop=0;

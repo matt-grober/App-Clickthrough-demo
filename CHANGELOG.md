@@ -6,6 +6,13 @@ a canvassing map and an activity log. All voter names, addresses and notes are e
 Live: https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/ (older designs at `/v2/` and `/v1/`).
 Every change below is a commit on `main`; the hash links each entry to its exact code change.
 
+## Fix: search screen (Nov 16, 2026)
+
+- The search bar no longer turns into a large pink square when tapped. Its placeholder text shared a class name
+  (`ph`) with the event photo tiles; it now uses its own (`sq-empty`).
+- The search field shrinks so the mic button stays on screen, and search results show each name above its
+  details. Fixed in all versions (`/`, `/v1/`, `/v2/`, `/v3/`).
+
 ## V4.2: "What's next" opens the voter on the map (Nov 16, 2026)
 
 - When asked what to do next, where to go or who to chase, Grok must call `show_next_door` and recommend the voter
