@@ -45,7 +45,8 @@ Then set `TOKEN_URL` in `index.html` to that Worker's `/token` address.
 The app sends what people do (screens, taps, voice start/pause/end) and say (their words and Grok's replies) to
 `POST /log` on the same Worker, in batches. Grok asks for the person's first name at the start of their first voice
 session and saves it with a `save_name` function call; events after that carry the name, and every event carries a
-per-device `visitor` ID and a per-visit `session` ID.
+per-device `visitor` ID and a per-visit `session` ID. After the sign-in screen, every event also carries `user_id`: the person's phone number in
+`+1XXXXXXXXXX` form, the primary user ID.
 
 Events are stored in the D1 database bound as `LOGS_DB` (table `events`, created automatically). Without that
 binding the Worker writes each event to Workers Logs instead (Observability, search for `tpa_event`).

@@ -6,7 +6,8 @@
  * people say and do in the demo.
  *
  *   POST /token  ->  { token, expires_at, model, voice }
- *   POST /log    <-  { visitor, session, name, events: [{ t, type, detail, screen }] }
+ *   POST /log    <-  { visitor, session, name, user_id, events: [{ t, type, detail, screen, name, user_id }] }
+ *                    user_id is the signed-in phone number (+1XXXXXXXXXX), the primary user ID.
  *
  * Environment:
  *   XAI_API_KEY        secret, required   (wrangler secret put XAI_API_KEY)
@@ -34,7 +35,7 @@ const LOG_MAX_EVENTS = 100;
 const LOG_SCHEMA =
   "CREATE TABLE IF NOT EXISTS events (" +
   "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-  "ts TEXT NOT NULL, received TEXT NOT NULL, visitor TEXT, session TEXT, name TEXT, " +
+  "ts TEXT NOT NULL, received TEXT NOT NULL, visitor TEXT, session TEXT, name TEXT, user_id TEXT, " +
   "type TEXT NOT NULL, detail TEXT, screen TEXT, country TEXT)";
 let schemaReady = null;
 
@@ -149,6 +150,7 @@ async function handleLog(request, env, cors) {
     session,
     // Each event carries the name known when it happened; earlier events link up through session.
     name: cut(e && "name" in e ? e.name : body.name, 80),
+    user_id: cut(e && "user_id" in e ? e.user_id : body.user_id, 20),
     type: cut(e?.type, 40) || "unknown",
     detail: cut(e?.detail, 2000),
     screen: cut(e?.screen, 40),
@@ -164,11 +166,11 @@ async function handleLog(request, env, cors) {
     schemaReady ??= env.LOGS_DB.prepare(LOG_SCHEMA).run();
     await schemaReady;
     const insert = env.LOGS_DB.prepare(
-      "INSERT INTO events (ts, received, visitor, session, name, type, detail, screen, country) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+      "INSERT INTO events (ts, received, visitor, session, name, user_id, type, detail, screen, country) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
     await env.LOGS_DB.batch(
-      rows.map((r) => insert.bind(r.ts, received, r.visitor, r.session, r.name, r.type, r.detail, r.screen, country))
+      rows.map((r) => insert.bind(r.ts, received, r.visitor, r.session, r.name, r.user_id, r.type, r.detail, r.screen, country))
     );
   } catch (err) {
     schemaReady = null;

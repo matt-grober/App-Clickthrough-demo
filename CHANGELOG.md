@@ -6,6 +6,15 @@ a canvassing map and an activity log. All voter names, addresses and notes are e
 Live: https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/ (older designs at `/v2/` and `/v1/`).
 Every change below is a commit on `main`; the hash links each entry to its exact code change.
 
+## Sign-in screen (Nov 16, 2026)
+
+- **Sign in or sign up on every launch** (main app only; `/v1/` and `/v2/` unchanged). Required: first name,
+  last name, mobile phone and ZIP code, with inline errors, automatic phone formatting and a 5-digit ZIP.
+  Signing in puts the person's initials in the header and their name on Me, and Grok greets them by first name.
+  For the demo it appears every time the app opens and starts empty.
+- **Phone number is the primary user ID.** It is logged in full as `user_id` (`+1XXXXXXXXXX`) on the `sign_in`
+  entry and on every activity entry after it; the Worker stores it in a new `user_id` column.
+
 ## V3: Canvassing V3 map is the main version (Oct 27, 2026)
 
 - `fa07e2c` **V3 becomes the main app.** The previous main version moves to `/v2/` with its own copy of the

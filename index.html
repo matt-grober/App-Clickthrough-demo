@@ -992,6 +992,39 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
 .v-orb{background:var(--brand);box-shadow:0 0 calc(24px + var(--lvl) * 56px) rgba(54,103,246,calc(.3 + var(--lvl) * .5));}
 .v-orb.speaking{background:var(--cherry);box-shadow:0 0 calc(24px + var(--lvl) * 56px) rgba(229,50,104,calc(.3 + var(--lvl) * .5));}
 .v-orb.idle{background:var(--gray2);box-shadow:none;}
+
+/* ---------- sign in / sign up: shown every time the app opens ---------- */
+.gate{position:absolute;inset:0;z-index:95;display:flex;flex-direction:column;background:var(--dkblue);
+  overflow-y:auto;overscroll-behavior:contain;-webkit-user-select:text;user-select:text;}
+.gate[hidden]{display:none!important;}
+.gate-top{padding:62px 24px 30px;color:#fff;display:flex;flex-direction:column;gap:14px;}
+.gate-brand{display:flex;align-items:center;gap:10px;}
+.gate-brand .brandmark{background:var(--brand);width:38px;height:38px;flex-basis:38px;border-radius:8px;}
+.gate-brand .brandmark svg{width:22px;height:22px;}
+.gate-brand span{font:800 13px/1.15 "Montserrat",sans-serif;letter-spacing:.06em;text-transform:uppercase;}
+.gate-top h1{margin:10px 0 0;font:800 27px/1.15 "Montserrat",sans-serif;letter-spacing:-.01em;}
+.gate-top p{margin:0;font-size:14.5px;line-height:1.5;color:#C7D1FF;max-width:32ch;}
+.gate-card{flex:1;background:var(--surface);border-radius:26px 26px 0 0;padding:26px 22px 30px;
+  display:flex;flex-direction:column;gap:16px;}
+.gate-row{display:flex;gap:12px;}
+.gate-row .gfield{flex:1;min-width:0;}
+.gfield{display:flex;flex-direction:column;gap:6px;}
+.gfield label{font:700 11px/1.2 "Montserrat",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);}
+.gfield input{font:500 16px/1.2 "Montserrat",sans-serif;color:var(--ink);background:var(--surface);
+  border:1.5px solid var(--line);border-radius:14px;padding:14px 14px;min-height:50px;width:100%;}
+.gfield input::placeholder{color:var(--ink-3);font-weight:400;}
+.gfield input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(54,103,246,.18);}
+.gfield.bad input{border-color:var(--cherry);}
+.gerr{font-size:12px;color:var(--cherry);font-weight:600;min-height:0;}
+.gerr:empty{display:none;}
+.gate-go{margin-top:6px;width:100%;min-height:54px;border:none;border-radius:16px;background:var(--brand);color:#fff;
+  font:700 15.5px/1 "Montserrat",sans-serif;letter-spacing:.02em;cursor:pointer;}
+.gate-go:active{transform:scale(.985);}
+.gate-go:focus-visible{outline:3px solid var(--aqua);outline-offset:2px;}
+.gate-go[disabled]{opacity:.7;cursor:default;}
+.gate-fine{font-size:12px;line-height:1.5;color:var(--ink-3);text-align:center;margin:0;}
+.gate-fine b{color:var(--ink-2);font-weight:600;}
+@media (max-width:520px){ .gate-top{padding-top:calc(30px + env(safe-area-inset-top,0px));} .gate-card{padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));} }
 </style>
 </head>
 <body>
@@ -2211,6 +2244,36 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
     </div>
   </div>
 
+  <!-- ==================== SIGN IN / SIGN UP ==================== -->
+  <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="gate-top">
+      <div class="gate-brand">
+        <div class="brandmark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16a8 8 0 1114 5"/><path d="M13 4l5 4-5 4"/></svg></div>
+        <span>Turning Point<br>Action</span>
+      </div>
+      <h1 id="gateTitle">Sign in or sign up</h1>
+      <p>Enter your details to get started. New here? This creates your account. Been here before? It signs you back in.</p>
+    </div>
+    <form class="gate-card" id="gateForm" novalidate>
+      <div class="gate-row">
+        <div class="gfield"><label for="gFirst">First name</label>
+          <input id="gFirst" name="first" autocomplete="given-name" autocapitalize="words" required>
+          <span class="gerr" id="gFirstErr" aria-live="polite"></span></div>
+        <div class="gfield"><label for="gLast">Last name</label>
+          <input id="gLast" name="last" autocomplete="family-name" autocapitalize="words" required>
+          <span class="gerr" id="gLastErr" aria-live="polite"></span></div>
+      </div>
+      <div class="gfield"><label for="gPhone">Mobile phone</label>
+        <input id="gPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(602) 555-0142" required>
+        <span class="gerr" id="gPhoneErr" aria-live="polite"></span></div>
+      <div class="gfield"><label for="gZip">ZIP code</label>
+        <input id="gZip" name="zip" inputmode="numeric" autocomplete="postal-code" placeholder="85031" maxlength="5" required>
+        <span class="gerr" id="gZipErr" aria-live="polite"></span></div>
+      <button class="gate-go" id="gateGo" type="submit">Continue</button>
+      <p class="gate-fine">Demo app: all voter data inside is example data. <b>Your sign-in details and activity are recorded</b> for this demo.</p>
+    </form>
+  </div>
+
   <!-- ==================== DOORS CANVASSING ==================== -->
   <div class="doorsview" id="doorsView" aria-hidden="true">
     <iframe id="doorsFrame" title="Doors canvassing" allow="microphone"></iframe>
@@ -2281,18 +2344,20 @@ window.tpaLog=(function(){
   function uid(){ return window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2); }
   function keep(store,key){ try{ var v=store.getItem(key); if(!v){ v=uid(); store.setItem(key,v); } return v; }catch(e){ return uid(); } }
   var visitor=keep(window.localStorage,'tpa-visitor'), session=keep(window.sessionStorage,'tpa-session');
-  var name=null; try{ name=sessionStorage.getItem('tpa-name'); }catch(e){}
+  // Everyone signs in on every launch, so the name starts empty and comes from the sign-in screen.
+  var name=null; try{ sessionStorage.removeItem('tpa-name'); }catch(e){}
+  var userId=null;   // the signed-in phone number, in +1 format: the primary user ID
   var queue=[], screen='home', timer=0;
 
   function log(type,detail){
-    queue.push({t:new Date().toISOString(),type:type,detail:detail==null?null:String(detail).slice(0,1000),screen:screen,name:name});
+    queue.push({t:new Date().toISOString(),type:type,detail:detail==null?null:String(detail).slice(0,1000),screen:screen,name:name,user_id:userId});
     if(queue.length>=40) flush(); else if(!timer) timer=setTimeout(flush,4000);
   }
   function flush(leaving){
     clearTimeout(timer); timer=0;
     if(!queue.length||!LOG_URL) return;
     // text/plain keeps this a simple request, so it also works as a beacon while the page closes.
-    var body=JSON.stringify({visitor:visitor,session:session,name:name,events:queue.splice(0,40)});
+    var body=JSON.stringify({visitor:visitor,session:session,name:name,user_id:userId,events:queue.splice(0,40)});
     if(leaving&&navigator.sendBeacon&&navigator.sendBeacon(LOG_URL,new Blob([body],{type:'text/plain'}))) return;
     fetch(LOG_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:body,keepalive:true}).catch(function(){});
     if(queue.length) flush(leaving);
@@ -2314,6 +2379,7 @@ window.tpaLog=(function(){
     log:log,
     setScreen:function(s){ screen=s; },
     getName:function(){ return name; },
+    setUser:function(id){ userId=id; },
     setName:function(n){ name=n; try{ sessionStorage.setItem('tpa-name',n); }catch(e){} log('name_given',n); }
   };
 })();
@@ -2549,7 +2615,7 @@ window.tpaLog=(function(){
 
   var INSTRUCTIONS=[
     "You are the voice assistant inside TPACTION, the Turning Point Action volunteer app.",
-    "You're talking with Matt Ramirez, a field activist on the Phoenix West team. This is a demo, so everything below is example data.",
+    "You're talking with a field activist on the Phoenix West team. This is a demo, so everything below is example data.",
     "Speak naturally and briefly: one to three short sentences, no lists or markdown. Offer one next step when it helps.",
     "Example data:",
     "- This week: 58 doors, 31 calls, 88 texts, 12 postcards, 4-day streak. 18 voters moved forward a ballot stage, up from 11.",
@@ -2906,6 +2972,61 @@ window.tpaLog=(function(){
   });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&sheet.classList.contains('show')) close(); });
   window.addEventListener('pagehide',stop);
+})();
+</script>
+
+<script>
+/* ---- sign in / sign up: required every time the app opens (demo) ---- */
+(function(){
+  var gate=document.getElementById('gate'), form=document.getElementById('gateForm'), go=document.getElementById('gateGo');
+  var F={first:document.getElementById('gFirst'), last:document.getElementById('gLast'),
+         phone:document.getElementById('gPhone'), zip:document.getElementById('gZip')};
+  var touched={};
+  function digits(v){ return (v||'').replace(/\D/g,''); }
+  function phoneDigits(){ var d=digits(F.phone.value); if(d.length===11&&d[0]==='1') d=d.slice(1); return d; }
+  function fmtPhone(d){ d=d.slice(0,10);
+    if(d.length<4) return d.length?'('+d:'';
+    if(d.length<7) return '('+d.slice(0,3)+') '+d.slice(3);
+    return '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6); }
+  F.phone.addEventListener('input',function(){ var d=phoneDigits(); F.phone.value=fmtPhone(d); check('phone'); });
+  F.zip.addEventListener('input',function(){ F.zip.value=digits(F.zip.value).slice(0,5); check('zip'); });
+  ['first','last'].forEach(function(k){ F[k].addEventListener('input',function(){ check(k); }); });
+  Object.keys(F).forEach(function(k){ F[k].addEventListener('blur',function(){ touched[k]=1; check(k); }); });
+
+  function problem(k){
+    if(k==='first') return F.first.value.trim()?'':'Enter your first name';
+    if(k==='last')  return F.last.value.trim()?'':'Enter your last name';
+    if(k==='phone'){ var n=phoneDigits().length; return n===10?'':(n?'Enter all 10 digits':'Enter your mobile number'); }
+    if(k==='zip'){ var z=F.zip.value.length; return z===5?'':(z?'ZIP codes have 5 digits':'Enter your ZIP code'); }
+  }
+  function check(k,force){
+    if(!touched[k]&&!force) return !problem(k);
+    var msg=problem(k), wrap=F[k].closest('.gfield');
+    document.getElementById('g'+k[0].toUpperCase()+k.slice(1)+'Err').textContent=msg;
+    wrap.classList.toggle('bad',!!msg); F[k].setAttribute('aria-invalid',msg?'true':'false');
+    return !msg;
+  }
+
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var bad=null;
+    Object.keys(F).forEach(function(k){ touched[k]=1; if(!check(k,true)&&!bad) bad=k; });
+    if(bad){ F[bad].focus(); return; }
+    var first=F.first.value.trim().replace(/\s+/g,' '), last=F.last.value.trim().replace(/\s+/g,' ');
+    var ph=phoneDigits(), zip=F.zip.value;
+    go.disabled=true; go.textContent='Signing in…';
+    setTimeout(function(){
+      // personalize the app
+      var initials=(first[0]+last[0]).toUpperCase();
+      document.querySelectorAll('.avatar-sm,.avatar-lg').forEach(function(el){ el.textContent=initials; });
+      var h=document.querySelector('#s-me .prof h2'); if(h) h.textContent=first+' '+last;
+      tpaLog.setUser('+1'+ph);
+      tpaLog.setName(first);
+      tpaLog.log('sign_in', first+' '+last+' · ZIP '+zip+' · phone +1'+ph);
+      gate.hidden=true;
+      go.disabled=false; go.textContent='Continue';
+    },700);
+  });
 })();
 </script>
 </body>
