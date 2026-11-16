@@ -1025,6 +1025,25 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
 .gate-fine{font-size:12px;line-height:1.5;color:var(--ink-3);text-align:center;margin:0;}
 .gate-fine b{color:var(--ink-2);font-weight:600;}
 @media (max-width:520px){ .gate-top{padding-top:calc(30px + env(safe-area-inset-top,0px));} .gate-card{padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));} }
+
+/* voice panel shrunk to a floating orb while Grok navigates; tap it to bring the panel back */
+.voice.mini{inset:auto 16px 94px auto;width:68px;height:68px;padding:0;border-radius:50%;background:var(--dkblue);
+  box-shadow:0 10px 26px rgba(3,18,156,.35);transition:none;cursor:pointer;overflow:visible;}
+.voice.mini > :not(.v-stage){display:none;}
+.voice.mini .v-stage{padding:0;width:100%;height:100%;justify-content:center;}
+.voice.mini .v-status,.voice.mini .v-hint{display:none;}
+.voice.mini .v-orb{width:56px;height:56px;}
+.voice.mini .v-orb svg{width:24px;height:24px;}
+.voice.mini .v-orb.connecting::after{inset:-5px;border-width:2px;}
+.phone.voice-mini .voice.mini{bottom:94px;}
+/* on the canvassing map the orb sits in the top corner, over the map's sample status bar, clear of its buttons */
+.phone.doors-on .voice.mini{inset:4px 14px auto auto;width:46px;height:46px;}
+.phone.doors-on .voice.mini .v-orb{width:38px;height:38px;}
+.phone.doors-on .voice.mini .v-orb svg{width:18px;height:18px;}
+@media (max-width:520px){
+  .voice.mini{bottom:calc(76px + env(safe-area-inset-bottom,0px));padding:0;}
+  .phone.doors-on .voice.mini{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto;padding:0;}
+}
 </style>
 </head>
 <body>
@@ -2373,7 +2392,7 @@ window.tpaLog=(function(){
   },true);
   document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') flush(true); });
   addEventListener('pagehide',function(){ log('app_close'); flush(true); });
-  log('app_open','v3');
+  log('app_open','v4');
 
   return {
     log:log,
@@ -2482,23 +2501,102 @@ window.tpaLog=(function(){
   /* ---- doors canvassing: doors.html opens full screen for the chosen campaign ---- */
   var doorsView=document.getElementById('doorsView'), doorsFrame=document.getElementById('doorsFrame');
   var doorsNames={vnm:'Voters Near Me',maryvale3:'Maryvale — Turf 3',estrella9:'Estrella Village — Turf 9'};
+  var openCampaign=null, doorsReady=null;
   function openDoors(c){
+    if(openCampaign===c && doorsReady) return doorsReady;
+    openCampaign=c;
+    doorsReady=new Promise(function(res){ doorsFrame.onload=function(){ res(); }; });
     doorsFrame.src='doors.html?c='+encodeURIComponent(c);
     doorsView.classList.add('on'); doorsView.setAttribute('aria-hidden','false');
     phone.classList.add('doors-on');
+    try{ localStorage.setItem('tpa-last-walk',c); }catch(e){}
     tpaLog.setScreen('doors'); tpaLog.log('screen','Doors — '+(doorsNames[c]||c));
+    return doorsReady;
   }
   function closeDoors(){
+    if(!openCampaign) return;
+    openCampaign=null; doorsReady=null;
     doorsView.classList.remove('on'); doorsView.setAttribute('aria-hidden','true');
     phone.classList.remove('doors-on');
     doorsFrame.src='about:blank';
     tpaLog.setScreen(current); tpaLog.log('screen',titles[current]);
   }
+  var doorsReq=0, doorsWaiting={};
+  function askDoors(op,extra){
+    return new Promise(function(res){
+      var id=++doorsReq; doorsWaiting[id]=res;
+      doorsFrame.contentWindow.postMessage(Object.assign({source:'tpa-app',op:op,req:id},extra||{}),
+        location.origin==='null'?'*':location.origin);
+      setTimeout(function(){ if(doorsWaiting[id]){ delete doorsWaiting[id]; res(null); } },3000);
+    });
+  }
+
+  /* ---- navigation API, used by the voice assistant to move around the app ---- */
+  var SCREENS={
+    home:{go:'home',home:0,says:'Home, For you: this week 58 doors, 31 calls, 88 texts, 12 postcards; 18 voters moved forward a ballot stage; weekly goals and today\'s activity.'},
+    home_feeds:{go:'home',home:1,says:'Home, Feeds: posts from Turning Point Action, a Turning Point USA field report video and an Arizona early-returns story.'},
+    home_team:{go:'home',home:2,says:'Home, Team: Phoenix West at 2,847 of 4,000 doors this week, field leadership Sandra Beltran and Ray Castillo, and the team roster.'},
+    people_match:{go:'people',people:0,says:'People, Match: match your phone contacts to the voter file; 14 of 247 contacts matched.'},
+    people_connect:{go:'people',people:1,says:'People, Connect: your matched contacts grouped as low-propensity Republicans (6), high-propensity Republicans (5) and independents (3).'},
+    chase_doors:{go:'chase',chase:0,says:'Chase, Doors: Voters Near Me, your turfs Maryvale Turf 3 (42 doors left) and Estrella Village Turf 9 (140 doors, not started), and turfs to claim nearby.'},
+    chase_calls:{go:'chase',chase:1,says:'Chase, Calls: the paused Maricopa ballot chase (74 left), people you know (14) and Super Chase turnout (210).'},
+    chase_texts:{go:'chase',chase:2,says:'Chase, Texts: 3 replies waiting from Rosa Alvarez, Thomas Nguyen and Danielle Okoro (opted out), and a 340-message ballot reminder batch.'},
+    chase_mail:{go:'chase',chase:3,says:'Chase, Mail: your Maryvale postcard batch (38 to write, mail by Sep 20) and batches to claim.'},
+    events:{go:'events',says:'Events: Maryvale Door-Knock Launch happening now, Ballot Chase Call Night, New Canvasser Training, Super Chase Phoenix and Build the Red Wall.'},
+    event_maryvale_launch:{go:'event',says:'The Maryvale door-knock launch: live group total 4,207 doors, your assignment Maryvale Turf 3, the agenda, a heat advisory and who is going.'},
+    event_build_the_red_wall_2025:{go:'eventpast',says:'Recap of Build the Red Wall 2025: you knocked 96 doors; the group did 18,400.'},
+    me:{go:'me',says:'Your profile: 3,847 doors knocked, 1,102 calls, 2,640 texts and 218 postcards, plus settings.'},
+    search:{go:'search',says:'Search: ask about turfs, voters, events or people.'},
+    notifications:{go:'notif',says:'Notifications: a new campaign from Ray Castillo, a Freedom Ticket offer, a new event nearby and Rosa Alvarez\'s reply.'}
+  };
+  var LISTS={voters_near_me:'vnm',maryvale_turf_3:'maryvale3',estrella_village_turf_9:'estrella9'};
+  function lastWalk(){ var c=null; try{ c=localStorage.getItem('tpa-last-walk'); }catch(e){} return doorsNames[c]?c:'maryvale3'; }
+  function listCode(name){ return !name||name==='last_used' ? lastWalk() : (LISTS[name]||lastWalk()); }
+  window.tpaApp={
+    goToScreen:function(name){
+      var t=SCREENS[name]; if(!t) return Promise.resolve({ok:false,error:'unknown screen'});
+      closeDoors(); go(t.go);
+      if(t.home!==undefined) setHomePane(t.home);
+      if(t.people!==undefined){ var b=document.querySelector('[data-pseg="'+t.people+'"]'); if(b) b.click(); }
+      if(t.chase!==undefined) setMode(t.chase);
+      return Promise.resolve({ok:true,now_showing:t.says});
+    },
+    openWalkList:function(name,viewName){
+      var c=listCode(name);
+      return openDoors(c).then(function(){ return askDoors('set_view',{view:viewName||'map'}); })
+        .then(function(d){ return {ok:!!d,list_name:doorsNames[c],walk_list:d}; });
+    },
+    nextDoor:function(name){
+      var c=listCode(name);
+      return openDoors(c).then(function(){ return askDoors('next_door'); })
+        .then(function(d){ return {ok:!!d,list_name:doorsNames[c],walk_list:d}; });
+    },
+    openVoter:function(person,name){
+      var order=name&&name!=='last_used'?[listCode(name)]:[openCampaign||lastWalk()].concat(['maryvale3','vnm','estrella9']);
+      order=order.filter(function(c,i){ return order.indexOf(c)===i; });
+      var wasOpen=openCampaign;
+      function tryNext(i){
+        if(i>=order.length){
+          // not found: put the person back where they were
+          if(wasOpen) openDoors(wasOpen); else closeDoors();
+          return Promise.resolve({ok:false,error:'No voter by that name in your walk lists'});
+        }
+        return openDoors(order[i]).then(function(){ return askDoors('open_voter',{name:person}); }).then(function(d){
+          if(d&&d.voter) return {ok:true,list_name:doorsNames[order[i]],walk_list:d};
+          return tryNext(i+1);
+        });
+      }
+      return tryNext(0);
+    },
+    closeWalkList:function(){ closeDoors(); go('chase'); setMode(0); return Promise.resolve({ok:true,now_showing:SCREENS.chase_doors.says}); },
+    lastWalkName:function(){ return doorsNames[lastWalk()]; }
+  };
   window.addEventListener('message',function(e){
     if(e.source!==doorsFrame.contentWindow||!e.data||e.data.source!=='tpa-doors') return;
     if(e.data.type==='close') closeDoors();
     else if(e.data.type==='tap') tpaLog.log('tap',e.data.detail);
     else if(e.data.type==='result') tpaLog.log('doors_result',e.data.detail);
+    else if(e.data.type==='reply'){ var r=doorsWaiting[e.data.req]; if(r){ delete doorsWaiting[e.data.req]; r(e.data.data); } }
   });
 
   document.addEventListener('click',function(e){
@@ -2627,7 +2725,11 @@ window.tpaLog=(function(){
     "- Matched contacts: 14 of 247. Low-propensity: Miguel Santos, Priya Raman, Walter Boyd.",
     "- Team Phoenix West: 2,847 of 4,000 doors this week. Leaders: Sandra Beltran (regional director), Ray Castillo (field organizer). Maria Gutierrez is knocking Turf 7 now.",
     "- Events: Maryvale Door-Knock Launch today at Cortez Park (heat advisory, 104F by 1 PM). Ballot Chase Call Night Sep 13, remote, 6 PM. New Canvasser Training Sep 14, Glendale. Super Chase Phoenix Oct 3. Build the Red Wall Oct 18.",
-    "For official voting rules, deadlines or drop-off locations, tell the volunteer to confirm with the county elections office. Don't make up facts beyond this data."
+    "For official voting rules, deadlines or drop-off locations, tell the volunteer to confirm with the county elections office. Don't make up facts beyond this data.",
+    "You can operate the app for the volunteer with tools: go_to_screen, open_walk_list, show_next_door, open_voter and close_walk_list.",
+    "When they ask to go somewhere, open or see something, or where to start, call the tool right away instead of explaining how to get there.",
+    "'My last walk list' or 'where I left off' means list last_used. 'Where do I start', 'what's next' or 'my next door' means show_next_door.",
+    "After a tool runs, say in one or two short sentences what is on screen now, using the tool result: for a door, the voter's name, address, and the most useful detail such as an unreturned ballot or the last note."
   ].join("\n");
 
   function instructionsFor(name){
@@ -2636,6 +2738,26 @@ window.tpaLog=(function(){
       "Start the conversation yourself: in one short sentence, greet them as the TPACTION assistant and ask for their first name. "+
       "When they tell you, call save_name with it, then ask how you can help. If they'd rather not say, carry on without it.");
   }
+
+  var LIST_ENUM=['last_used','voters_near_me','maryvale_turf_3','estrella_village_turf_9'];
+  var NAV_TOOLS=[
+    {type:'function',name:'go_to_screen',
+     description:'Show a screen of the app. Use when the volunteer asks to go to, open or see part of the app.',
+     parameters:{type:'object',properties:{screen:{type:'string',enum:['home','home_feeds','home_team','people_match','people_connect',
+       'chase_doors','chase_calls','chase_texts','chase_mail','events','event_maryvale_launch','event_build_the_red_wall_2025',
+       'me','search','notifications']}},required:['screen']}},
+    {type:'function',name:'open_walk_list',
+     description:'Open a door-knocking walk list on the canvassing map or as a list. Use last_used for the walk list the volunteer used most recently.',
+     parameters:{type:'object',properties:{list:{type:'string',enum:LIST_ENUM},view:{type:'string',enum:['map','list']}},required:['list']}},
+    {type:'function',name:'show_next_door',
+     description:'Open a walk list and show the next door to knock: the closest door not yet worked today. Use for where to start or what is next.',
+     parameters:{type:'object',properties:{list:{type:'string',enum:LIST_ENUM}},required:[]}},
+    {type:'function',name:'open_voter',
+     description:'Find a voter by name in the walk lists and open their door on the map.',
+     parameters:{type:'object',properties:{name:{type:'string',description:'Full or partial name'},list:{type:'string',enum:LIST_ENUM}},required:['name']}},
+    {type:'function',name:'close_walk_list',description:'Close the canvassing map and go back to Chase, Doors.',
+     parameters:{type:'object',properties:{},required:[]}}
+  ];
 
   var NAME_TOOL={type:'function',name:'save_name',
     description:"Save the volunteer's first name as soon as they tell you.",
@@ -2672,6 +2794,7 @@ window.tpaLog=(function(){
   }
 
   function open(){
+    setMini(false);
     phone.classList.add('voice-on');
     sheet.classList.add('show'); sheet.setAttribute('aria-hidden','false'); sheet.inert=false;
     logEl.textContent=''; suggEl.style.display='';
@@ -2682,6 +2805,7 @@ window.tpaLog=(function(){
   function close(){
     if(S) tpaLog.log('voice_end');
     stop();
+    setMini(false);
     phone.classList.remove('voice-on');
     sheet.classList.remove('show'); sheet.setAttribute('aria-hidden','true'); sheet.inert=true;
     fab.focus();
@@ -2734,7 +2858,7 @@ window.tpaLog=(function(){
           audio:{input:{format:{type:'audio/pcm',rate:RATE}},output:{format:{type:'audio/pcm',rate:RATE}}}
         }}));
         // Tools go in their own update so the session above still applies if they're refused.
-        ws.send(JSON.stringify({type:'session.update',session:{tools:[NAME_TOOL]}}));
+        ws.send(JSON.stringify({type:'session.update',session:{tools:[NAME_TOOL].concat(NAV_TOOLS)}}));
         if(!tpaLog.getName()) ws.send(JSON.stringify({type:'response.create'}));
         tpaLog.log('voice_connected');
         startCapture(my);
@@ -2804,7 +2928,7 @@ window.tpaLog=(function(){
   function checkIdle(){
     var now=Date.now(), quiet=now-S.last;
     if(S.sources.length){ touch(); return; }
-    if((S.userTalking||S.busy)&&quiet<60000) return;
+    if((S.userTalking||S.busy||S.toolsPending)&&quiet<60000) return;
     if(quiet>=IDLE_MS){ sleep(); return; }
     var left=Math.ceil((IDLE_MS-quiet)/1000);
     if(left<=3&&(S.state==='listening'||S.state==='muted'))
@@ -2850,10 +2974,10 @@ window.tpaLog=(function(){
         S.userTalking=false; S.busy=true; touch();
         break;
       case 'response.created':
-        S.busy=true; touch();
+        S.busy=true; S.responding=true; touch();
         break;
       case 'response.done':
-        S.busy=false; touch(); logReplies();
+        S.busy=false; S.responding=false; touch(); logReplies();
         if(S.followUp&&S.ws&&S.ws.readyState===1){ S.followUp=false; S.ws.send(JSON.stringify({type:'response.create'})); }
         break;
       case 'error':
@@ -2874,14 +2998,37 @@ window.tpaLog=(function(){
   function onToolCall(callId,name,args){
     if(!callId||S.calls[callId]) return;
     S.calls[callId]=1;
-    var out={ok:false};
+    var a={}; try{ a=JSON.parse(args||'{}')||{}; }catch(e){}
+    var my=gen, app=window.tpaApp, job;
     if(name==='save_name'){
-      try{ var n=String(JSON.parse(args||'{}').name||'').trim().slice(0,60); if(n){ tpaLog.setName(n); out={ok:true,name:n}; } }catch(e){}
-    }
-    if(!S.ws||S.ws.readyState!==1) return;
-    S.ws.send(JSON.stringify({type:'conversation.item.create',item:{type:'function_call_output',call_id:callId,output:JSON.stringify(out)}}));
-    S.followUp=true;  // Grok continues once the response that made the call has finished
+      var n=String(a.name||'').trim().slice(0,60);
+      if(n) tpaLog.setName(n);
+      job=Promise.resolve(n?{ok:true,name:n}:{ok:false});
+    } else if(app && name==='go_to_screen') job=app.goToScreen(a.screen);
+    else if(app && name==='open_walk_list') job=app.openWalkList(a.list,a.view);
+    else if(app && name==='show_next_door') job=app.nextDoor(a.list);
+    else if(app && name==='open_voter') job=app.openVoter(a.name,a.list);
+    else if(app && name==='close_walk_list') job=app.closeWalkList();
+    else job=Promise.resolve({ok:false,error:'unknown tool'});
+    if(name!=='save_name'){ setMini(true); tpaLog.log('voice_action',name+(args&&args!=='{}'?' '+args:'')); }
+    S.toolsPending=(S.toolsPending||0)+1;
+    job.catch(function(){ return {ok:false}; }).then(function(out){
+      if(my!==gen||!S) return;
+      S.toolsPending--; touch();
+      if(!S.ws||S.ws.readyState!==1) return;
+      S.ws.send(JSON.stringify({type:'conversation.item.create',item:{type:'function_call_output',call_id:callId,output:JSON.stringify(out)}}));
+      // Grok continues once the response that made the call has finished
+      if(S.responding) S.followUp=true; else S.ws.send(JSON.stringify({type:'response.create'}));
+    });
   }
+
+  /* while Grok drives the app, the voice panel shrinks to a floating orb so the screen stays visible */
+  function setMini(on){
+    sheet.classList.toggle('mini',!!on);
+    sheet.setAttribute('aria-modal',on?'false':'true');
+    phone.classList.toggle('voice-mini',!!on);
+  }
+  sheet.addEventListener('click',function(e){ if(sheet.classList.contains('mini')){ e.stopPropagation(); setMini(false); } },true);
 
   function play(b64){
     if(!b64) return;

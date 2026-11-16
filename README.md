@@ -10,14 +10,20 @@ override that in Me › Dark mode.
 
 ## Versions
 
-- `/` (`index.html` + `doors.html`): the main app. Figma revisions (Montserrat, small caps, Superfeed brand
-  colors, flat voice mic) with the Canvassing V3 map behind Chase → Doors.
-- `/v2/`: the previous main version, the Figma revisions with the earlier navy canvassing map.
+- `/` (`index.html` + `doors.html`): the main app (V4): sign-in on every launch, the Figma revisions, the Canvassing
+  V3 map behind Chase → Doors, and a voice assistant that can navigate the app.
+- `/v3/`: the previous main version (sign-in, no voice navigation).
+- `/v2/`: the Figma revisions with the earlier navy canvassing map.
 - `/v1/`: the original design with the earlier canvassing map.
-- `/v3/` redirects to `/`.
 
 Each version folder has its own `doors.html`. All versions share the Worker and the activity log;
-`app_open` carries `v3`, `v2` or `v1`.
+`app_open` carries `v4`, `v3`, `v2` or `v1`.
+
+## Voice navigation
+
+Grok gets app-control tools in the second `session.update` (`go_to_screen`, `open_walk_list`, `show_next_door`,
+`open_voter`, `close_walk_list`). They call `window.tpaApp` in `index.html`, which drives the app's own navigation
+and asks `doors.html` for walk-list details over `postMessage` (`source: 'tpa-app'` requests, `reply` answers).
 
 ## Doors canvassing
 

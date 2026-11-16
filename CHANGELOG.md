@@ -6,6 +6,16 @@ a canvassing map and an activity log. All voter names, addresses and notes are e
 Live: https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/ (older designs at `/v2/` and `/v1/`).
 Every change below is a commit on `main`; the hash links each entry to its exact code change.
 
+## V4: Voice navigation (Nov 16, 2026)
+
+- **Grok can drive the app.** New voice tools: `go_to_screen` (any screen or tab), `open_walk_list` (map or list;
+  "last used" is remembered on the device), `show_next_door` (the closest door not worked today, with its voter
+  sheet open), `open_voter` (find a voter by name across the walk lists) and `close_walk_list`. Each tool tells
+  Grok what is now on screen, e.g. the next voter's name, address, stage, ballot flag and last note.
+- While Grok navigates, the voice panel shrinks to a floating orb so the screen stays visible; tap it to bring
+  the panel back. On the canvassing map the orb sits in the top corner, clear of the map's buttons.
+- Voice actions are logged as `voice_action`. The previous main version is kept at `/v3/`.
+
 ## Sign-in screen (Nov 16, 2026)
 
 - **Sign in or sign up on every launch** (main app only; `/v1/` and `/v2/` unchanged). Required: first name,

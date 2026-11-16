@@ -2314,6 +2314,40 @@ if(CAMP){
   Object.assign(CAMPAIGN, CAMP.header);
 }
 
+/* requests from the app, so the voice assistant can work the map: summary, next door, a voter by name, map/list */
+function describeVoter(v){
+  const l=(LOGS[v.id]||[])[0];
+  return { name:v.n, address:v.a, distance_mi:v.d ?? null, stage:S[v.s].name,
+    ballot_flags:(v.flags||[]).map(f=>FLAGS[f]&&FLAGS[f].lbl).filter(Boolean),
+    household:household(v).map(p=>p.n), prior_attempts:v.att,
+    worked_today:doorState(v)||'no',
+    last_note: l ? `${l.when} by ${l.who}: ${l.txt}` : null };
+}
+function walkSummary(){
+  const n=doors().length, w=workedDoors().length;
+  return { list:`${CAMPAIGN.name} · ${CAMPAIGN.turf}`, doors:n, worked_today:w, still_to_knock:n-w, view };
+}
+window.addEventListener('message',e=>{
+  const q=e.data;
+  if(!IN_APP || e.source!==window.parent || !q || q.source!=='tpa-app') return;
+  let data=null;
+  if(q.op==='summary') data=walkSummary();
+  else if(q.op==='set_view'){ closeSheets(); setView(q.view==='list'?'list':'map'); data=walkSummary(); }
+  else if(q.op==='next_door'){
+    const v=doors().filter(d=>!doorState(d)).sort((a,b)=>(a.d??9)-(b.d??9))[0];
+    if(v){ setView('map'); openVoter(v.id); }
+    data={ ...walkSummary(), next_door: v?describeVoter(v):null };
+  }
+  else if(q.op==='open_voter'){
+    const t=String(q.name||'').toLowerCase().trim();
+    const v=t && (PEOPLE.find(p=>p.n.toLowerCase()===t) || PEOPLE.find(p=>p.n.toLowerCase().includes(t)) ||
+                  PEOPLE.find(p=>t.split(/\s+/).every(w=>p.n.toLowerCase().includes(w))));
+    if(v){ setView('map'); openVoter(v.id); }
+    data={ ...walkSummary(), voter: v?describeVoter(v):null };
+  }
+  tell({type:'reply', req:q.req, data});
+});
+
 /* mockup seed — one door talked to, one tried, so both check colors are visible on load.
    Delete this block when the real shift state comes from the server. */
 (function seedWorked(){
