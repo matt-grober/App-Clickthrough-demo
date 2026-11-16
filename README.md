@@ -22,7 +22,7 @@ Each version folder has its own `doors.html`. All versions share the Worker and 
 ## Voice navigation
 
 Grok gets app-control tools in the second `session.update` (`go_to_screen`, `open_walk_list`, `show_next_door`,
-`open_voter`, `close_walk_list`). They call `window.tpaApp` in `index.html`, which drives the app's own navigation
+`open_voter`, `close_walk_list`, `open_campaign`, `find_in_app`). They call `window.tpaApp` in `index.html`, which drives the app's own navigation
 and asks `doors.html` for walk-list details over `postMessage` (`source: 'tpa-app'` requests, `reply` answers).
 
 ## Doors canvassing

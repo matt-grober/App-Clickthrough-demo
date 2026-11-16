@@ -1044,6 +1044,16 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
   .voice.mini{bottom:calc(76px + env(safe-area-inset-bottom,0px));padding:0;}
   .phone.doors-on .voice.mini{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto;padding:0;}
 }
+
+/* the floating voice orb keeps the mic button's flat Cherry Red; gray only when paused or offline */
+.voice.mini{background:var(--cherry);box-shadow:0 10px 26px rgba(229,50,104,.35);}
+.voice.mini .v-orb,.voice.mini .v-orb.speaking{background:var(--cherry);box-shadow:none;}
+.voice.mini .v-orb.idle{background:var(--gray2);}
+.voice.mini:has(.v-orb.idle){background:var(--gray2);box-shadow:0 8px 20px rgba(0,0,0,.18);}
+/* what the voice assistant just found or opened */
+.voice-hl{animation:voicehl 2.6s ease-out;position:relative;z-index:1;}
+@keyframes voicehl{0%,55%{box-shadow:0 0 0 3px var(--brand),0 0 0 8px rgba(54,103,246,.22);}100%{box-shadow:0 0 0 0 rgba(54,103,246,0);}}
+@media (prefers-reduced-motion:reduce){.voice-hl{animation:none;outline:3px solid var(--brand);}}
 </style>
 </head>
 <body>
@@ -2550,6 +2560,52 @@ window.tpaLog=(function(){
     notifications:{go:'notif',says:'Notifications: a new campaign from Ray Castillo, a Freedom Ticket offer, a new event nearby and Rosa Alvarez\'s reply.'}
   };
   var LISTS={voters_near_me:'vnm',maryvale_turf_3:'maryvale3',estrella_village_turf_9:'estrella9'};
+  var CAMPAIGNS={
+    doors_voters_near_me:{walk:'voters_near_me'},
+    doors_maryvale_turf_3:{walk:'maryvale_turf_3'},
+    doors_estrella_village_turf_9:{walk:'estrella_village_turf_9'},
+    calls_voters_near_me:{mode:1,tab:'Calls',pane:'p-calls',title:'Voters Near Me',label:'Voters Near Me (calls)'},
+    calls_maricopa_ballot_chase:{mode:1,tab:'Calls',pane:'p-calls',title:'Maricopa ballot chase',label:'Maricopa ballot chase'},
+    calls_people_you_know:{mode:1,tab:'Calls',pane:'p-calls',title:'People you know',label:'People you know'},
+    calls_super_chase_turnout:{mode:1,tab:'Calls',pane:'p-calls',title:'Super Chase turnout',label:'Super Chase turnout'},
+    texts_voters_near_me:{mode:2,tab:'Texts',pane:'p-texts',title:'Voters Near Me',label:'Voters Near Me (texts)'},
+    texts_needs_reply:{mode:2,tab:'Texts',pane:'p-texts',title:'Rosa Alvarez',label:'Needs your reply (3 waiting)',open:false},
+    texts_ballot_reminder_maryvale:{mode:2,tab:'Texts',pane:'p-texts',title:'Ballot reminder',label:'Ballot reminder — Maryvale'},
+    mail_voters_near_me:{mode:3,tab:'Mail',pane:'p-mail',title:'Voters Near Me',label:'Voters Near Me (postcards)'},
+    mail_maryvale_high_propensity:{mode:3,tab:'Mail',pane:'p-mail',title:'Maryvale high-propensity',label:'Maryvale high-propensity postcards'},
+    mail_estrella_new_registrants:{mode:3,tab:'Mail',pane:'p-mail',title:'new registrants',label:'Estrella Village new registrants (available to claim)',open:false},
+    mail_request_supplies:{mode:3,tab:'Mail',pane:'p-mail',title:'Request supplies',label:'Request supplies',open:false}
+  };
+  function pseg(i){ var b=document.querySelector('[data-pseg="'+i+'"]'); if(b) b.click(); }
+  var FIND_AREAS=[
+    {area:'feeds',where:'Home, Feeds',sel:'#h-feeds .postcard, #h-feeds .card',show:function(){ go('home'); setHomePane(1); }},
+    {area:'home',where:'Home, For you',sel:'#h-you .logrow',show:function(){ go('home'); setHomePane(0); }},
+    {area:'team',where:'Home, Team',sel:'#h-team .member, #h-team .tact',show:function(){ go('home'); setHomePane(2); }},
+    {area:'people',where:'People, Match',sel:'#pp-match .member',show:function(){ go('people'); pseg(0); }},
+    {area:'people',where:'People, Connect',sel:'#pp-connect .member',show:function(){ go('people'); pseg(1); }},
+    {area:'chase',where:'Chase, Doors',sel:'#p-doors .work, #p-doors .vnm',show:function(){ go('chase'); setMode(0); }},
+    {area:'chase',where:'Chase, Calls',sel:'#p-calls .work, #p-calls .vnm',show:function(){ go('chase'); setMode(1); }},
+    {area:'chase',where:'Chase, Texts',sel:'#p-texts .work, #p-texts .thread, #p-texts .vnm',show:function(){ go('chase'); setMode(2); }},
+    {area:'chase',where:'Chase, Mail',sel:'#p-mail .work, #p-mail .vnm',show:function(){ go('chase'); setMode(3); }},
+    {area:'events',where:'Events',sel:'#s-events .ebtn',show:function(){ go('events'); }},
+    {area:'notifications',where:'Notifications',sel:'#s-notif .nrow',show:function(){ go('notif'); }}
+  ];
+  var STOP=' the a an and or of to in on for from with about me my show find open pull up take go get see is are was any some that this article articles post posts story video feed feeds please can you ';
+  function keywords(q){ return String(q||'').toLowerCase().split(/[^a-z0-9]+/).filter(function(w){ return w.length>1&&STOP.indexOf(' '+w+' ')<0; }); }
+  function textOf(el){ return (el.innerText||el.textContent||'').replace(/\s+/g,' ').trim().slice(0,300); }
+  function findRow(pane,title){
+    var els=document.querySelectorAll('#'+pane+' .work, #'+pane+' .vnm, #'+pane+' .thread'), t=title.toLowerCase();
+    for(var i=0;i<els.length;i++){ if(textOf(els[i]).toLowerCase().indexOf(t)>-1) return els[i]; }
+    return null;
+  }
+  function spotlight(el){
+    setTimeout(function(){
+      el.scrollIntoView({block:'center',behavior:'smooth'});
+      document.querySelectorAll('.voice-hl').forEach(function(x){ x.classList.remove('voice-hl'); });
+      void el.offsetWidth; el.classList.add('voice-hl');
+      setTimeout(function(){ el.classList.remove('voice-hl'); },2600);
+    },60);
+  }
   function lastWalk(){ var c=null; try{ c=localStorage.getItem('tpa-last-walk'); }catch(e){} return doorsNames[c]?c:'maryvale3'; }
   function listCode(name){ return !name||name==='last_used' ? lastWalk() : (LISTS[name]||lastWalk()); }
   window.tpaApp={
@@ -2589,7 +2645,43 @@ window.tpaLog=(function(){
       return tryNext(0);
     },
     closeWalkList:function(){ closeDoors(); go('chase'); setMode(0); return Promise.resolve({ok:true,now_showing:SCREENS.chase_doors.says}); },
-    lastWalkName:function(){ return doorsNames[lastWalk()]; }
+    lastWalkName:function(){ return doorsNames[lastWalk()]; },
+
+    // Calls, Texts and Mail campaigns live as rows on their Chase tab: show the tab, bring the row into view,
+    // highlight it and open it the way a tap does. Doors campaigns open their walk list.
+    openCampaign:function(id){
+      var C=CAMPAIGNS[id]; if(!C) return Promise.resolve({ok:false,error:'unknown campaign'});
+      if(C.walk) return this.openWalkList(C.walk,'map');
+      closeDoors(); go('chase'); setMode(C.mode);
+      var el=findRow(C.pane,C.title);
+      if(!el) return Promise.resolve({ok:false,error:'campaign not found on screen'});
+      spotlight(el);
+      var opened=false;
+      if(C.open!==false && /^(Opening|Resuming|Starting)/.test(el.dataset.toast||'')){ el.click(); opened=true; }
+      return Promise.resolve({ok:true,where:'Chase, '+C.tab,campaign:C.label,opened:opened,details:textOf(el)});
+    },
+
+    // Search the app's content (feed posts and articles, events, notifications, contacts, team, text threads,
+    // campaigns, today's activity), show the best match on its screen and highlight it.
+    findInApp:function(query,area){
+      var words=keywords(query);
+      if(!words.length) return Promise.resolve({ok:false,error:'nothing to search for'});
+      var best=null;
+      FIND_AREAS.forEach(function(A){
+        if(area&&area!=='any'&&A.area!==area) return;
+        document.querySelectorAll(A.sel).forEach(function(el){
+          var t=textOf(el).toLowerCase(), score=0;
+          words.forEach(function(w){ if(t.indexOf(w)>-1) score++; });
+          if(t.indexOf(words.join(' '))>-1) score+=2;
+          if(score&&(!best||score>best.score)) best={score:score,el:el,A:A};
+        });
+      });
+      if(!best) return Promise.resolve({ok:false,error:'Nothing in the app matches that'});
+      closeDoors(); best.A.show();
+      var acc=best.el.closest('.acc'); if(acc) acc.classList.add('open');
+      spotlight(best.el);
+      return Promise.resolve({ok:true,where:best.A.where,found:textOf(best.el)});
+    }
   };
   window.addEventListener('message',function(e){
     if(e.source!==doorsFrame.contentWindow||!e.data||e.data.source!=='tpa-doors') return;
@@ -2729,6 +2821,7 @@ window.tpaLog=(function(){
     "You can operate the app for the volunteer with tools: go_to_screen, open_walk_list, show_next_door, open_voter and close_walk_list.",
     "When they ask to go somewhere, open or see something, or where to start, call the tool right away instead of explaining how to get there.",
     "'My last walk list' or 'where I left off' means list last_used. 'Where do I start', 'what's next' or 'my next door' means show_next_door.",
+    "Use open_campaign for a specific call queue, text campaign, text replies or postcard batch, and find_in_app to find an article, post, video, event, notification, person or anything else by its words (area feeds for articles and posts).",
     "After a tool runs, say in one or two short sentences what is on screen now, using the tool result: for a door, the voter's name, address, and the most useful detail such as an unreturned ballot or the last note."
   ].join("\n");
 
@@ -2756,7 +2849,17 @@ window.tpaLog=(function(){
      description:'Find a voter by name in the walk lists and open their door on the map.',
      parameters:{type:'object',properties:{name:{type:'string',description:'Full or partial name'},list:{type:'string',enum:LIST_ENUM}},required:['name']}},
     {type:'function',name:'close_walk_list',description:'Close the canvassing map and go back to Chase, Doors.',
-     parameters:{type:'object',properties:{},required:[]}}
+     parameters:{type:'object',properties:{},required:[]}},
+    {type:'function',name:'open_campaign',
+     description:'Take the volunteer to a specific campaign of any type: door-knocking walk lists, call queues, text campaigns and replies, or postcard batches.',
+     parameters:{type:'object',properties:{campaign:{type:'string',enum:['doors_voters_near_me','doors_maryvale_turf_3','doors_estrella_village_turf_9',
+       'calls_voters_near_me','calls_maricopa_ballot_chase','calls_people_you_know','calls_super_chase_turnout',
+       'texts_voters_near_me','texts_needs_reply','texts_ballot_reminder_maryvale',
+       'mail_voters_near_me','mail_maryvale_high_propensity','mail_estrella_new_registrants','mail_request_supplies']}},required:['campaign']}},
+    {type:'function',name:'find_in_app',
+     description:'Find something in the app by keywords and show it highlighted on its screen: feed posts, articles and videos, events, notifications, contacts, team members, text conversations, campaigns or today\'s activity.',
+     parameters:{type:'object',properties:{query:{type:'string',description:'A few keywords, e.g. "Maricopa doors video" or "early ballot returns"'},
+       area:{type:'string',enum:['any','feeds','events','notifications','people','team','chase','home']}},required:['query']}}
   ];
 
   var NAME_TOOL={type:'function',name:'save_name',
@@ -3009,6 +3112,8 @@ window.tpaLog=(function(){
     else if(app && name==='show_next_door') job=app.nextDoor(a.list);
     else if(app && name==='open_voter') job=app.openVoter(a.name,a.list);
     else if(app && name==='close_walk_list') job=app.closeWalkList();
+    else if(app && name==='open_campaign') job=app.openCampaign(a.campaign);
+    else if(app && name==='find_in_app') job=app.findInApp(a.query,a.area);
     else job=Promise.resolve({ok:false,error:'unknown tool'});
     if(name!=='save_name'){ setMini(true); tpaLog.log('voice_action',name+(args&&args!=='{}'?' '+args:'')); }
     S.toolsPending=(S.toolsPending||0)+1;

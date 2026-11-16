@@ -6,6 +6,18 @@ a canvassing map and an activity log. All voter names, addresses and notes are e
 Live: https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/ (older designs at `/v2/` and `/v1/`).
 Every change below is a commit on `main`; the hash links each entry to its exact code change.
 
+## V4.1: Voice reaches every campaign and can find content (Nov 16, 2026)
+
+- **`open_campaign`**: Grok can take people to any campaign type: door walk lists; Calls (Voters Near Me,
+  Maricopa ballot chase, People you know, Super Chase turnout); Texts (Voters Near Me, Needs your reply,
+  Ballot reminder — Maryvale); Mail (Voters Near Me, Maryvale high-propensity, Estrella Village new registrants,
+  Request supplies). It opens the campaign the way a tap does; rows that would claim or record something are
+  only shown and highlighted.
+- **`find_in_app`**: Grok can find feed posts, articles and videos, events, notifications, contacts, team members,
+  text conversations, campaigns and today's activity by keywords, opens the right screen, scrolls to the item
+  and highlights it.
+- The floating voice orb is flat Cherry Red like the mic button (gray when paused).
+
 ## V4: Voice navigation (Nov 16, 2026)
 
 - **Grok can drive the app.** New voice tools: `go_to_screen` (any screen or tab), `open_walk_list` (map or list;
