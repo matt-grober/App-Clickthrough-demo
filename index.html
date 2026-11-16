@@ -1062,6 +1062,14 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
 /* the canvassing map starts below the phone's status bar, like every other screen */
 .doorsview{top:47px;}
 @media (max-width:520px){ .doorsview{top:env(safe-area-inset-top,0px);} }
+
+/* Phones: pin the app to the screen. iOS Safari fades whatever scrolls under the status bar; with the app fixed
+   to the top edge it sees the solid status-bar strip instead, and the page itself no longer rubber-bands. */
+@media (max-width:520px){
+  html,body{height:100%;overflow:hidden;}
+  .phone{position:fixed;inset:0;width:auto;height:auto;}
+  .statusbar{background:var(--surface);}
+}
 </style>
 </head>
 <body>

@@ -7,6 +7,13 @@ Live: https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/ (earlier vers
 Every change below is a commit on `main`; the hash identifies its exact code change
 (`https://github.com/matt-grober/App-Clickthrough-demo/commit/<hash>`).
 
+## Fix: faded top on iPhone (Nov 16, 2026)
+
+- On phones the app is now pinned to the screen (`position: fixed`) with a solid status-bar strip. iOS Safari fades
+  and blurs page content that scrolls under the status bar; with a fixed element at the top edge it shows the
+  solid strip instead. The page itself also no longer rubber-bands; each screen's own content scrolls.
+  Desktop phone frame unchanged. Applied to all versions.
+
 ## Fix: canvassing map under the phone's status bar (Nov 16, 2026)
 
 Commit `fa80170`.
