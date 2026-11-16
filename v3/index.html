@@ -1029,6 +1029,10 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
 /* search screen: the field shrinks so the mic button fits; result titles sit above their details */
 .sfield{min-width:0;}
 .rr-t,.rr-s{display:block;}
+
+/* the canvassing map starts below the phone's status bar, like every other screen */
+.doorsview{top:47px;}
+@media (max-width:520px){ .doorsview{top:env(safe-area-inset-top,0px);} }
 </style>
 </head>
 <body>

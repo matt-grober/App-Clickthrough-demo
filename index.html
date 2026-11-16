@@ -1036,13 +1036,13 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
 .voice.mini .v-orb svg{width:24px;height:24px;}
 .voice.mini .v-orb.connecting::after{inset:-5px;border-width:2px;}
 .phone.voice-mini .voice.mini{bottom:94px;}
-/* on the canvassing map the orb sits in the top corner, over the map's sample status bar, clear of its buttons */
-.phone.doors-on .voice.mini{inset:4px 14px auto auto;width:46px;height:46px;}
+/* on the canvassing map the orb sits just below the map's header, clear of its buttons */
+.phone.doors-on .voice.mini{inset:163px 14px auto auto;width:46px;height:46px;}   /* just below the map's header */
 .phone.doors-on .voice.mini .v-orb{width:38px;height:38px;}
 .phone.doors-on .voice.mini .v-orb svg{width:18px;height:18px;}
 @media (max-width:520px){
   .voice.mini{bottom:calc(76px + env(safe-area-inset-bottom,0px));padding:0;}
-  .phone.doors-on .voice.mini{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto;padding:0;}
+  .phone.doors-on .voice.mini{top:calc(116px + env(safe-area-inset-top,0px));bottom:auto;padding:0;}
 }
 
 /* the floating voice orb keeps the mic button's flat Cherry Red; gray only when paused or offline */
@@ -1058,6 +1058,10 @@ body,button,input,textarea,select{font-family:"Montserrat",-apple-system,BlinkMa
 /* search screen: the field shrinks so the mic button fits; result titles sit above their details */
 .sfield{min-width:0;}
 .rr-t,.rr-s{display:block;}
+
+/* the canvassing map starts below the phone's status bar, like every other screen */
+.doorsview{top:47px;}
+@media (max-width:520px){ .doorsview{top:env(safe-area-inset-top,0px);} }
 </style>
 </head>
 <body>

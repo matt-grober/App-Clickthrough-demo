@@ -6,6 +6,13 @@ a canvassing map and an activity log. All voter names, addresses and notes are e
 Live: https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/ (older designs at `/v2/` and `/v1/`).
 Every change below is a commit on `main`; the hash links each entry to its exact code change.
 
+## Fix: canvassing map under the phone's status bar (Nov 16, 2026)
+
+- Inside the app, the canvassing map no longer shows the design mockup's sample status bar ("2:03", battery 79)
+  under the phone's real one, and no longer runs up beneath the real status bar. Its header, list, filter chip,
+  pins and voter record moved up 38px to close the gap. Opened on its own, the map still matches the design.
+- The floating voice orb on the map now sits just below the map's header. Fixed in all versions.
+
 ## Fix: search screen (Nov 16, 2026)
 
 - The search bar no longer turns into a large pink square when tapped. Its placeholder text shared a class name

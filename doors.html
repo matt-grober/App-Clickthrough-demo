@@ -735,7 +735,17 @@
   .focuscard .fdir{background:#fff;color:var(--navy)}
   .focuscard .fx{position:absolute;top:6px;right:6px;width:26px;height:26px;border:0;border-radius:50%;background:#EEF2F8;color:#6B7280;cursor:pointer;font-size:13px;line-height:26px;padding:0}
   @media (prefers-reduced-motion:reduce){.pin.focus{animation:none}}
+
+  /* ---------- app hook: inside the TPACTION app the phone's real status bar is already there, so the
+     mockup's sample status bar (2:03 · battery) is hidden and everything below it moves up 38px ---------- */
+  .in-app .statusbar{display:none}
+  .in-app .apphead{padding-top:12px}
+  .in-app .pinlayer{top:max(158px,17%)}
+  .in-app .filterchip{top:134px}
+  .in-app .listview{padding-top:140px}
+  .in-app .phead{padding-top:14px}
 </style>
+<script>if(window.parent!==window)document.documentElement.classList.add('in-app');</script>
 </head>
 <body>
 <div class="device" id="device">
