@@ -2623,9 +2623,17 @@ window.tpaLog=(function(){
         .then(function(d){ return {ok:!!d,list_name:doorsNames[c],walk_list:d}; });
     },
     nextDoor:function(name){
-      var c=listCode(name);
-      return openDoors(c).then(function(){ return askDoors('next_door'); })
-        .then(function(d){ return {ok:!!d,list_name:doorsNames[c],walk_list:d}; });
+      // the chosen (or last used) list first; if it's finished, the next campaign with doors left
+      var first=listCode(name), order=[first].concat(name&&name!=='last_used'?[]:['maryvale3','vnm','estrella9']);
+      order=order.filter(function(c,i){ return order.indexOf(c)===i; });
+      function tryNext(i){
+        if(i>=order.length) return Promise.resolve({ok:false,error:'Every door in your walk lists is worked for today'});
+        return openDoors(order[i]).then(function(){ return askDoors('next_door'); }).then(function(d){
+          if(d&&d.next_door) return {ok:true,list_name:doorsNames[order[i]],moved_to_another_list:i>0,walk_list:d};
+          return tryNext(i+1);
+        });
+      }
+      return tryNext(0);
     },
     openVoter:function(person,name){
       var order=name&&name!=='last_used'?[listCode(name)]:[openCampaign||lastWalk()].concat(['maryvale3','vnm','estrella9']);
@@ -2810,8 +2818,8 @@ window.tpaLog=(function(){
     "Example data:",
     "- This week: 58 doors, 31 calls, 88 texts, 12 postcards, 4-day streak. 18 voters moved forward a ballot stage, up from 11.",
     "- Weekly goals: doors 312 of 400, calls 62 of 150, texts 340 of 300, postcards 12 of 50. Three days left.",
-    "- Turfs: Maryvale Turf 3, 42 doors left of 100, 9 ballot-chase stops, next door 1408 N 49th Dr (Rosa Alvarez, mailed her ballot Friday; husband Hector hasn't filled his out). Estrella Village Turf 9, 140 doors, not started. Available nearby: Alhambra Turf 2 (120 doors), Encanto Turf 5 (95 doors).",
-    "- Chase list: 23 voters on Matt's turfs requested a ballot and haven't returned it. The Maricopa deadline is 6 days away.",
+    "- Turfs: Maryvale Turf 3, 42 doors left of 100, 9 ballot-chase stops. Estrella Village Turf 9, 140 doors, not started. Available nearby: Alhambra Turf 2 (120 doors), Encanto Turf 5 (95 doors).",
+    "- Chase list: 23 voters on the volunteer's turfs requested a ballot and haven't returned it. The Maricopa deadline is 6 days away.",
     "- Calls: Maricopa ballot chase paused with 74 left. People you know: 14. Super Chase turnout: 210.",
     "- Texts waiting: Rosa Alvarez asked whether mailing takes long; Thomas Nguyen asked where to drop his ballot off; Danielle Okoro opted out.",
     "- Matched contacts: 14 of 247. Low-propensity: Miguel Santos, Priya Raman, Walter Boyd.",
@@ -2820,7 +2828,9 @@ window.tpaLog=(function(){
     "For official voting rules, deadlines or drop-off locations, tell the volunteer to confirm with the county elections office. Don't make up facts beyond this data.",
     "You can operate the app for the volunteer with tools: go_to_screen, open_walk_list, show_next_door, open_voter and close_walk_list.",
     "When they ask to go somewhere, open or see something, or where to start, call the tool right away instead of explaining how to get there.",
-    "'My last walk list' or 'where I left off' means list last_used. 'Where do I start', 'what's next' or 'my next door' means show_next_door.",
+    "'My last walk list' or 'where I left off' means list last_used.",
+    "When the volunteer asks what to do next, where to go, who to chase or where to start, call show_next_door first and recommend the voter it returns; it opens their campaign and singles them out on the map.",
+    "Never name a voter or an address to visit without calling show_next_door or open_voter for them first, so the map always shows the voter you are talking about.",
     "Use open_campaign for a specific call queue, text campaign, text replies or postcard batch, and find_in_app to find an article, post, video, event, notification, person or anything else by its words (area feeds for articles and posts).",
     "After a tool runs, say in one or two short sentences what is on screen now, using the tool result: for a door, the voter's name, address, and the most useful detail such as an unreturned ballot or the last note."
   ].join("\n");

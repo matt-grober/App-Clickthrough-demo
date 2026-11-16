@@ -6,6 +6,17 @@ a canvassing map and an activity log. All voter names, addresses and notes are e
 Live: https://app-clickthrough-demo.falling-dawn-6bfc.workers.dev/ (older designs at `/v2/` and `/v1/`).
 Every change below is a commit on `main`; the hash links each entry to its exact code change.
 
+## V4.2: "What's next" opens the voter on the map (Nov 16, 2026)
+
+- When asked what to do next, where to go or who to chase, Grok must call `show_next_door` and recommend the voter
+  it returns; it never names a voter or address without opening them on the map. The fixed "next door" line in
+  its briefing is gone, so suggestions always come from the live walk list.
+- Next door is chosen like a ballot chase: doors not worked today, unreturned ballots first, then the closest.
+  If the last-used list is finished, it moves on to the next campaign with doors left.
+- The voter is singled out on the map: other doors fade, their pin grows and pulses, and a "Go here next" card
+  shows name, address and why, with Open (voter sheet) and Directions (Google Maps). The map's DIRECTIONS button
+  also goes to them. Tapping another door or ✕ ends the single-out. Asking for a voter by name works the same way.
+
 ## V4.1: Voice reaches every campaign and can find content (Nov 16, 2026)
 
 - **`open_campaign`**: Grok can take people to any campaign type: door walk lists; Calls (Voters Near Me,

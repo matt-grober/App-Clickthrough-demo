@@ -718,6 +718,23 @@
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition-duration:.01ms!important}
   }
+
+  /* ---------- app hook: one voter singled out on the map (voice assistant "what's next") ---------- */
+  .pin.dim{opacity:.28}
+  .pin.focus{transform:translate(-50%,-100%) scale(1.4);z-index:4;animation:focuspulse 1.6s ease-in-out infinite}
+  @keyframes focuspulse{0%,100%{filter:drop-shadow(0 3px 5px rgba(16,32,58,.32))}50%{filter:drop-shadow(0 0 12px rgba(54,103,246,.95))}}
+  .focuscard{position:absolute;z-index:6;width:236px;pointer-events:auto;background:#fff;border-radius:16px;
+    padding:12px 13px 11px;box-shadow:0 10px 28px rgba(16,32,58,.28);font-family:inherit}
+  .focuscard .fk{font-size:9px;letter-spacing:.14em;font-weight:700;color:var(--navy);margin-bottom:4px;padding-right:20px}
+  .focuscard .fn{font-size:15px;font-weight:700;letter-spacing:.01em;line-height:1.25}
+  .focuscard .fa{font-size:12px;color:var(--muted);margin-top:2px}
+  .focuscard .fw{font-size:11.5px;font-weight:600;color:#B0700F;background:#FCF3E3;border-radius:7px;padding:4px 7px;margin-top:7px;display:inline-block}
+  .focuscard .fbtns{display:flex;gap:7px;margin-top:10px}
+  .focuscard .fbtns button{flex:1;border-radius:10px;padding:9px 6px;font-family:inherit;font-size:10.5px;font-weight:700;letter-spacing:.1em;cursor:pointer;border:1.5px solid var(--navy)}
+  .focuscard .fopen{background:var(--navy);color:#fff}
+  .focuscard .fdir{background:#fff;color:var(--navy)}
+  .focuscard .fx{position:absolute;top:6px;right:6px;width:26px;height:26px;border:0;border-radius:50%;background:#EEF2F8;color:#6B7280;cursor:pointer;font-size:13px;line-height:26px;padding:0}
+  @media (prefers-reduced-motion:reduce){.pin.focus{animation:none}}
 </style>
 </head>
 <body>
@@ -2327,6 +2344,56 @@ function walkSummary(){
   const n=doors().length, w=workedDoors().length;
   return { list:`${CAMPAIGN.name} · ${CAMPAIGN.turf}`, doors:n, worked_today:w, still_to_knock:n-w, view };
 }
+/* single out one voter: every other door fades, their pin grows and pulses, and a card names them with
+   Open (their voter sheet) and Directions. The map's own DIRECTIONS button goes to them too. */
+let focusDoorId=null, focusVoterId=null, focusWhy='';
+function placeOf(){ const pl=(CAMP&&CAMP.place)||{city:'Chandler',zip:'85249'}; return pl; }
+function directionsTo(v){
+  const pl=placeOf();
+  const url='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(`${v.a}, ${pl.city}, AZ ${pl.zip}`);
+  tell({type:'result',detail:`Directions opened to ${v.n}, ${v.a}`});
+  window.open(url,'_blank','noopener');
+}
+function focusVoter(v,why){
+  closeSheets(); setView('map'); filter=null; updateChip();
+  focusVoterId=v.id; focusDoorId=(doorOf(v)||v).id; focusWhy=why||'';
+  renderPins();
+}
+function clearFocus(){ focusDoorId=focusVoterId=null; renderPins(); }
+function applyFocus(){
+  if(!focusDoorId) return;
+  const door=person(focusDoorId), v=person(focusVoterId);
+  if(!door||!v||door.x===undefined){ focusDoorId=focusVoterId=null; return; }
+  pinlayer.querySelectorAll('.pin').forEach(b=>{
+    const me=+b.dataset.id===focusDoorId; b.classList.toggle('focus',me); b.classList.toggle('dim',!me); if(me) b.classList.remove('hidden');
+  });
+  if(selected) return;                         // their voter sheet is open
+  const c=document.createElement('div'); c.className='focuscard'; c.id='focusCard';
+  c.style.left=`clamp(0px, calc(${door.x}% - 118px), calc(100% - 236px))`;
+  c.style.top=`${door.y}%`;
+  c.style.transform= door.y<38 ? 'translateY(22px)' : 'translateY(calc(-100% - 84px))';
+  const flag=(v.flags||[]).includes('unreturned')?'Unreturned ballot':'';
+  c.innerHTML=`<div class="fk">GO HERE NEXT</div><div class="fn"></div><div class="fa"></div>
+    ${focusWhy||flag?'<div class="fw"></div>':''}
+    <div class="fbtns"><button class="fopen">OPEN</button><button class="fdir">DIRECTIONS</button></div>
+    <button class="fx" aria-label="Stop highlighting">✕</button>`;
+  c.querySelector('.fn').textContent=v.n;
+  c.querySelector('.fa').textContent=`${v.a} · ${v.d ?? '—'} mi · ${S[v.s].name}`;
+  const fw=c.querySelector('.fw'); if(fw) fw.textContent=focusWhy||flag;
+  c.querySelector('.fopen').onclick=()=>openVoter(v.id);
+  c.querySelector('.fdir').onclick=()=>directionsTo(v);
+  c.querySelector('.fx').onclick=clearFocus;
+  pinlayer.appendChild(c);
+}
+/* every pin redraw keeps the singled-out voter */
+const _renderPins=renderPins;
+renderPins=function(){ _renderPins(); applyFocus(); };
+/* tapping a different door ends the single-out */
+pinlayer.addEventListener('click',e=>{
+  const b=e.target.closest('.pin'); if(b && focusDoorId && +b.dataset.id!==focusDoorId){ focusDoorId=focusVoterId=null; }
+},true);
+document.querySelector('.actions .btn-outline').addEventListener('click',()=>{ if(focusVoterId) directionsTo(person(focusVoterId)); });
+
 window.addEventListener('message',e=>{
   const q=e.data;
   if(!IN_APP || e.source!==window.parent || !q || q.source!=='tpa-app') return;
@@ -2334,15 +2401,18 @@ window.addEventListener('message',e=>{
   if(q.op==='summary') data=walkSummary();
   else if(q.op==='set_view'){ closeSheets(); setView(q.view==='list'?'list':'map'); data=walkSummary(); }
   else if(q.op==='next_door'){
-    const v=doors().filter(d=>!doorState(d)).sort((a,b)=>(a.d??9)-(b.d??9))[0];
-    if(v){ setView('map'); openVoter(v.id); }
-    data={ ...walkSummary(), next_door: v?describeVoter(v):null };
+    // chase order: doors not worked today, unreturned ballots first, then the closest
+    const rank=d=>(d.flags||[]).includes('unreturned')?0:1;
+    const v=doors().filter(d=>!doorState(d)).sort((a,b)=>rank(a)-rank(b)||(a.d??9)-(b.d??9))[0];
+    const why=v?(rank(v)===0?'Unreturned ballot · closest to chase':'Closest door not worked yet'):'';
+    if(v) focusVoter(v,why);
+    data={ ...walkSummary(), next_door: v?{...describeVoter(v), why}:null };
   }
   else if(q.op==='open_voter'){
     const t=String(q.name||'').toLowerCase().trim();
     const v=t && (PEOPLE.find(p=>p.n.toLowerCase()===t) || PEOPLE.find(p=>p.n.toLowerCase().includes(t)) ||
                   PEOPLE.find(p=>t.split(/\s+/).every(w=>p.n.toLowerCase().includes(w))));
-    if(v){ setView('map'); openVoter(v.id); }
+    if(v) focusVoter(v,(v.flags||[]).includes('unreturned')?'Unreturned ballot':'');
     data={ ...walkSummary(), voter: v?describeVoter(v):null };
   }
   tell({type:'reply', req:q.req, data});
